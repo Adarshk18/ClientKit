@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Sans, Newsreader } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 const sans = IBM_Plex_Sans({
@@ -26,7 +27,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${sans.variable} ${serif.variable} h-full`}>
-      <body className="flex min-h-full flex-col bg-paper text-ink">{children}</body>
+      <body className="flex min-h-full flex-col bg-paper text-ink">
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }
