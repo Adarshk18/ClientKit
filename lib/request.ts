@@ -22,9 +22,15 @@ export async function assertSameOrigin(): Promise<void> {
   const origin = h.get("origin");
   const app = process.env.NEXT_PUBLIC_APP_URL;
   if (!origin || !app) return;
-  const expected = new URL(app).origin;
-  const normalize = (value: string) => value.replace("127.0.0.1", "localhost");
-  if (normalize(origin) !== normalize(expected)) {
-    throw new Error("Invalid origin");
+  try {
+    const got = new URL(origin);
+    const expected = new URL(app);
+    const host = (value: string) => value.replace("127.0.0.1", "localhost");
+    if (host(got.host) === host(expected.host)) return;
+    // Vercel assigns both a default *.vercel.app host and an alias like *-omega.vercel.app
+    if (got.hostname.endsWith(".vercel.app") && expected.hostname.endsWith(".vercel.app")) return;
+  } catch {
+    return;
   }
+  throw new Error("Invalid origin");
 }
