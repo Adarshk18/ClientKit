@@ -1,11 +1,15 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
-import { supabaseAnonKey, supabaseUrl } from "@/lib/env";
 
 export async function createSupabaseServer() {
   const cookieStore = await cookies();
+  const url = process.env.SUPABASE_URL;
+  const anon = process.env.SUPABASE_ANON_KEY;
+  if (!url || !anon) {
+    throw new Error("Supabase is not configured");
+  }
 
-  return createServerClient(supabaseUrl(), supabaseAnonKey(), {
+  return createServerClient(url, anon, {
     cookies: {
       getAll() {
         return cookieStore.getAll();
