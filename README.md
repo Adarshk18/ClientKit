@@ -109,7 +109,7 @@ Playwright specs live in `tests/e2e`. They skip unless `E2E=1` (they need a runn
 
 ## Library choices
 
-- **sanitize-html** instead of a browser-only DOMPurify build (server-safe allowlist).
+- **Allowlist HTML sanitizer in-repo** (no sanitize-html). Vercel/Node ESM and that package do not mix.
 - **In-Postgres rate limits** instead of Redis (one fewer vendor on Vercel).
 - **UPI QR generated in the browser** from the VPA (`qrcode`) — no extra QR vendor.
 - Job payouts are **not** Dodo Checkout on the founder account on purpose. Taking that money would make this a payments business.

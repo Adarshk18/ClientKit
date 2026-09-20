@@ -1,6 +1,4 @@
-import sanitizeHtml from "sanitize-html";
-
-const ALLOWED_TAGS = [
+const ALLOWED_TAGS = new Set([
   "p",
   "br",
   "strong",
@@ -16,7 +14,7 @@ const ALLOWED_TAGS = [
   "h4",
   "blockquote",
   "a",
-];
+]);
 
 export const MAX_SCOPE_LENGTH = 20_000;
 export const MAX_LINE_ITEMS = 20;
@@ -38,29 +36,48 @@ export function normalizeScopeHtml(input: string): string {
   );
 }
 
+function safeHref(raw: string): string | null {
+  const value = raw.trim().replace(/^['"]|['"]$/g, "").replace(/&amp;/gi, "&");
+  if (!/^(https?:|mailto:)/i.test(value)) return null;
+  if (/[\s<>\\]/.test(value)) return null;
+  return value;
+}
+
 export function sanitizeScopeHtml(input: string): string {
-  const clipped = input.slice(0, MAX_SCOPE_LENGTH);
-  return sanitizeHtml(clipped, {
-    allowedTags: ALLOWED_TAGS,
-    allowedAttributes: {
-      a: ["href"],
-    },
-    allowedSchemes: ["https", "http", "mailto"],
-    allowProtocolRelative: false,
-    transformTags: {
-      a: sanitizeHtml.simpleTransform("a", { rel: "noopener noreferrer", target: "_blank" }, true),
-    },
-    exclusiveFilter: (frame) => {
-      const tag = frame.tag;
-      return tag === "script" || tag === "iframe" || tag === "object" || tag === "embed";
-    },
+  let html = input.slice(0, MAX_SCOPE_LENGTH);
+  html = html.replace(/<script\b[\s\S]*?<\/script>/gi, "");
+  html = html.replace(/<style\b[\s\S]*?<\/style>/gi, "");
+  html = html.replace(/<!--[\s\S]*?-->/g, "");
+
+  return html.replace(/<\/?([a-zA-Z][a-zA-Z0-9]*)\b([^>]*)\/?>/g, (full, tag, attrs) => {
+    const name = String(tag).toLowerCase();
+    if (!ALLOWED_TAGS.has(name)) return "";
+    if (full.startsWith("</")) return `</${name}>`;
+    if (name === "br") return "<br />";
+    if (name === "a") {
+      const hrefMatch = String(attrs).match(/\bhref\s*=\s*("([^"]*)"|'([^']*)'|([^\s>]+))/i);
+      const raw = hrefMatch?.[2] ?? hrefMatch?.[3] ?? hrefMatch?.[4] ?? "";
+      const href = safeHref(raw);
+      if (!href) return "<a>";
+      const encoded = href.replaceAll("&", "&amp;").replaceAll('"', "&quot;");
+      return `<a href="${encoded}" rel="noopener noreferrer" target="_blank">`;
+    }
+    return `<${name}>`;
   });
 }
 
 export function htmlToPlainText(html: string): string {
-  return sanitizeHtml(html, { allowedTags: [], allowedAttributes: {} })
-    .replace(/&nbsp;/g, " ")
+  return html
+    .replace(/<script\b[\s\S]*?<\/script>/gi, "")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&quot;/gi, '"')
+    .replace(/\s+\n/g, "\n")
     .replace(/\n{3,}/g, "\n\n")
+    .replace(/[ \t]{2,}/g, " ")
     .trim();
 }
 

@@ -14,7 +14,7 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
-  serverExternalPackages: ["@react-pdf/renderer", "sanitize-html", "standardwebhooks"],
+  serverExternalPackages: ["@react-pdf/renderer", "standardwebhooks"],
   experimental: {
     serverActions: {
       bodySizeLimit: "1mb",
