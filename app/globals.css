@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+:root {
+  --paper: #f2eee6;
+  --ink: #1c1917;
+  --muted: #6a645a;
+  --line: #d6cfc2;
+  --stamp: #8b3a2a;
+  --stamp-hover: #6e2d21;
+  --cream: #faf7f0;
+  --danger: #8b1e1e;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-stamp: var(--stamp);
+  --color-stamp-hover: var(--stamp-hover);
+  --color-cream: var(--cream);
+  --color-danger: var(--danger);
+  --font-sans: var(--font-sans);
+  --font-serif: var(--font-serif);
+}
+
+html,
+body {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+body {
+  font-family: var(--font-sans), "IBM Plex Sans", system-ui, sans-serif;
+  text-rendering: optimizeLegibility;
+}
+
+.font-serif {
+  font-family: var(--font-serif), "Newsreader", Georgia, serif;
+}
+
+input,
+textarea,
+select {
+  background: var(--cream);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 0;
+}
+
+input:focus,
+textarea:focus,
+select:focus,
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--stamp);
+  outline-offset: 2px;
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.prose p {
+  margin: 0 0 0.75em;
+}
+
+.prose p:last-child {
+  margin-bottom: 0;
+}
+
+.prose ul,
+.prose ol {
+  margin: 0.5em 0 0.75em 1.1em;
+}
