@@ -116,4 +116,4 @@ Playwright specs live in `tests/e2e`. They skip unless `E2E=1` (they need a runn
 
 ## Deploy (Vercel)
 
-Set the same env vars. Production cookies are `Secure` + `SameSite=Lax`. Cron hits `/api/cron/expire` hourly to mark overdue sent docs (the public page also expires on read).
+Set the same env vars. Production cookies are `Secure` + `SameSite=Lax`. Cron hits `/api/cron/expire` once a day (Hobby limit). The public page also expires overdue docs on read.
