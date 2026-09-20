@@ -6,6 +6,7 @@ import { formatDateTime } from "@/lib/dates";
 import { effectiveStatus } from "@/lib/document-state";
 import { appUrl } from "@/lib/env";
 import { JobActions } from "@/components/job-actions";
+import { SharePanel } from "@/components/share-panel";
 import { StatusChip } from "@/components/status-chip";
 import { btnSecondary } from "@/lib/ui";
 import { sanitizeScopeHtml } from "@/lib/sanitize";
@@ -51,10 +52,19 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
 
       <JobActions documentId={job.id} status={status} publicId={job.public_id} />
 
+      {status !== "draft" && status !== "void" ? (
+        <SharePanel
+          publicId={job.public_id}
+          clientName={client?.name ?? "there"}
+          title={job.title}
+          workspaceName={workspace.name}
+        />
+      ) : null}
+
       {status !== "draft" ? (
-        <p className="text-sm">
-          Public link:{" "}
-          <a href={publicLink} className="underline decoration-line underline-offset-4" target="_blank" rel="noreferrer">
+        <p className="text-sm text-muted">
+          Direct link:{" "}
+          <a href={publicLink} className="text-ink underline decoration-line underline-offset-4" target="_blank" rel="noreferrer">
             {publicLink}
           </a>
         </p>

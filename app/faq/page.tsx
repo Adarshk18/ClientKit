@@ -28,6 +28,19 @@ export default function FaqPage() {
               Check your UPI or payment link. Then click Mark paid. We do not see their transfer.
             </dd>
           </div>
+          <div>
+            <dt className="font-medium">Can I send the link on WhatsApp?</dt>
+            <dd className="mt-1 text-muted">
+              Yes. Open the job, use WhatsApp or copy the message. The client does not create an account.
+            </dd>
+          </div>
+          <div>
+            <dt className="font-medium">What if they viewed it and went quiet?</dt>
+            <dd className="mt-1 text-muted">
+              Click Nudge client. We email them once an hour max. Duplicate a finished job when the next one is the
+              same shape.
+            </dd>
+          </div>
         </dl>
       </article>
       <SiteFooter />

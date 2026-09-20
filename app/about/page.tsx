@@ -22,7 +22,12 @@ export default function AboutPage() {
           </p>
           <p>
             Job money never hits our merchant account. You save one UPI VPA or a hosted payment URL you created
-            yourself. We charge you a monthly software fee. That is the whole business.
+            yourself. We charge you a monthly software fee. That is the whole business. Suites in 2026 still hold
+            card payouts 2–3 days and take ~3% of the job. We do neither.
+          </p>
+          <p>
+            Share the public link on WhatsApp. If they stall, nudge them. Duplicate a finished job instead of
+            rebuilding the same scope. The client never creates an account.
           </p>
           <p>
             Signatures here are simple electronic signatures: legal name, intent checkbox, IP, time, and a hash of

@@ -103,6 +103,33 @@ export default function MarketingPage() {
           </ol>
         </section>
 
+        <section className="border-t border-line py-12 lg:py-16">
+          <h2 className="font-serif text-2xl">What people are leaving suites over right now</h2>
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-muted">
+            August–September 2026 reviews keep repeating the same four problems. Client Kit is built around those,
+            not around a CRM.
+          </p>
+          <ul className="mt-8 max-w-2xl space-y-5 text-sm leading-6">
+            <li>
+              <strong className="text-ink">They hold your client’s money.</strong> Card payouts on the big tools take
+              2–3 business days; ACH a week. Disputes can freeze funds. Here the client pays your UPI or your own
+              payment link. We never touch the job money.
+            </li>
+            <li>
+              <strong className="text-ink">They tax the invoice.</strong> Processing on a $5,000 job is over $140 on
+              top of a $36–$129/mo plan. We charge software rent. Zero cut of the job.
+            </li>
+            <li>
+              <strong className="text-ink">The client has to make an account.</strong> Portals kill momentum on mobile.
+              Our client opens one link, signs, pays. Share it on WhatsApp. Nudge if they stall.
+            </li>
+            <li>
+              <strong className="text-ink">India is an afterthought.</strong> New Stripe accounts are blocked for many
+              Indian founders; UPI is not a first-class button. UPI VPA + QR is a first-class payout method here.
+            </li>
+          </ul>
+        </section>
+
         <section className="grid gap-10 border-t border-line py-12 lg:grid-cols-2 lg:gap-16 lg:py-16">
           <div>
             <h2 className="font-serif text-2xl">Your side</h2>

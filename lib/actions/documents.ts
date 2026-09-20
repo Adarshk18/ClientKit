@@ -465,4 +465,93 @@ export async function markPaidAction(documentId: string): Promise<ActionResult> 
   }
 }
 
+export async function duplicateDocumentAction(documentId: string): Promise<ActionResult<{ id: string }>> {
+  try {
+    await assertSameOrigin();
+    const { supabase, workspace } = await requireWorkspace();
+    const doc = await loadDocBundle(documentId, workspace.id);
+    if (!doc || doc.deleted_at) return { ok: false, error: "Not found" };
+
+    const { data: created, error } = await supabase
+      .from("documents")
+      .insert({
+        workspace_id: workspace.id,
+        client_id: doc.client_id,
+        public_id: newPublicId(),
+        title: `${doc.title} (copy)`,
+        scope_html: doc.scope_html,
+        currency: doc.currency,
+        subtotal: doc.subtotal,
+        deposit_percent: doc.deposit_percent,
+        deposit_amount: doc.deposit_amount,
+        amount_due: doc.amount_due,
+        remainder_amount: doc.remainder_amount,
+        expires_at: null,
+        status: "draft",
+      })
+      .select("id")
+      .single();
+    if (error || !created) return { ok: false, error: "Could not duplicate." };
+
+    const items = doc.line_items
+      .slice()
+      .sort((a, b) => a.sort_order - b.sort_order)
+      .map((item) => ({ label: item.label, qty: Number(item.qty), unit_amount: item.unit_amount }));
+    await replaceLineItems(supabase, created.id, items);
+    revalidatePath("/jobs");
+    return { ok: true, data: { id: created.id } };
+  } catch (error) {
+    logError("documents.duplicate", error);
+    return { ok: false, error: "Could not duplicate." };
+  }
+}
+
+export async function nudgeClientAction(documentId: string): Promise<ActionResult> {
+  try {
+    await assertSameOrigin();
+    const { supabase, workspace, user } = await requireWorkspace();
+    const doc = await loadDocBundle(documentId, workspace.id);
+    if (!doc) return { ok: false, error: "Not found" };
+    const status = effectiveStatus(doc.status, doc.expires_at);
+    if (status !== "sent" && status !== "viewed" && status !== "signed") {
+      return { ok: false, error: "Nothing to nudge. Send the job first, or it is already paid." };
+    }
+
+    const hourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+    const { count } = await supabase
+      .from("events")
+      .select("id", { count: "exact", head: true })
+      .eq("document_id", documentId)
+      .eq("type", "resent")
+      .gte("created_at", hourAgo);
+    if ((count ?? 0) > 0) {
+      return { ok: false, error: "Wait an hour between reminders." };
+    }
+
+    const { sendNudgeToClient } = await import("@/lib/email");
+    await sendNudgeToClient({
+      to: doc.clients.email,
+      clientName: doc.clients.name,
+      workspaceName: workspace.name,
+      title: doc.title,
+      publicId: doc.public_id,
+      kind: status === "signed" ? "pay" : "sign",
+    });
+
+    const { ip, userAgent } = await requestMeta();
+    await supabase.from("events").insert({
+      document_id: documentId,
+      type: "resent",
+      ip,
+      user_agent: userAgent,
+      meta: { by: user.id, kind: "nudge" },
+    });
+    revalidatePath(`/jobs/${documentId}`);
+    return { ok: true, data: undefined };
+  } catch (error) {
+    logError("documents.nudge", error);
+    return { ok: false, error: "Could not send the reminder." };
+  }
+}
+
 

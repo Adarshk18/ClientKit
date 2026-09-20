@@ -4,7 +4,9 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import {
   deleteDraftAction,
+  duplicateDocumentAction,
   markPaidAction,
+  nudgeClientAction,
   resendDocumentAction,
   sendDocumentAction,
   voidDocumentAction,
@@ -62,6 +64,16 @@ export function JobActions({
             </button>
           </>
         ) : null}
+        {status === "sent" || status === "viewed" || status === "signed" ? (
+          <button
+            type="button"
+            disabled={pending}
+            className={btnSecondary}
+            onClick={() => run(() => nudgeClientAction(documentId))}
+          >
+            {pending ? "Sending…" : "Nudge client"}
+          </button>
+        ) : null}
         {status === "sent" || status === "viewed" ? (
           <>
             <button
@@ -116,6 +128,23 @@ export function JobActions({
             Copy link
           </button>
         ) : null}
+        <button
+          type="button"
+          disabled={pending}
+          className={btnSecondary}
+          onClick={() => {
+            startTransition(async () => {
+              const result = await duplicateDocumentAction(documentId);
+              if (!result.ok) {
+                setError(result.error);
+                return;
+              }
+              router.push(`/jobs/${result.data.id}/edit`);
+            });
+          }}
+        >
+          Duplicate
+        </button>
       </div>
     </div>
   );
