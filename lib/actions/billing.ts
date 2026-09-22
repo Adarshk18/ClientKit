@@ -66,6 +66,7 @@ export async function startPlanCheckoutAction(
     const client = getDodoClient();
     const productId = dodoProductId(parsed.data);
     const isIndia = isIndiaCountry(billingCountry);
+    const billingCurrency = currencyForCountry(billingCountry);
 
     const session = await client.checkoutSessions.create({
       product_cart: [{ product_id: productId, quantity: 1 }],
@@ -80,8 +81,8 @@ export async function startPlanCheckoutAction(
       allowed_payment_method_types: isIndia
         ? ["upi_collect", "credit", "debit"]
         : ["credit", "debit"],
-      billing_currency: isIndia ? "INR" : undefined,
-      billing_address: isIndia ? { country: "IN" } : undefined,
+      billing_currency: billingCurrency,
+      billing_address: { country: billingCountry },
       feature_flags: { redirect_immediately: true },
     });
 

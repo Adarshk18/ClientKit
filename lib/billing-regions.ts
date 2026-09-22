@@ -1,29 +1,43 @@
 import type { Plan } from "@/lib/types";
 
-export type BillingCurrency = "USD" | "INR";
+export type BillingCurrency =
+  | "USD"
+  | "INR"
+  | "GBP"
+  | "EUR"
+  | "CAD"
+  | "AUD"
+  | "SGD"
+  | "AED"
+  | "NZD";
 
 export type CountryOption = {
   code: string;
   label: string;
+  currency: BillingCurrency;
 };
 
-/** Countries shown in the pricing / checkout dropdown. Only IN bills in INR. */
+/** Countries shown in the pricing / checkout dropdown. */
 export const BILLING_COUNTRIES: CountryOption[] = [
-  { code: "IN", label: "India" },
-  { code: "US", label: "United States" },
-  { code: "GB", label: "United Kingdom" },
-  { code: "CA", label: "Canada" },
-  { code: "AU", label: "Australia" },
-  { code: "SG", label: "Singapore" },
-  { code: "AE", label: "United Arab Emirates" },
-  { code: "DE", label: "Germany" },
-  { code: "FR", label: "France" },
-  { code: "NL", label: "Netherlands" },
-  { code: "IE", label: "Ireland" },
-  { code: "NZ", label: "New Zealand" },
-  { code: "OTHER", label: "Other" },
+  { code: "IN", label: "India", currency: "INR" },
+  { code: "US", label: "United States", currency: "USD" },
+  { code: "GB", label: "United Kingdom", currency: "GBP" },
+  { code: "CA", label: "Canada", currency: "CAD" },
+  { code: "AU", label: "Australia", currency: "AUD" },
+  { code: "SG", label: "Singapore", currency: "SGD" },
+  { code: "AE", label: "United Arab Emirates", currency: "AED" },
+  { code: "DE", label: "Germany", currency: "EUR" },
+  { code: "FR", label: "France", currency: "EUR" },
+  { code: "NL", label: "Netherlands", currency: "EUR" },
+  { code: "IE", label: "Ireland", currency: "EUR" },
+  { code: "NZ", label: "New Zealand", currency: "NZD" },
+  { code: "OTHER", label: "Other", currency: "USD" },
 ];
 
+const BY_CODE = Object.fromEntries(BILLING_COUNTRIES.map((c) => [c.code, c])) as Record<
+  string,
+  CountryOption
+>;
 const KNOWN_CODES = new Set(BILLING_COUNTRIES.map((c) => c.code));
 
 /** Fixed list prices by billing currency (major units). Do not invent live FX. */
@@ -33,6 +47,25 @@ export const PLAN_PRICES_BY_CURRENCY: Record<
 > = {
   USD: { founder: 9, solo: 12, busy: 29 },
   INR: { founder: 749, solo: 999, busy: 2499 },
+  GBP: { founder: 7, solo: 9, busy: 22 },
+  EUR: { founder: 8, solo: 11, busy: 27 },
+  CAD: { founder: 12, solo: 16, busy: 39 },
+  AUD: { founder: 14, solo: 18, busy: 45 },
+  SGD: { founder: 12, solo: 16, busy: 39 },
+  AED: { founder: 33, solo: 44, busy: 107 },
+  NZD: { founder: 15, solo: 20, busy: 48 },
+};
+
+const LOCALE_FOR_CURRENCY: Record<BillingCurrency, string> = {
+  USD: "en-US",
+  INR: "en-IN",
+  GBP: "en-GB",
+  EUR: "en-IE",
+  CAD: "en-CA",
+  AUD: "en-AU",
+  SGD: "en-SG",
+  AED: "en-AE",
+  NZD: "en-NZ",
 };
 
 export const COUNTRY_COOKIE = "ck_country";
@@ -43,7 +76,6 @@ export function normalizeCountry(raw: string | null | undefined): string {
   const code = raw.trim().toUpperCase();
   if (!code || code === "XX" || code === "T1") return "US";
   if (KNOWN_CODES.has(code)) return code;
-  // Unknown geo codes fall back to Other (USD checkout via workspace country US).
   return "OTHER";
 }
 
@@ -54,7 +86,8 @@ export function workspaceCountry(country: string): string {
 }
 
 export function currencyForCountry(country: string): BillingCurrency {
-  return workspaceCountry(country) === "IN" ? "INR" : "USD";
+  const code = normalizeCountry(country);
+  return BY_CODE[code]?.currency ?? "USD";
 }
 
 export function isIndiaCountry(country: string): boolean {
@@ -69,8 +102,7 @@ export function planPriceMajor(plan: Exclude<Plan, "free">, country: string): nu
 export function formatPlanPrice(plan: Exclude<Plan, "free">, country: string): string {
   const currency = currencyForCountry(country);
   const major = PLAN_PRICES_BY_CURRENCY[currency][plan];
-  const locale = currency === "INR" ? "en-IN" : "en-US";
-  // List prices are whole units; avoid "$9.00" / "₹749.00".
+  const locale = LOCALE_FOR_CURRENCY[currency];
   return new Intl.NumberFormat(locale, {
     style: "currency",
     currency,

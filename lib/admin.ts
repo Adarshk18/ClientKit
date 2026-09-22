@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { createSupabaseAdmin } from "@/lib/supabase/admin";
 
@@ -17,7 +17,8 @@ export function isAdminEmail(email: string | null | undefined): boolean {
 
 /**
  * Gate /admin: logged-in user whose email is in ADMIN_EMAILS.
- * Everyone else gets notFound() so the route is not advertised.
+ * Unsigned visitors go to login. Signed-in non-admins get notFound()
+ * so the route is not advertised.
  */
 export async function requireAdmin() {
   const supabase = await createSupabaseServer();
@@ -25,7 +26,11 @@ export async function requireAdmin() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user || !isAdminEmail(user.email)) {
+  if (!user) {
+    redirect("/login?next=/admin");
+  }
+
+  if (!isAdminEmail(user.email)) {
     notFound();
   }
 

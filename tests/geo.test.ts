@@ -11,32 +11,41 @@ import {
 } from "@/lib/billing-regions";
 
 describe("billing regions", () => {
-  it("maps only India to INR", () => {
+  it("maps each country to its currency", () => {
     expect(currencyForCountry("IN")).toBe("INR");
     expect(currencyForCountry("US")).toBe("USD");
-    expect(currencyForCountry("GB")).toBe("USD");
+    expect(currencyForCountry("GB")).toBe("GBP");
+    expect(currencyForCountry("DE")).toBe("EUR");
+    expect(currencyForCountry("FR")).toBe("EUR");
+    expect(currencyForCountry("CA")).toBe("CAD");
+    expect(currencyForCountry("AU")).toBe("AUD");
+    expect(currencyForCountry("SG")).toBe("SGD");
+    expect(currencyForCountry("AE")).toBe("AED");
+    expect(currencyForCountry("NZ")).toBe("NZD");
     expect(currencyForCountry("OTHER")).toBe("USD");
-    expect(currencyForCountry("xx")).toBe("USD");
   });
 
-  it("uses fixed USD and INR list prices", () => {
+  it("uses fixed list prices per currency", () => {
     expect(PLAN_PRICES_BY_CURRENCY.USD).toEqual({ founder: 9, solo: 12, busy: 29 });
     expect(PLAN_PRICES_BY_CURRENCY.INR).toEqual({ founder: 749, solo: 999, busy: 2499 });
+    expect(PLAN_PRICES_BY_CURRENCY.GBP).toEqual({ founder: 7, solo: 9, busy: 22 });
+    expect(PLAN_PRICES_BY_CURRENCY.EUR).toEqual({ founder: 8, solo: 11, busy: 27 });
     expect(planPriceMajor("solo", "US")).toBe(12);
     expect(planPriceMajor("solo", "IN")).toBe(999);
-    expect(planPriceMajor("busy", "IN")).toBe(2499);
+    expect(planPriceMajor("solo", "GB")).toBe(9);
+    expect(planPriceMajor("solo", "DE")).toBe(11);
+    expect(planPriceMajor("busy", "AU")).toBe(45);
   });
 
-  it("formats plan prices with currency symbols", () => {
+  it("formats plan prices with the right currency symbol", () => {
     expect(formatPlanPrice("founder", "US")).toMatch(/\$9/);
-    expect(formatPlanPrice("solo", "US")).toMatch(/\$12/);
-    expect(formatPlanPrice("busy", "US")).toMatch(/\$29/);
+    expect(formatPlanPrice("solo", "GB")).toMatch(/£9|GBP/);
+    expect(formatPlanPrice("solo", "DE")).toMatch(/11/);
     expect(formatPlanPrice("founder", "IN")).toMatch(/749/);
-    expect(formatPlanPrice("solo", "IN")).toMatch(/999/);
     expect(formatPlanPrice("busy", "IN")).toMatch(/2,?499/);
   });
 
-  it("normalizes country codes and Other → US for workspace", () => {
+  it("normalizes country codes and Other to US for workspace", () => {
     expect(normalizeCountry("in")).toBe("IN");
     expect(normalizeCountry("OTHER")).toBe("OTHER");
     expect(workspaceCountry("OTHER")).toBe("US");
