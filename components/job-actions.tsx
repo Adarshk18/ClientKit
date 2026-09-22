@@ -11,6 +11,7 @@ import {
   sendDocumentAction,
   voidDocumentAction,
 } from "@/lib/actions/documents";
+import { Spinner } from "@/components/spinner";
 import { btnDanger, btnPrimary, btnSecondary } from "@/lib/ui";
 import type { DocStatus } from "@/lib/types";
 
@@ -71,7 +72,7 @@ export function JobActions({
             className={btnSecondary}
             onClick={() => run(() => nudgeClientAction(documentId))}
           >
-            {pending ? "Sending…" : "Nudge client"}
+            {pending ? <Spinner label="Sending" /> : "Nudge client"}
           </button>
         ) : null}
         {status === "sent" || status === "viewed" ? (

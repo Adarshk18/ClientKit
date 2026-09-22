@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { startPlanCheckoutAction } from "@/lib/actions/billing";
+import { Spinner } from "@/components/spinner";
 import { FOUNDER_CAP, PLAN_PRICES } from "@/lib/plans";
 import { btnPrimary, btnSecondary } from "@/lib/ui";
 import type { Plan } from "@/lib/types";
@@ -48,7 +49,7 @@ export function CheckoutButtons({ current }: { current: Plan }) {
                 className={`mt-4 w-full ${active ? btnSecondary : btnPrimary}`}
                 onClick={() => start(plan)}
               >
-                {active ? "Current plan" : pending ? "Redirecting…" : `Choose ${info.label}`}
+                {active ? "Current plan" : pending ? <Spinner label="Redirecting" /> : `Choose ${info.label}`}
               </button>
             </div>
           );

@@ -8,6 +8,7 @@ import {
   updateWorkspaceAction,
   uploadLogoAction,
 } from "@/lib/actions/settings";
+import { Spinner } from "@/components/spinner";
 import { SubmitButton } from "@/components/submit-button";
 import { btnPrimary, fieldClass } from "@/lib/ui";
 import type { ActionResult, PayoutType } from "@/lib/types";
@@ -18,7 +19,7 @@ function PendingFileButton() {
   const { pending } = useFormStatus();
   return (
     <button type="submit" disabled={pending} className={btnPrimary} aria-busy={pending}>
-      {pending ? "Uploading…" : "Upload logo"}
+      {pending ? <Spinner label="Uploading" /> : "Upload logo"}
     </button>
   );
 }

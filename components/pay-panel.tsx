@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { markPaymentSentAction } from "@/lib/actions/sign";
 import { CopyButton } from "@/components/copy-button";
+import { Spinner } from "@/components/spinner";
 import { UpiQr } from "@/components/upi-qr";
 import { btnPrimary, btnSecondary } from "@/lib/ui";
 import { formatMoney } from "@/lib/money";
@@ -75,7 +76,7 @@ export function PayPanel({
               });
             }}
           >
-            {pending ? "Saving…" : "I’ve sent the payment"}
+            {pending ? <Spinner label="Saving" /> : "I've sent the payment"}
           </button>
         )}
         {error ? <p className="text-sm text-danger">{error}</p> : null}
@@ -86,7 +87,7 @@ export function PayPanel({
   return (
     <div className="space-y-4">
       <p className="text-sm">
-        Pay {formatMoney(amountDue, currency)} using the freelancer’s payment link. Client Kit does not take this
+        Pay {formatMoney(amountDue, currency)} using the freelancer's payment link. Client Kit does not take this
         money.
       </p>
       <a

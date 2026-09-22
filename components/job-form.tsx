@@ -9,6 +9,7 @@ import {
 } from "@/lib/actions/documents";
 import { computeAmounts, formatMoney, fromMinorUnits, parseMajorAmount, toMinorUnits } from "@/lib/money";
 import { MAX_LINE_ITEMS } from "@/lib/sanitize";
+import { Spinner } from "@/components/spinner";
 import { btnPrimary, btnSecondary, fieldArea, fieldClass } from "@/lib/ui";
 
 type Item = { label: string; qty: string; price: string };
@@ -266,12 +267,12 @@ export function JobForm({
       <div className="flex flex-wrap gap-3">
         {mode === "sent" ? (
           <button type="submit" disabled={pending} className={btnPrimary}>
-            {pending ? "Saving…" : "Void and save as new version"}
+            {pending ? <Spinner label="Saving" /> : "Void and save as new version"}
           </button>
         ) : (
           <>
             <button type="submit" disabled={pending} className={btnSecondary}>
-              {pending ? "Saving…" : "Save draft"}
+              {pending ? <Spinner label="Saving" /> : "Save draft"}
             </button>
             <button
               type="button"
@@ -286,7 +287,7 @@ export function JobForm({
                 } as React.FormEvent<HTMLFormElement>);
               }}
             >
-              {pending ? "Sending…" : "Save and send"}
+              {pending ? <Spinner label="Sending" /> : "Save and send"}
             </button>
           </>
         )}
