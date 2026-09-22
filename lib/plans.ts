@@ -15,7 +15,7 @@ export const SENT_LIMITS: Record<Plan, number> = {
 
 export const GRACE_DAYS = 3;
 
-/** Founder ($9) is only offered to the first N workspaces. After that, new accounts take Solo ($12). */
+/** Founder is only offered to the first N workspaces. After that, new accounts take Solo. */
 export const FOUNDER_CAP = 50;
 
 export function founderSeatsRemaining(founderWorkspaceCount: number): number {

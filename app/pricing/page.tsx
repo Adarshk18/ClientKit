@@ -1,12 +1,15 @@
 import { SiteFooter, SiteHeader } from "@/components/site-header";
 import { PricingTable } from "@/components/pricing-table";
 import { TrackPageView } from "@/components/track";
+import { getVisitorCountry } from "@/lib/visitor-country";
 
 export const metadata = {
   title: "Pricing",
 };
 
-export default function PricingPage() {
+export default async function PricingPage() {
+  const initialCountry = await getVisitorCountry();
+
   return (
     <div className="flex min-h-full flex-col">
       <TrackPageView meta={{ page: "pricing" }} />
@@ -19,7 +22,7 @@ export default function PricingPage() {
           limit.
         </p>
         <div className="mt-10">
-          <PricingTable />
+          <PricingTable initialCountry={initialCountry} />
         </div>
         <p className="mt-8 max-w-xl text-[13px] leading-5 text-muted">
           Failed SaaS payments get a 3-day grace, then the workspace is read-only until billing is fixed. You can

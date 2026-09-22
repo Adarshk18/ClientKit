@@ -8,11 +8,20 @@ import { planCheckoutSchema } from "@/lib/validators";
 import { assertSameOrigin } from "@/lib/request";
 import { logError } from "@/lib/logger";
 import { canPurchaseFounder, FOUNDER_CAP } from "@/lib/plans";
+import {
+  currencyForCountry,
+  formatPlanPrice,
+  isIndiaCountry,
+  workspaceCountry,
+} from "@/lib/billing-regions";
 import { createSupabaseAdmin } from "@/lib/supabase/admin";
 import type { ActionResult } from "@/lib/types";
 import type { Plan } from "@/lib/types";
 
-export async function startPlanCheckoutAction(plan: string): Promise<ActionResult<{ url: string }>> {
+export async function startPlanCheckoutAction(
+  plan: string,
+  country?: string,
+): Promise<ActionResult<{ url: string }>> {
   try {
     await assertSameOrigin();
     const parsed = planCheckoutSchema.safeParse(plan);
@@ -21,8 +30,23 @@ export async function startPlanCheckoutAction(plan: string): Promise<ActionResul
     const { user, workspace } = await requireWorkspace();
     if (!user.email) return { ok: false, error: "Your account needs an email to bill." };
 
+    const admin = createSupabaseAdmin();
+    let billingCountry = workspaceCountry(workspace.country);
+
+    if (country) {
+      billingCountry = workspaceCountry(country);
+      const billingCurrency = currencyForCountry(billingCountry);
+      const { error: updateError } = await admin
+        .from("workspaces")
+        .update({ country: billingCountry, currency: billingCurrency })
+        .eq("id", workspace.id);
+      if (updateError) {
+        logError("billing.persistCountry", updateError);
+        return { ok: false, error: "Could not save billing country. Try again." };
+      }
+    }
+
     if (parsed.data === "founder") {
-      const admin = createSupabaseAdmin();
       const { count, error: countError } = await admin
         .from("workspaces")
         .select("id", { count: "exact", head: true })
@@ -34,15 +58,14 @@ export async function startPlanCheckoutAction(plan: string): Promise<ActionResul
       if (!canPurchaseFounder(count ?? 0)) {
         return {
           ok: false,
-          error: `Founder ($9) is limited to the first ${FOUNDER_CAP} workspaces. Choose Solo ($12).`,
+          error: `Founder (${formatPlanPrice("founder", billingCountry)}) is limited to the first ${FOUNDER_CAP} workspaces. Choose Solo (${formatPlanPrice("solo", billingCountry)}).`,
         };
       }
     }
 
     const client = getDodoClient();
     const productId = dodoProductId(parsed.data);
-    const country = workspace.country.toUpperCase();
-    const isIndia = country === "IN";
+    const isIndia = isIndiaCountry(billingCountry);
 
     const session = await client.checkoutSessions.create({
       product_cart: [{ product_id: productId, quantity: 1 }],
@@ -73,8 +96,8 @@ export async function startPlanCheckoutAction(plan: string): Promise<ActionResul
   }
 }
 
-export async function redirectToCheckout(plan: Exclude<Plan, "free">): Promise<void> {
-  const result = await startPlanCheckoutAction(plan);
+export async function redirectToCheckout(plan: Exclude<Plan, "free">, country?: string): Promise<void> {
+  const result = await startPlanCheckoutAction(plan, country);
   if (result.ok) redirect(result.data.url);
   redirect(`/settings/billing?error=${encodeURIComponent(result.error)}`);
 }
@@ -91,4 +114,3 @@ export async function countFounderWorkspaces(): Promise<number> {
   }
   return count ?? 0;
 }
-

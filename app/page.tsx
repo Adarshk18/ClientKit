@@ -2,9 +2,15 @@ import Link from "next/link";
 import { SiteFooter, SiteHeader } from "@/components/site-header";
 import { PricingTable } from "@/components/pricing-table";
 import { TrackPageView, TrackedLink } from "@/components/track";
+import { formatPlanPrice } from "@/lib/billing-regions";
 import { btnPrimary } from "@/lib/ui";
+import { getVisitorCountry } from "@/lib/visitor-country";
 
-export default function MarketingPage() {
+export default async function MarketingPage() {
+  const country = await getVisitorCountry();
+  const soloPrice = formatPlanPrice("solo", country);
+  const founderPrice = formatPlanPrice("founder", country);
+
   return (
     <div className="flex min-h-full flex-col">
       <TrackPageView />
@@ -13,7 +19,7 @@ export default function MarketingPage() {
       <main className="mx-auto w-full max-w-6xl px-4">
         <section className="grid items-start gap-12 py-12 lg:grid-cols-12 lg:gap-10 lg:py-16">
           <div className="lg:col-span-5">
-            <p className="text-[13px] text-stamp">$12 a month</p>
+            <p className="text-[13px] text-stamp">from {soloPrice} a month</p>
             <h1 className="mt-3 font-serif text-[2.35rem] font-medium leading-[1.15] tracking-tight sm:text-[2.75rem]">
               Write the job. They sign. You get paid.
             </h1>
@@ -191,7 +197,7 @@ export default function MarketingPage() {
             monthly send limit.
           </p>
           <div className="mt-8">
-            <PricingTable />
+            <PricingTable initialCountry={country} />
           </div>
         </section>
 
@@ -203,9 +209,10 @@ export default function MarketingPage() {
               <dd className="mt-1 text-muted">No. They pay your UPI or your hosted link. We never see the card.</dd>
             </div>
             <div>
-              <dt className="font-medium">What is Founder at $9?</dt>
+              <dt className="font-medium">What is Founder at {founderPrice}?</dt>
               <dd className="mt-1 text-muted">
-                Founder is $9/mo for the first 50 workspaces only. After that, new accounts pay Solo at $12.
+                Founder is {founderPrice}/mo for the first 50 workspaces only. After that, new accounts pay Solo at{" "}
+                {soloPrice}.
               </dd>
             </div>
             <div>

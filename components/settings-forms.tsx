@@ -10,6 +10,7 @@ import {
 } from "@/lib/actions/settings";
 import { Spinner } from "@/components/spinner";
 import { SubmitButton } from "@/components/submit-button";
+import { BILLING_COUNTRIES, countrySelectValue, currencyForCountry, workspaceCountry } from "@/lib/billing-regions";
 import { btnPrimary, fieldClass } from "@/lib/ui";
 import type { ActionResult, PayoutType } from "@/lib/types";
 
@@ -55,13 +56,18 @@ export function BrandForm({
   currency: string;
   country: string;
 }) {
+  void currency;
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
+  const [selectedCountry, setSelectedCountry] = useState(countrySelectValue(country));
+  const derivedCurrency = currencyForCountry(selectedCountry);
 
   return (
     <form
       className="space-y-4"
       action={async (formData) => {
+        formData.set("country", workspaceCountry(selectedCountry));
+        formData.set("currency", currencyForCountry(selectedCountry));
         const result = await updateWorkspaceAction(formData);
         if (!result.ok) {
           setError(result.error);
@@ -83,11 +89,22 @@ export function BrandForm({
       <div className="grid grid-cols-2 gap-3">
         <label className="text-sm">
           Currency
-          <input name="currency" defaultValue={currency} maxLength={3} className={fieldClass} />
+          <input name="currency" value={derivedCurrency} readOnly className={fieldClass} />
+          <span className="mt-1 block text-[12px] text-muted">Follows country (INR for India, else USD).</span>
         </label>
         <label className="text-sm">
           Country
-          <input name="country" defaultValue={country} maxLength={2} className={fieldClass} />
+          <select
+            className={fieldClass}
+            value={selectedCountry}
+            onChange={(event) => setSelectedCountry(event.target.value)}
+          >
+            {BILLING_COUNTRIES.map((c) => (
+              <option key={c.code} value={c.code}>
+                {c.label}
+              </option>
+            ))}
+          </select>
         </label>
       </div>
       <SubmitButton className={btnPrimary}>Save brand</SubmitButton>
