@@ -2,7 +2,7 @@
 
 /** Primary actions: ≥44px touch target on phones; full-width until sm. */
 export const btnPrimary =
-  "inline-flex min-h-11 w-full items-center justify-center rounded-sm px-3 py-2.5 text-center text-[13px] font-medium leading-tight text-paper bg-stamp hover:bg-stamp-hover disabled:opacity-55 sm:w-auto sm:shrink-0 sm:whitespace-nowrap sm:px-4";
+  "inline-flex min-h-11 w-full items-center justify-center rounded-sm px-3 py-2.5 text-center text-[13px] font-medium leading-tight text-cream bg-stamp hover:bg-stamp-hover disabled:opacity-55 sm:w-auto sm:shrink-0 sm:whitespace-nowrap sm:px-4";
 
 export const btnSecondary =
   "inline-flex min-h-11 w-full items-center justify-center rounded-sm border border-line bg-transparent px-3 py-2.5 text-center text-[13px] font-medium leading-tight text-ink hover:bg-cream disabled:opacity-55 sm:w-auto sm:shrink-0 sm:whitespace-nowrap sm:px-4";
@@ -14,7 +14,7 @@ export const btnGhost =
   "inline-flex min-h-11 items-center justify-center rounded-sm px-2.5 text-[13px] font-medium text-ink hover:text-stamp sm:px-3 sm:whitespace-nowrap";
 
 export const btnNav =
-  "inline-flex min-h-11 shrink-0 items-center justify-center rounded-sm bg-stamp px-3 text-[13px] font-medium text-paper hover:bg-stamp-hover sm:px-4";
+  "inline-flex min-h-11 shrink-0 items-center justify-center rounded-sm bg-stamp px-3 text-[13px] font-medium text-cream hover:bg-stamp-hover sm:px-4";
 
 export const fieldClass =
   "mt-1 min-h-11 w-full rounded-sm border border-line bg-cream px-3 text-sm text-ink placeholder:text-muted/70";
