@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { SiteFooter, SiteHeader } from "@/components/site-header";
 import { PricingTable } from "@/components/pricing-table";
+import { TrackPageView, TrackedLink } from "@/components/track";
 import { btnPrimary } from "@/lib/ui";
 
 export default function MarketingPage() {
   return (
     <div className="flex min-h-full flex-col">
+      <TrackPageView />
       <SiteHeader />
 
       <main className="mx-auto w-full max-w-6xl px-4">
@@ -20,9 +22,9 @@ export default function MarketingPage() {
               deposit. The money goes to your UPI or payment link — not to us.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3">
-              <Link href="/signup" className={btnPrimary}>
+              <TrackedLink href="/signup" className={btnPrimary} meta={{ cta: "hero_get_started" }}>
                 Get started
-              </Link>
+              </TrackedLink>
               <Link
                 href="/login"
                 className="text-[13px] text-muted underline decoration-line underline-offset-4 hover:text-ink"
@@ -55,12 +57,14 @@ export default function MarketingPage() {
                     <dd>$600</dd>
                   </div>
                 </dl>
-                <Link
+                <TrackedLink
                   href="/s/demo-acme"
                   className="mt-6 block h-10 w-full bg-ink text-center text-[13px] font-medium leading-10 text-paper hover:bg-ink/90"
+                  event="demo_open"
+                  meta={{ cta: "open_demo" }}
                 >
                   Open demo and sign
-                </Link>
+                </TrackedLink>
               </div>
             </div>
             <p className="mt-4 max-w-[48ch] text-[13px] leading-5 text-muted">
@@ -228,9 +232,9 @@ export default function MarketingPage() {
           <p className="mt-3 max-w-md text-sm leading-6 text-muted">
             Create a workspace, write a document, copy the URL. That is the product.
           </p>
-          <Link href="/signup" className={`${btnPrimary} mt-6`}>
+          <TrackedLink href="/signup" className={`${btnPrimary} mt-6`} meta={{ cta: "footer_get_started" }}>
             Get started
-          </Link>
+          </TrackedLink>
         </section>
       </main>
 

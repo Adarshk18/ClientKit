@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { FOUNDER_CAP, PLAN_PRICES, SENT_LIMITS } from "@/lib/plans";
+import { TrackedLink } from "@/components/track";
 import { btnPrimary, btnSecondary } from "@/lib/ui";
 import type { Plan } from "@/lib/types";
 
@@ -36,9 +36,13 @@ export function PricingTable({ ctaHref = "/signup" }: { ctaHref?: string }) {
               <li>Signed PDF + audit log</li>
               <li>Payout to your UPI or payment URL</li>
             </ul>
-            <Link href={ctaHref} className={`mt-8 w-full ${featured ? btnPrimary : btnSecondary}`}>
+            <TrackedLink
+              href={ctaHref}
+              className={`mt-8 w-full ${featured ? btnPrimary : btnSecondary}`}
+              meta={{ cta: `pricing_${plan}`, plan }}
+            >
               {featured ? "Start on Solo" : `Choose ${info.label}`}
-            </Link>
+            </TrackedLink>
           </div>
         );
       })}

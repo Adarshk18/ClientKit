@@ -78,3 +78,17 @@ export async function redirectToCheckout(plan: Exclude<Plan, "free">): Promise<v
   if (result.ok) redirect(result.data.url);
   redirect(`/settings/billing?error=${encodeURIComponent(result.error)}`);
 }
+
+export async function countFounderWorkspaces(): Promise<number> {
+  const admin = createSupabaseAdmin();
+  const { count, error } = await admin
+    .from("workspaces")
+    .select("id", { count: "exact", head: true })
+    .eq("plan", "founder");
+  if (error) {
+    logError("billing.countFounder", error);
+    return FOUNDER_CAP;
+  }
+  return count ?? 0;
+}
+

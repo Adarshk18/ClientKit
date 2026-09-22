@@ -10,6 +10,8 @@ const PUBLIC_PREFIXES = [
   "/auth/",
   "/api/webhooks/",
   "/api/cron/",
+  "/api/analytics",
+  "/admin",
   "/terms",
   "/privacy",
   "/faq",

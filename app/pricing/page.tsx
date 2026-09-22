@@ -1,5 +1,6 @@
 import { SiteFooter, SiteHeader } from "@/components/site-header";
 import { PricingTable } from "@/components/pricing-table";
+import { TrackPageView } from "@/components/track";
 
 export const metadata = {
   title: "Pricing",
@@ -8,6 +9,7 @@ export const metadata = {
 export default function PricingPage() {
   return (
     <div className="flex min-h-full flex-col">
+      <TrackPageView meta={{ page: "pricing" }} />
       <SiteHeader />
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-12">
         <p className="text-[13px] text-stamp">Pricing</p>

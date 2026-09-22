@@ -3,17 +3,19 @@
 import { useState, useTransition } from "react";
 import { startPlanCheckoutAction } from "@/lib/actions/billing";
 import { Spinner } from "@/components/spinner";
+import { track } from "@/components/track";
 import { FOUNDER_CAP, PLAN_PRICES } from "@/lib/plans";
 import { btnPrimary, btnSecondary } from "@/lib/ui";
 import type { Plan } from "@/lib/types";
 
-export function CheckoutButtons({ current }: { current: Plan }) {
+export function CheckoutButtons({ current, founderOpen = true }: { current: Plan; founderOpen?: boolean }) {
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
   function start(plan: Exclude<Plan, "free">) {
     startTransition(async () => {
       setError(null);
+      track("checkout_start", { meta: { plan } });
       const result = await startPlanCheckoutAction(plan);
       if (!result.ok) {
         setError(result.error);
@@ -45,11 +47,17 @@ export function CheckoutButtons({ current }: { current: Plan }) {
               </p>
               <button
                 type="button"
-                disabled={pending || active}
+                disabled={pending || active || (plan === "founder" && !founderOpen)}
                 className={`mt-4 w-full ${active ? btnSecondary : btnPrimary}`}
                 onClick={() => start(plan)}
               >
-                {active ? "Current plan" : pending ? <Spinner label="Redirecting" /> : `Choose ${info.label}`}
+                {active
+                  ? "Current plan"
+                  : plan === "founder" && !founderOpen
+                    ? "Founder full"
+                    : pending
+                      ? <Spinner label="Redirecting" />
+                      : `Choose ${info.label}`}
               </button>
             </div>
           );

@@ -37,8 +37,9 @@ Open [http://localhost:3000](http://localhost:3000).
 
 1. Create a project.
 2. Auth → enable Email and Google. Add redirect `{NEXT_PUBLIC_APP_URL}/auth/callback`.
-3. SQL editor: paste `supabase/migrations/0001_init.sql`.
+3. SQL editor: paste `supabase/migrations/0001_init.sql`, then `supabase/migrations/0002_admin_analytics.sql` (required for `/admin` traffic metrics and `POST /api/analytics`).
 4. Copy Project URL, anon key, and service role key into `.env.local`.
+5. Set `ADMIN_EMAILS` to a comma-separated list of emails allowed to open `/admin` (Unauthorized users get a 404).
 
 ### 2. Resend
 
@@ -89,7 +90,7 @@ Paste the webhook signing secret into `DODO_PAYMENTS_WEBHOOK_KEY`. The route ver
 
 Subscribe at least: `subscription.active`, `subscription.updated`, `subscription.on_hold`, `subscription.failed`, `payment.succeeded`, `payment.failed`.
 
-### 5. Seed a demo workspace
+### 6. Seed a demo workspace
 
 ```bash
 npm run seed
@@ -116,4 +117,4 @@ Playwright specs live in `tests/e2e`. They skip unless `E2E=1` (they need a runn
 
 ## Deploy (Vercel)
 
-Set the same env vars. Production cookies are `Secure` + `SameSite=Lax`. Cron hits `/api/cron/expire` once a day (Hobby limit). The public page also expires overdue docs on read.
+Set the same env vars (including `ADMIN_EMAILS` for the founder `/admin` dashboard). Production cookies are `Secure` + `SameSite=Lax`. Ensure both SQL migrations have been run in the production Supabase project. Cron hits `/api/cron/expire` once a day (Hobby limit). The public page also expires overdue docs on read.

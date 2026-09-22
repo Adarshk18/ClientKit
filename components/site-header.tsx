@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Wordmark } from "@/components/wordmark";
+import { TrackedLink } from "@/components/track";
 import { btnNav, btnGhost } from "@/lib/ui";
 
 export function SiteHeader({ showCta = true }: { showCta?: boolean }) {
@@ -18,9 +19,9 @@ export function SiteHeader({ showCta = true }: { showCta?: boolean }) {
             Log in
           </Link>
           {showCta ? (
-            <Link href="/signup" className={btnNav}>
+            <TrackedLink href="/signup" className={btnNav} meta={{ cta: "header_get_started" }}>
               Get started
-            </Link>
+            </TrackedLink>
           ) : null}
         </nav>
       </div>

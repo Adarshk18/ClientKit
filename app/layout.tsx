@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     "One page for a freelancer job: write the proposal, get a signature, collect the deposit. $12 a month. No CRM.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${sans.variable} ${serif.variable} h-full`}>
       <body className="flex min-h-full flex-col bg-paper text-ink">
