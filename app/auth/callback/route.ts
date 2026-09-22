@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { logError } from "@/lib/logger";
+import { safeNextPath } from "@/lib/safe-path";
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
@@ -38,6 +39,6 @@ export async function GET(request: Request) {
     }
   }
 
-  const safeNext = next.startsWith("/") && !next.startsWith("//") ? next : "/jobs";
+  const safeNext = safeNextPath(next);
   return NextResponse.redirect(new URL(safeNext, url.origin));
 }

@@ -17,6 +17,15 @@ describe("sanitizeScopeHtml", () => {
     const clean = sanitizeScopeHtml("<p>Hello <strong>world</strong></p>");
     expect(clean).toContain("<strong>world</strong>");
   });
+
+  it("rejects javascript and data hrefs", () => {
+    const clean = sanitizeScopeHtml(
+      '<a href="javascript:alert(1)">x</a><a href="data:text/html,hi">y</a><a href="https://ok.example">z</a>',
+    );
+    expect(clean).not.toMatch(/javascript:/i);
+    expect(clean).not.toMatch(/data:/i);
+    expect(clean).toContain('href="https://ok.example"');
+  });
 });
 
 describe("normalizeScopeHtml", () => {

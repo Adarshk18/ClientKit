@@ -6,10 +6,11 @@ export const runtime = "nodejs";
 
 export async function GET(request: Request) {
   const secret = process.env.CRON_SECRET;
+  if (!secret) {
+    return NextResponse.json({ error: "Cron not configured" }, { status: 503 });
+  }
   const auth = request.headers.get("authorization");
-  const vercelCron = request.headers.get("x-vercel-cron");
-  const ok = vercelCron === "1" || (secret && auth === `Bearer ${secret}`);
-  if (!ok) {
+  if (auth !== `Bearer ${secret}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   try {

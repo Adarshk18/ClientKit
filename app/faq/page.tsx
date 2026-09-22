@@ -1,5 +1,11 @@
 import { SiteFooter, SiteHeader } from "@/components/site-header";
 
+export const metadata = {
+  title: "FAQ",
+  description:
+    "Answers about Client Kit proposals, signatures, UPI and payment links, plans, and billing.",
+};
+
 export default function FaqPage() {
   return (
     <div className="flex min-h-dvh flex-col">

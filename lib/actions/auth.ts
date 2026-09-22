@@ -3,10 +3,24 @@
 import { redirect } from "next/navigation";
 import { appUrl } from "@/lib/env";
 import { logError } from "@/lib/logger";
+import { AUTH_LIMIT, rateLimit } from "@/lib/rate-limit";
+import { requestMeta } from "@/lib/request";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { authSchema } from "@/lib/validators";
 
+async function assertAuthRateLimit(kind: "signin" | "signup" | "oauth"): Promise<boolean> {
+  const { ip } = await requestMeta();
+  const limited = await rateLimit({
+    key: `auth:${kind}:${ip}`,
+    ...AUTH_LIMIT,
+  });
+  return limited.ok;
+}
+
 export async function signInAction(formData: FormData): Promise<void> {
+  if (!(await assertAuthRateLimit("signin"))) {
+    redirect("/login?error=rate");
+  }
   const parsed = authSchema.pick({ email: true, password: true }).safeParse({
     email: formData.get("email"),
     password: formData.get("password"),
@@ -25,6 +39,9 @@ export async function signInAction(formData: FormData): Promise<void> {
 }
 
 export async function signUpAction(formData: FormData): Promise<void> {
+  if (!(await assertAuthRateLimit("signup"))) {
+    redirect("/signup?error=rate");
+  }
   const parsed = authSchema.safeParse({
     email: formData.get("email"),
     password: formData.get("password"),
@@ -63,6 +80,9 @@ export async function signUpAction(formData: FormData): Promise<void> {
 }
 
 export async function signInWithGoogle(): Promise<void> {
+  if (!(await assertAuthRateLimit("oauth"))) {
+    redirect("/login?error=rate");
+  }
   const supabase = await createSupabaseServer();
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",

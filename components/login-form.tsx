@@ -18,7 +18,11 @@ export function LoginForm({
       {checkEmail ? (
         <p className="mt-3 text-sm text-stamp">Check your email to confirm the account, then log in.</p>
       ) : null}
-      {error ? <p className="mt-3 text-sm text-danger">Could not sign in. Check email and password.</p> : null}
+      {error === "rate" ? (
+        <p className="mt-3 text-sm text-danger" role="alert">Too many attempts. Try again later.</p>
+      ) : error ? (
+        <p className="mt-3 text-sm text-danger" role="alert">Could not sign in. Check email and password.</p>
+      ) : null}
       <form action={signInAction} className="mt-8 space-y-4">
         <label className="block text-[13px]">
           Email

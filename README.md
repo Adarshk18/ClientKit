@@ -117,4 +117,4 @@ Playwright specs live in `tests/e2e`. They skip unless `E2E=1` (they need a runn
 
 ## Deploy (Vercel)
 
-Set the same env vars (including `ADMIN_EMAILS` for the founder `/admin` dashboard). Production cookies are `Secure` + `SameSite=Lax`. Ensure both SQL migrations have been run in the production Supabase project. Cron hits `/api/cron/expire` once a day (Hobby limit). The public page also expires overdue docs on read.
+Set the same env vars (including `ADMIN_EMAILS` for the founder `/admin` dashboard). Production cookies are `Secure` + `SameSite=Lax`. Ensure both SQL migrations have been run in the production Supabase project. Cron hits `/api/cron/expire` once a day (Hobby limit); set `CRON_SECRET` so Vercel sends `Authorization: Bearer <CRON_SECRET>`. The public page also expires overdue docs on read.

@@ -205,14 +205,7 @@ export async function sendDocumentAction(documentId: string): Promise<ActionResu
     });
     const contentHash = hashFrozenPayload(payload);
 
-    const periodReset =
-      new Date(workspace.period_reset_at).getTime() <= Date.now()
-        ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-        : new Date(workspace.period_reset_at);
-    const sentCount =
-      new Date(workspace.period_reset_at).getTime() <= Date.now() ? 1 : workspace.docs_sent_this_period + 1;
-
-    const { error } = await supabase
+    const { data: sentRows, error } = await supabase
       .from("documents")
       .update({
         status: "sent",
@@ -221,17 +214,41 @@ export async function sendDocumentAction(documentId: string): Promise<ActionResu
       })
       .eq("id", documentId)
       .eq("workspace_id", workspace.id)
-      .eq("status", "draft");
-    if (error) return { ok: false, error: "Could not send." };
+      .eq("status", "draft")
+      .select("id");
+    if (error || !sentRows?.length) return { ok: false, error: "Could not send." };
 
-    await supabase
-      .from("workspaces")
-      .update({
-        docs_sent_this_period: sentCount,
-        period_reset_at: periodReset.toISOString(),
-      })
-      .eq("id", workspace.id)
-      .eq("owner_id", user.id);
+    // Optimistic lock on the send counter so concurrent sends cannot under-count the cap.
+    let counterOk = false;
+    for (let attempt = 0; attempt < 2 && !counterOk; attempt++) {
+      const { data: fresh } = await supabase
+        .from("workspaces")
+        .select("docs_sent_this_period, period_reset_at")
+        .eq("id", workspace.id)
+        .maybeSingle();
+      if (!fresh) break;
+      const resetDue = new Date(fresh.period_reset_at).getTime() <= Date.now();
+      const nextCount = resetDue ? 1 : fresh.docs_sent_this_period + 1;
+      const nextReset = resetDue
+        ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+        : fresh.period_reset_at;
+      let q = supabase
+        .from("workspaces")
+        .update({
+          docs_sent_this_period: nextCount,
+          period_reset_at: nextReset,
+        })
+        .eq("id", workspace.id)
+        .eq("owner_id", user.id);
+      if (!resetDue) {
+        q = q.eq("docs_sent_this_period", fresh.docs_sent_this_period);
+      }
+      const { data: bumped } = await q.select("id");
+      counterOk = Boolean(bumped?.length);
+    }
+    if (!counterOk) {
+      logError("documents.send.counter", new Error("send counter update failed after document send"));
+    }
 
     await sendDocumentToClient({
       to: doc.clients.email,
@@ -279,11 +296,16 @@ export async function saveAsNewVersionAction(
     const clientId = await upsertClient(supabase, workspace.id, input.client_name, input.client_email);
     const { ip, userAgent } = await requestMeta();
 
-    await supabase
+    const { data: voided, error: voidError } = await supabase
       .from("documents")
       .update({ status: "void" })
       .eq("id", existingId)
-      .eq("workspace_id", workspace.id);
+      .eq("workspace_id", workspace.id)
+      .in("status", ["sent", "viewed"])
+      .select("id");
+    if (voidError || !voided?.length) {
+      return { ok: false, error: "Document changed — refresh and try again." };
+    }
 
     await supabase.from("events").insert({
       document_id: existingId,
@@ -335,7 +357,16 @@ export async function voidDocumentAction(documentId: string): Promise<ActionResu
       return { ok: false, error: "Signed documents cannot be voided. They are the record." };
     }
     const { ip, userAgent } = await requestMeta();
-    await supabase.from("documents").update({ status: "void" }).eq("id", documentId).eq("workspace_id", workspace.id);
+    const { data: voided, error: voidError } = await supabase
+      .from("documents")
+      .update({ status: "void" })
+      .eq("id", documentId)
+      .eq("workspace_id", workspace.id)
+      .in("status", ["draft", "sent", "viewed", "expired"])
+      .select("id");
+    if (voidError || !voided?.length) {
+      return { ok: false, error: "Could not void document." };
+    }
     await supabase.from("events").insert({
       document_id: documentId,
       type: "voided",
@@ -424,7 +455,7 @@ export async function markPaidAction(documentId: string): Promise<ActionResult> 
 
     const { ip, userAgent } = await requestMeta();
     const now = new Date().toISOString();
-    const { error } = await supabase
+    const { data: paidRows, error } = await supabase
       .from("documents")
       .update({
         status: "paid",
@@ -434,8 +465,9 @@ export async function markPaidAction(documentId: string): Promise<ActionResult> 
       })
       .eq("id", documentId)
       .eq("workspace_id", workspace.id)
-      .eq("status", "signed");
-    if (error) return { ok: false, error: "Could not mark paid." };
+      .eq("status", "signed")
+      .select("id");
+    if (error || !paidRows?.length) return { ok: false, error: "Could not mark paid." };
 
     await supabase.from("events").insert({
       document_id: documentId,

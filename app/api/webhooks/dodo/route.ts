@@ -4,6 +4,7 @@ import { verifyDodoWebhook, type DodoWebhookPayload } from "@/lib/dodo";
 import { workspacePatchFromSubscription } from "@/lib/billing-map";
 import { sendSaasPaymentFailed } from "@/lib/email";
 import { logError } from "@/lib/logger";
+import { canPurchaseFounder } from "@/lib/plans";
 
 export const runtime = "nodejs";
 
@@ -89,6 +90,31 @@ async function applyDodoEvent(payload: DodoWebhookPayload): Promise<void> {
 
   const { data: workspace } = await query.maybeSingle();
   if (!workspace) return;
+
+  if (patch.plan === "founder") {
+    const { data: current } = await admin
+      .from("workspaces")
+      .select("plan")
+      .eq("id", workspace.id)
+      .maybeSingle();
+    if (current?.plan !== "founder") {
+      const { count, error: countError } = await admin
+        .from("workspaces")
+        .select("id", { count: "exact", head: true })
+        .eq("plan", "founder");
+      if (countError) {
+        logError("dodo.webhook.founderCap", countError);
+        delete patch.plan;
+      } else if (!canPurchaseFounder(count ?? 0)) {
+        // Checkout already charged Founder; grant Solo seat instead of exceeding the cohort.
+        patch.plan = "solo";
+        logError(
+          "dodo.webhook.founderCap",
+          new Error(`Founder cap reached; workspace ${workspace.id} granted solo`),
+        );
+      }
+    }
+  }
 
   await admin.from("workspaces").update(patch).eq("id", workspace.id);
 

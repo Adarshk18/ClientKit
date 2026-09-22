@@ -57,3 +57,5 @@ export async function rateLimit(input: {
 export const VIEW_LIMIT = { limit: 60, windowMs: 60 * 60 * 1000 };
 export const SIGN_LIMIT = { limit: 10, windowMs: 60 * 60 * 1000 };
 export const ANALYTICS_LIMIT = { limit: 120, windowMs: 60 * 60 * 1000 };
+export const AUTH_LIMIT = { limit: 20, windowMs: 60 * 60 * 1000 };
+export const PAY_LIMIT = { limit: 30, windowMs: 60 * 60 * 1000 };

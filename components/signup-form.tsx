@@ -12,8 +12,10 @@ export function SignupForm({ error }: { error?: string }) {
       <p className="mt-2 text-sm text-muted">
         $12/mo after you pick a plan. Sending jobs starts on the free allowance.
       </p>
-      {error ? (
-        <p className="mt-3 text-sm text-danger">Could not create the account. Try a different email.</p>
+      {error === "rate" ? (
+        <p className="mt-3 text-sm text-danger" role="alert">Too many attempts. Try again later.</p>
+      ) : error ? (
+        <p className="mt-3 text-sm text-danger" role="alert">Could not create the account. Try a different email.</p>
       ) : null}
       <form action={signUpAction} className="mt-8 space-y-4">
         <label className="block text-[13px]">

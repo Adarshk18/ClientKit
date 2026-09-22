@@ -2,6 +2,8 @@ import { SiteFooter, SiteHeader } from "@/components/site-header";
 
 export const metadata = {
   title: "About",
+  description:
+    "Client Kit is one public page for freelancers: write a proposal, get a signature, collect payment — without a CRM.",
 };
 
 export default function AboutPage() {

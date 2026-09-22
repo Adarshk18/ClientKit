@@ -5,6 +5,8 @@ import { getVisitorCountry } from "@/lib/visitor-country";
 
 export const metadata = {
   title: "Pricing",
+  description:
+    "Free to try. Founder, Solo, and Busy plans for freelancers. No cut of job payments — clients pay you directly.",
 };
 
 export default async function PricingPage() {

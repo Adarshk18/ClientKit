@@ -4,7 +4,7 @@ import { createSupabaseAdmin } from "@/lib/supabase/admin";
 import { signInputSchema } from "@/lib/validators";
 import { canPay, canSign } from "@/lib/document-state";
 import { buildFrozenPayload, hashFrozenPayload } from "@/lib/hash";
-import { rateLimit, SIGN_LIMIT } from "@/lib/rate-limit";
+import { rateLimit, SIGN_LIMIT, PAY_LIMIT } from "@/lib/rate-limit";
 import { requestMeta } from "@/lib/request";
 import { renderSignedPdf } from "@/lib/pdf";
 import { sendSignedToFreelancer } from "@/lib/email";
@@ -91,6 +91,29 @@ export async function signDocumentAction(
     }
 
     const signedAt = new Date().toISOString();
+
+    // Claim the document first (status guard) so void/expire races cannot be overwritten after sign.
+    const { data: claimed, error: claimError } = await admin
+      .from("documents")
+      .update({
+        status: "signed",
+        signed_at: signedAt,
+        frozen_payload: payload,
+        frozen_hash: hash,
+      })
+      .eq("id", doc.id)
+      .in("status", ["sent", "viewed"])
+      .select("id")
+      .maybeSingle();
+
+    if (claimError) {
+      logError("sign.claim", claimError);
+      return { ok: false, error: "Could not save the signature." };
+    }
+    if (!claimed) {
+      return { ok: false, error: "This document is no longer available to sign." };
+    }
+
     const { error: signError } = await admin.from("signatures").insert({
       document_id: doc.id,
       signer_name: parsed.data.signer_name,
@@ -106,18 +129,19 @@ export async function signDocumentAction(
         return { ok: false, error: "This document is already signed.", code: "already_signed" };
       }
       logError("sign.insert", signError);
+      // Roll back the claim so the doc is not left signed without a signature row.
+      await admin
+        .from("documents")
+        .update({
+          status: doc.status,
+          signed_at: null,
+          frozen_payload: doc.frozen_payload,
+          frozen_hash: doc.frozen_hash,
+        })
+        .eq("id", doc.id)
+        .eq("status", "signed");
       return { ok: false, error: "Could not save the signature." };
     }
-
-    await admin
-      .from("documents")
-      .update({
-        status: "signed",
-        signed_at: signedAt,
-        frozen_payload: payload,
-        frozen_hash: hash,
-      })
-      .eq("id", doc.id);
 
     await admin.from("events").insert({
       document_id: doc.id,
@@ -173,6 +197,14 @@ export async function signDocumentAction(
 export async function markPaymentSentAction(publicId: string): Promise<ActionResult> {
   try {
     const { ip, userAgent } = await requestMeta();
+    const limited = await rateLimit({
+      key: `pay:${publicId}:${ip}`,
+      ...PAY_LIMIT,
+    });
+    if (!limited.ok) {
+      return { ok: false, error: "Too many attempts. Try again later." };
+    }
+
     const admin = createSupabaseAdmin();
     const { data: doc } = await admin
       .from("documents")
@@ -185,11 +217,20 @@ export async function markPaymentSentAction(publicId: string): Promise<ActionRes
     if (!payable.ok) return { ok: false, error: payable.reason };
     if (doc.payment_status === "paid") return { ok: true, data: undefined };
 
-    await admin
+    const { data: updated, error: updateError } = await admin
       .from("documents")
       .update({ payment_status: "payment_sent" })
       .eq("id", doc.id)
-      .eq("status", "signed");
+      .eq("status", "signed")
+      .neq("payment_status", "paid")
+      .select("id")
+      .maybeSingle();
+    if (updateError) {
+      logError("pay.sent.update", updateError);
+      return { ok: false, error: "Could not record payment." };
+    }
+    if (!updated) return { ok: true, data: undefined };
+
     await admin.from("events").insert({
       document_id: doc.id,
       type: "payment_sent",
