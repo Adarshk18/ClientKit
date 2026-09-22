@@ -12,12 +12,12 @@ export default async function MarketingPage() {
   const founderPrice = formatPlanPrice("founder", country);
 
   return (
-    <div className="flex min-h-full flex-col">
+    <div className="flex min-h-dvh flex-col">
       <TrackPageView />
       <SiteHeader />
 
       <main className="mx-auto w-full max-w-6xl px-4">
-        <section className="grid items-start gap-12 py-12 lg:grid-cols-12 lg:gap-10 lg:py-16">
+        <section className="ck-page-pad grid items-start gap-8 py-8 sm:gap-12 sm:py-12 lg:grid-cols-12 lg:gap-10 lg:py-16">
           <div className="lg:col-span-5">
             <p className="text-[13px] text-stamp">from {soloPrice} a month</p>
             <h1 className="mt-3 font-serif text-[2.35rem] font-medium leading-[1.15] tracking-tight sm:text-[2.75rem]">

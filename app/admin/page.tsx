@@ -52,7 +52,7 @@ export default async function AdminPage() {
   const eventTypes = ["viewed", "signed", "paid", "resent", "voided", "expired", "payment_sent"];
 
   return (
-    <main className="mx-auto w-full max-w-6xl space-y-10 px-4 py-8">
+    <main className="ck-page-pad mx-auto w-full max-w-6xl space-y-8 overflow-x-clip px-3 py-6 sm:space-y-10 sm:px-4 sm:py-8">
       <div>
         <p className="text-[13px] text-stamp">Founder dashboard</p>
         <h1 className="mt-1 font-serif text-3xl">Product pulse</h1>
@@ -62,7 +62,7 @@ export default async function AdminPage() {
         </p>
       </div>
 
-      <div className="grid gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-px border border-line bg-line grid-cols-2 lg:grid-cols-4">
         <Kpi
           label="Workspaces"
           value={data.signups.total}
@@ -145,7 +145,7 @@ export default async function AdminPage() {
           page_view 7d / 30d: {data.analytics.pageViews7} / {data.analytics.pageViews30} · cta_click:{" "}
           {data.analytics.ctaClicks7} / {data.analytics.ctaClicks30}
         </p>
-        <div className="overflow-x-auto border border-line bg-cream">
+        <div className="max-w-full overflow-x-auto overscroll-x-contain border border-line bg-cream">
           <table className="w-full min-w-[28rem] text-left text-sm">
             <thead className="border-b border-line text-[12px] text-muted">
               <tr>

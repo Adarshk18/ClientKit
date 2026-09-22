@@ -8,21 +8,21 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const { user } = await requireAdmin();
 
   return (
-    <div className="min-h-full">
-      <header className="border-b border-line">
-        <div className="mx-auto flex min-h-14 max-w-6xl flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-2">
-          <div className="flex items-center gap-4">
+    <div className="min-h-dvh">
+      <header className="sticky top-0 z-40 border-b border-line bg-paper/95 backdrop-blur-sm landscape-short:static">
+        <div className="ck-safe-header mx-auto flex min-h-11 max-w-6xl flex-wrap items-center justify-between gap-x-4 gap-y-1 px-3 py-1.5 sm:min-h-12 sm:px-4 sm:py-2 landscape-short:min-h-10 landscape-short:py-1">
+          <div className="flex min-w-0 items-center gap-4">
             <Wordmark />
             <span className="text-[12px] uppercase tracking-wide text-stamp">Admin</span>
           </div>
-          <nav className="flex flex-wrap items-center gap-3 text-[13px]">
-            <Link href="/admin" className="text-ink hover:text-stamp">
+          <nav className="flex max-w-full flex-wrap items-center gap-3 text-[13px]">
+            <Link href="/admin" className="inline-flex min-h-11 items-center text-ink hover:text-stamp landscape-short:min-h-9">
               Overview
             </Link>
-            <Link href="/jobs" className="text-muted hover:text-ink">
+            <Link href="/jobs" className="inline-flex min-h-11 items-center text-muted hover:text-ink landscape-short:min-h-9">
               App
             </Link>
-            <span className="text-muted">{user.email}</span>
+            <span className="max-w-[12rem] truncate text-muted">{user.email}</span>
           </nav>
         </div>
       </header>

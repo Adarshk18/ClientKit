@@ -11,10 +11,10 @@ export default async function PricingPage() {
   const initialCountry = await getVisitorCountry();
 
   return (
-    <div className="flex min-h-full flex-col">
+    <div className="flex min-h-dvh flex-col">
       <TrackPageView meta={{ page: "pricing" }} />
       <SiteHeader />
-      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-12">
+      <main className="ck-page-pad mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:py-12">
         <p className="text-[13px] text-stamp">Pricing</p>
         <h1 className="mt-2 max-w-xl font-serif text-3xl">You pay for the software. Clients pay you.</h1>
         <p className="mt-4 max-w-xl text-sm leading-6 text-muted">

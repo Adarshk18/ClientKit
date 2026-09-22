@@ -148,9 +148,9 @@ export function JobForm({
         Scope
         <textarea
           name="scope_html"
-          rows={8}
+          rows={6}
           defaultValue={defaultValues?.scope_html ?? ""}
-          className={fieldArea}
+          className={`${fieldArea} short-h:min-h-[6rem]`}
           placeholder="What you'll do, what's not included, and the timeline."
         />
         <span className="mt-1 block text-xs text-muted">HTML is sanitized. Scripts and iframes are stripped.</span>
@@ -161,7 +161,7 @@ export function JobForm({
           <h2 className="font-serif text-lg">Line items</h2>
           <button
             type="button"
-            className="text-sm text-stamp"
+            className="inline-flex min-h-11 items-center text-sm text-stamp"
             onClick={() => {
               if (items.length >= MAX_LINE_ITEMS) return;
               setItems([...items, { label: "", qty: "1", price: "" }]);
@@ -219,7 +219,7 @@ export function JobForm({
         </div>
       </section>
 
-      <section className="grid gap-4 sm:grid-cols-3">
+      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <label className="text-sm">
           Currency
           <input
@@ -264,7 +264,7 @@ export function JobForm({
         ) : null}
       </div>
 
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap landscape:flex-row">
         {mode === "sent" ? (
           <button type="submit" disabled={pending} className={btnPrimary}>
             {pending ? <Spinner label="Saving" /> : "Void and save as new version"}

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Sans, Newsreader } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
@@ -24,10 +24,17 @@ export const metadata: Metadata = {
     "One page for a freelancer job: write the proposal, get a signature, collect the deposit. $12 a month. No CRM.",
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#f2eee6",
+};
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${sans.variable} ${serif.variable} h-full`}>
-      <body className="flex min-h-full flex-col bg-paper text-ink">
+      <body className="flex min-h-dvh flex-col bg-paper text-ink ck-safe-bottom">
         {children}
         <Analytics />
       </body>

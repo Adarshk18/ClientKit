@@ -2,7 +2,7 @@ import { SiteFooter, SiteHeader } from "@/components/site-header";
 
 export default function PrivacyPage() {
   return (
-    <div className="flex min-h-full flex-col">
+    <div className="flex min-h-dvh flex-col">
       <SiteHeader />
       <article className="mx-auto w-full max-w-2xl flex-1 px-4 py-12 text-sm leading-7">
         <h1 className="font-serif text-3xl">Privacy</h1>

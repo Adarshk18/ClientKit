@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+@custom-variant landscape (@media (orientation: landscape));
+@custom-variant landscape-short (@media (orientation: landscape) and (max-height: 500px));
+@custom-variant short-h (@media (max-height: 500px));
+
 :root {
   --paper: #f2eee6;
   --ink: #1c1917;
@@ -9,6 +13,10 @@
   --stamp-hover: #6e2d21;
   --cream: #faf7f0;
   --danger: #8b1e1e;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
 }
 
 @theme inline {
@@ -24,17 +32,69 @@
   --font-serif: var(--font-serif);
 }
 
-html,
-body {
+html {
   background: var(--paper);
   color: var(--ink);
-  overflow-x: hidden;
+  overflow-x: clip;
   max-width: 100%;
+  /* Prefer dynamic viewport height so mobile browser chrome does not force scroll traps */
+  min-height: 100%;
+  min-height: 100dvh;
 }
 
 body {
+  background: var(--paper);
+  color: var(--ink);
+  overflow-x: clip;
+  max-width: 100%;
+  min-height: 100%;
+  min-height: 100dvh;
+  min-height: 100svh;
+  padding-left: var(--safe-left);
+  padding-right: var(--safe-right);
   font-family: var(--font-sans), "IBM Plex Sans", system-ui, sans-serif;
   text-rendering: optimizeLegibility;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Notched phones: keep sticky/top chrome clear of the status bar */
+.ck-safe-header {
+  padding-top: max(0.5rem, var(--safe-top));
+  padding-left: max(0.75rem, var(--safe-left));
+  padding-right: max(0.75rem, var(--safe-right));
+}
+
+.ck-safe-bottom {
+  padding-bottom: max(0.75rem, var(--safe-bottom));
+}
+
+/* Landscape + short: shrink chrome so forms/pricing stay usable */
+@media (orientation: landscape) and (max-height: 500px) {
+  .ck-safe-header {
+    padding-top: max(0.25rem, var(--safe-top));
+    padding-bottom: 0.25rem;
+  }
+
+  .ck-page-pad {
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+  }
+
+  .ck-auth-main {
+    justify-content: flex-start !important;
+    padding-top: 0.75rem !important;
+    padding-bottom: 0.75rem !important;
+  }
+
+  .ck-pricing-card {
+    padding: 1rem !important;
+  }
+
+  .ck-public-shell {
+    padding-top: 1.25rem !important;
+    padding-bottom: 1.25rem !important;
+  }
 }
 
 .font-serif {
@@ -48,6 +108,7 @@ select {
   color: var(--ink);
   border: 1px solid var(--line);
   border-radius: 0;
+  max-width: 100%;
 }
 
 input:focus,
@@ -62,6 +123,14 @@ a:focus-visible {
 button:disabled {
   opacity: 0.55;
   cursor: not-allowed;
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+  height: auto;
 }
 
 .prose p {

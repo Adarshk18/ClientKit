@@ -86,7 +86,7 @@ export function BrandForm({
         Workspace name
         <input name="name" required defaultValue={name} className={fieldClass} />
       </label>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-3 min-[400px]:grid-cols-2">
         <label className="text-sm">
           Currency
           <input name="currency" value={derivedCurrency} readOnly className={fieldClass} />

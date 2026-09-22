@@ -54,12 +54,12 @@ export function CheckoutButtons({
         Founder is {formatPlanPrice("founder", country)}/mo for the first {FOUNDER_CAP} workspaces. After that, new
         accounts pay Solo at {formatPlanPrice("solo", country)}/mo.
       </p>
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 landscape:sm:grid-cols-3">
         {(["founder", "solo", "busy"] as const).map((plan) => {
           const label = PLAN_LABELS[plan];
           const active = current === plan;
           return (
-            <div key={plan} className={`border p-4 ${active ? "border-ink bg-cream" : "border-line bg-cream/60"}`}>
+            <div key={plan} className={`ck-pricing-card border p-4 ${active ? "border-ink bg-cream" : "border-line bg-cream/60"}`}>
               <p className="text-[12px] text-stamp">{label}</p>
               <p className="mt-2 font-serif text-3xl">
                 {formatPlanPrice(plan, country)}

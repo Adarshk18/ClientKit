@@ -56,7 +56,7 @@ export function SignForm({
         />
       </label>
       <label className="flex items-start gap-3 text-sm">
-        <input name="agree" type="checkbox" required className="mt-1 h-4 w-4" />
+        <input name="agree" type="checkbox" required className="mt-0.5 h-5 w-5 shrink-0" />
         <span>I agree to the scope and amounts on this page, and I intend this as my electronic signature.</span>
       </label>
       <SubmitButton className={`${btnPrimary} h-11 w-full`} pendingLabel="Signing…">

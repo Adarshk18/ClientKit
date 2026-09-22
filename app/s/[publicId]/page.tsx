@@ -82,7 +82,7 @@ export default async function PublicDocumentPage({
         <LogoMark name={workspace.name} src={logo} />
         <div>
           <p className="text-[13px] text-muted">{workspace.name}</p>
-          <h1 className="font-serif text-3xl leading-tight">{doc.title}</h1>
+          <h1 className="font-serif text-2xl leading-tight sm:text-3xl landscape-short:text-2xl">{doc.title}</h1>
         </div>
       </header>
 
@@ -130,7 +130,7 @@ export default async function PublicDocumentPage({
         </div>
       </section>
 
-      <section className="mt-10 border border-ink bg-cream p-5">
+      <section className="mt-8 border border-ink bg-cream p-4 sm:mt-10 sm:p-5 landscape-short:mt-4 landscape-short:p-3">
         {status === "paid" ? (
           <div>
             <h2 className="font-serif text-2xl">Paid</h2>
@@ -193,8 +193,10 @@ export default async function PublicDocumentPage({
 
 function PublicShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-full bg-paper">
-      <article className="mx-auto w-full max-w-xl px-4 py-10 sm:py-14">{children}</article>
+    <div className="min-h-dvh bg-paper">
+      <article className="ck-public-shell mx-auto w-full max-w-xl px-4 py-8 sm:py-14 landscape:max-w-3xl landscape-short:py-4">
+        {children}
+      </article>
     </div>
   );
 }

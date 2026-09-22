@@ -42,17 +42,17 @@ export function PricingTable({
       <div className="max-w-xs">
         <CountrySelect value={country} onChange={setCountry} id="pricing-country" refreshOnChange />
       </div>
-      <div className="grid gap-px border border-line bg-line sm:grid-cols-3">
+      <div className="grid gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-3 landscape:sm:grid-cols-3">
         {plans.map((plan) => {
           const featured = plan === "solo";
           const label = PLAN_LABELS[plan];
           return (
             <div
               key={plan}
-              className={`bg-cream p-6 ${featured ? "sm:relative sm:z-10 sm:ring-1 sm:ring-ink" : ""}`}
+              className={`ck-pricing-card bg-cream p-5 sm:p-6 ${featured ? "sm:relative sm:z-10 sm:ring-1 sm:ring-ink" : ""}`}
             >
               <p className="text-[13px] text-stamp">{label}</p>
-              <p className="mt-3 font-serif text-4xl tabular-nums">
+              <p className="mt-3 font-serif text-3xl tabular-nums sm:text-4xl landscape-short:text-3xl">
                 {formatPlanPrice(plan, country)}
                 <span className="text-lg text-muted">/mo</span>
               </p>

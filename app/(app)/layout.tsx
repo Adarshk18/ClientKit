@@ -8,9 +8,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const { user, workspace } = await requireWorkspace();
   const logo = await signedLogoUrl(workspace.logo_url);
   return (
-    <div className="min-h-full">
+    <div className="min-h-dvh">
       <AppNav workspaceName={workspace.name} logoSrc={logo} email={user.email ?? ""} />
-      <main className="mx-auto w-full max-w-6xl px-3 py-6 sm:px-4 sm:py-8">{children}</main>
+      <main className="ck-page-pad mx-auto w-full max-w-6xl px-3 py-6 sm:px-4 sm:py-8">{children}</main>
     </div>
   );
 }

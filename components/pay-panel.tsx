@@ -46,7 +46,7 @@ export function PayPanel({
           Pay {formatMoney(amountDue, currency)} to{" "}
           <span className="font-medium">{workspaceName}</span> via UPI.
         </p>
-        <div className="flex flex-col items-start gap-4 sm:flex-row">
+        <div className="flex flex-col items-start gap-4 min-[480px]:flex-row landscape:flex-row">
           <UpiQr
             vpa={payoutValue}
             payeeName={workspaceName}
