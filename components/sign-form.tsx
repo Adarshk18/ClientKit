@@ -30,7 +30,7 @@ export function SignForm({
       <input type="hidden" name="public_id" value={publicId} />
       <input type="hidden" name="document_hash" value={documentHash} />
       {state && !state.ok ? (
-        <p className="border border-danger/30 bg-[#f8e8e4] px-3 py-2 text-sm text-danger" role="alert">
+        <p className="border border-danger/30 bg-danger-soft px-3 py-2 text-sm text-danger" role="alert">
           {state.error}
         </p>
       ) : null}

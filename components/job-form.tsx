@@ -117,7 +117,7 @@ export function JobForm({
   return (
     <form ref={formRef} onSubmit={onSubmit(mode === "sent" ? "version" : "save")} className="space-y-8">
       {error ? (
-        <p className="border border-danger/30 bg-[#f8e8e4] px-3 py-2 text-sm text-danger" role="alert">
+        <p className="border border-danger/30 bg-danger-soft px-3 py-2 text-sm text-danger" role="alert">
           {error}
         </p>
       ) : null}

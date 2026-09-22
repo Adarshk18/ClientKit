@@ -41,14 +41,14 @@ export default async function MarketingPage() {
           </div>
 
           <div className="lg:col-span-7">
-            <div className="border border-ink/15 bg-cream shadow-[6px_8px_0_0_rgba(28,25,23,0.06)]">
+            <div className="border border-line bg-cream">
               <div className="flex items-center justify-between border-b border-line px-5 py-3">
                 <span className="text-[12px] text-muted">/s/demo-acme</span>
                 <span className="text-[12px] text-stamp">Awaiting signature</span>
               </div>
               <div className="px-5 py-6 sm:px-7">
                 <p className="font-serif text-xl">Acme site rebuild</p>
-                <p className="mt-1 text-[13px] text-muted">Studio North → Acme · due in 14 days</p>
+                <p className="mt-1 text-[13px] text-muted">Studio North for Acme · due in 14 days</p>
                 <p className="mt-5 max-w-[46ch] text-sm leading-6">
                   Homepage, CMS, and two rounds of revision. You send copy. We ship a static export you can host
                   anywhere.

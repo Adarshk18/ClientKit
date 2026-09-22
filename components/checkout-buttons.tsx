@@ -48,7 +48,7 @@ export function CheckoutButtons({
         <CountrySelect value={country} onChange={setCountry} id="checkout-country" />
       </div>
       {error ? (
-        <p className="border border-danger/30 bg-[#f8e8e4] px-3 py-2 text-sm text-danger">{error}</p>
+        <p className="border border-danger/30 bg-danger-soft px-3 py-2 text-sm text-danger">{error}</p>
       ) : null}
       <p className="text-sm text-muted">
         Founder is {formatPlanPrice("founder", country)}/mo for the first {FOUNDER_CAP} workspaces. After that, new

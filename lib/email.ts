@@ -29,9 +29,9 @@ async function send(to: string, subject: string, html: string): Promise<void> {
 }
 
 function wrap(body: string): string {
-  return `<!doctype html><html><body style="font-family:Georgia,serif;color:#1a1916;background:#f6f1e8;padding:32px">
-  <div style="max-width:560px;margin:0 auto;background:#fff;padding:28px;border:1px solid #e7e0d4">
-    <p style="font-size:13px;color:#8b3a2a;margin:0 0 16px">Client Kit</p>
+  return `<!doctype html><html><body style="font-family:Georgia,serif;color:#15202B;background:#F3F5F8;padding:32px">
+  <div style="max-width:560px;margin:0 auto;background:#fff;padding:28px;border:1px solid #D8DEE8">
+    <p style="font-size:13px;color:#0F6E6A;margin:0 0 16px">Client Kit</p>
     ${body}
   </div>
   </body></html>`;
@@ -51,8 +51,8 @@ export async function sendDocumentToClient(input: {
     wrap(`
       <p>Hi ${escapeHtml(input.clientName)},</p>
       <p>${escapeHtml(input.workspaceName)} sent you a proposal to review, sign, and pay.</p>
-      <p><a href="${link}" style="display:inline-block;background:#8b3a2a;color:#fff;padding:12px 18px;text-decoration:none">Open document</a></p>
-      <p style="font-size:13px;color:#5c574e">If the button does not work: ${link}</p>
+      <p><a href="${link}" style="display:inline-block;background:#0F6E6A;color:#fff;padding:12px 18px;text-decoration:none">Open document</a></p>
+      <p style="font-size:13px;color:#5B6575">If the button does not work: ${link}</p>
     `),
   );
 }
@@ -135,8 +135,8 @@ export async function sendNudgeToClient(input: {
       <p>Hi ${escapeHtml(input.clientName)},</p>
       <p>${escapeHtml(input.workspaceName)} is waiting on “${escapeHtml(input.title)}”.</p>
       <p>${line}</p>
-      <p><a href="${link}" style="display:inline-block;background:#8b3a2a;color:#fff;padding:12px 18px;text-decoration:none">Open document</a></p>
-      <p style="font-size:13px;color:#5c574e">${link}</p>
+      <p><a href="${link}" style="display:inline-block;background:#0F6E6A;color:#fff;padding:12px 18px;text-decoration:none">Open document</a></p>
+      <p style="font-size:13px;color:#5B6575">${link}</p>
     `),
   );
 }

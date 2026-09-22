@@ -18,7 +18,7 @@ export function EmptyState({
 
 export function ErrorState({ title, body }: { title: string; body: string }) {
   return (
-    <div className="border border-danger/30 bg-[#f8e8e4] px-6 py-8">
+    <div className="border border-danger/30 bg-danger-soft px-6 py-8">
       <h2 className="font-serif text-xl text-danger">{title}</h2>
       <p className="mt-2 text-sm leading-6 text-ink/80">{body}</p>
     </div>

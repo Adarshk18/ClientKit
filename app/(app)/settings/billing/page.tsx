@@ -33,7 +33,7 @@ export default async function BillingPage({
         </p>
       ) : null}
       {error ? (
-        <p className="border border-danger/30 bg-[#f8e8e4] px-4 py-3 text-sm text-danger">{error}</p>
+        <p className="border border-danger/30 bg-danger-soft px-4 py-3 text-sm text-danger">{error}</p>
       ) : null}
 
       <section className="border border-line bg-cream p-5 text-sm">

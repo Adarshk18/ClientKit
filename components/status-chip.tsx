@@ -3,7 +3,7 @@ import type { DocStatus } from "@/lib/types";
 const STYLES: Record<DocStatus, string> = {
   draft: "text-muted",
   sent: "text-ink",
-  viewed: "text-ink",
+  viewed: "text-muted",
   signed: "text-stamp",
   paid: "text-stamp",
   expired: "text-[#7a4b12]",

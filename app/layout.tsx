@@ -1,18 +1,18 @@
 import type { Metadata, Viewport } from "next";
-import { IBM_Plex_Sans, Newsreader } from "next/font/google";
+import { Literata, Source_Sans_3 } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
-const sans = IBM_Plex_Sans({
+const sans = Source_Sans_3({
   variable: "--font-sans",
   subsets: ["latin"],
   weight: ["400", "500", "600"],
 });
 
-const serif = Newsreader({
+const serif = Literata({
   variable: "--font-serif",
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -28,7 +28,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: "#f2eee6",
+  themeColor: "#F3F5F8",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

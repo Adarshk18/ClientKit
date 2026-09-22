@@ -30,7 +30,7 @@ export function UpiQr({
     if (note) params.set("tn", note.slice(0, 50));
     const payload = `upi://pay?${params.toString()}`;
     void import("qrcode").then((qr) =>
-      qr.toDataURL(payload, { margin: 1, width: 240, color: { dark: "#1a1916", light: "#fffaf3" } }).then(setSrc),
+      qr.toDataURL(payload, { margin: 1, width: 240, color: { dark: "#15202B", light: "#FFFFFF" } }).then(setSrc),
     );
   }, [vpa, payeeName, amountMinor, currency, note]);
 
