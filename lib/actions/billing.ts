@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { requireWorkspace } from "@/lib/auth";
 import { dodoProductId, getDodoClient } from "@/lib/dodo";
+import type { CountryCode, Currency } from "dodopayments/resources/misc";
 import { appUrl } from "@/lib/env";
 import { planCheckoutSchema } from "@/lib/validators";
 import { assertSameOrigin } from "@/lib/request";
@@ -81,8 +82,8 @@ export async function startPlanCheckoutAction(
       allowed_payment_method_types: isIndia
         ? ["upi_collect", "credit", "debit"]
         : ["credit", "debit"],
-      billing_currency: billingCurrency,
-      billing_address: { country: billingCountry },
+      billing_currency: billingCurrency as Currency,
+      billing_address: { country: billingCountry as CountryCode },
       feature_flags: { redirect_immediately: true },
     });
 
