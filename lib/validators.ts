@@ -26,7 +26,7 @@ export const documentInputSchema = z.object({
 export type DocumentInput = z.infer<typeof documentInputSchema>;
 
 export const signInputSchema = z.object({
-  public_id: z.string().min(16).max(32),
+  public_id: z.string().min(8).max(40),
   signer_name: z.string().trim().min(2).max(120),
   signer_email: emailSchema,
   agree: z.coerce.boolean().refine((value) => value === true, "You must agree to sign."),

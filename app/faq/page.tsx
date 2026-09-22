@@ -12,6 +12,12 @@ export default function FaqPage() {
             <dd className="mt-1 text-muted">No. Clients pay you. You pay $12/mo for the software.</dd>
           </div>
           <div>
+            <dt className="font-medium">What is the Founder plan?</dt>
+            <dd className="mt-1 text-muted">
+              Founder is $9/mo for the first 50 workspaces only. After that, new accounts take Solo at $12/mo.
+            </dd>
+          </div>
+          <div>
             <dt className="font-medium">Is this a qualified digital signature?</dt>
             <dd className="mt-1 text-muted">
               No. It is a simple electronic signature with a hashed snapshot, IP, and timestamp. The page footer

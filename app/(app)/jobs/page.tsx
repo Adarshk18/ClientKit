@@ -84,10 +84,10 @@ export default async function JobsPage({
                 : null;
             return (
               <li key={job.id}>
-                <Link href={`/jobs/${job.id}`} className="block px-4 py-4 hover:bg-white">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div>
-                      <p className="font-medium">{job.title}</p>
+                <Link href={`/jobs/${job.id}`} className="block px-3 py-4 hover:bg-white sm:px-4">
+                  <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+                    <div className="min-w-0">
+                      <p className="break-words font-medium">{job.title}</p>
                       <p className="text-sm text-muted">
                         {aha ?? `${client?.name ?? "Client"} · ${formatMoney(job.amount_due, job.currency)} due now`}
                       </p>

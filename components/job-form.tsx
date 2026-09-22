@@ -174,9 +174,9 @@ export function JobForm({
         ) : null}
         <div className="space-y-2">
           {items.map((item, index) => (
-            <div key={index} className="grid grid-cols-12 gap-2">
+            <div key={index} className="grid grid-cols-1 gap-2 sm:grid-cols-12">
               <input
-                className={`col-span-6 ${field}`}
+                className={`sm:col-span-6 ${field}`}
                 placeholder="Label"
                 value={item.label}
                 onChange={(e) => {
@@ -186,7 +186,7 @@ export function JobForm({
                 }}
               />
               <input
-                className={`col-span-2 ${field}`}
+                className={`sm:col-span-2 ${field}`}
                 placeholder="Qty"
                 value={item.qty}
                 onChange={(e) => {
@@ -196,7 +196,7 @@ export function JobForm({
                 }}
               />
               <input
-                className={`col-span-3 ${field}`}
+                className={`sm:col-span-3 ${field}`}
                 placeholder="Price"
                 value={item.price}
                 onChange={(e) => {
@@ -207,7 +207,7 @@ export function JobForm({
               />
               <button
                 type="button"
-                className="col-span-1 mt-1 h-10 text-sm text-muted"
+                className="sm:col-span-1 mt-1 h-10 w-full text-sm text-muted sm:w-auto"
                 onClick={() => setItems(items.filter((_, i) => i !== index))}
                 aria-label="Remove line"
               >

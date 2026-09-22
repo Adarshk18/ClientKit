@@ -7,6 +7,8 @@ import { appUrl } from "@/lib/env";
 import { planCheckoutSchema } from "@/lib/validators";
 import { assertSameOrigin } from "@/lib/request";
 import { logError } from "@/lib/logger";
+import { canPurchaseFounder, FOUNDER_CAP } from "@/lib/plans";
+import { createSupabaseAdmin } from "@/lib/supabase/admin";
 import type { ActionResult } from "@/lib/types";
 import type { Plan } from "@/lib/types";
 
@@ -18,6 +20,24 @@ export async function startPlanCheckoutAction(plan: string): Promise<ActionResul
 
     const { user, workspace } = await requireWorkspace();
     if (!user.email) return { ok: false, error: "Your account needs an email to bill." };
+
+    if (parsed.data === "founder") {
+      const admin = createSupabaseAdmin();
+      const { count, error: countError } = await admin
+        .from("workspaces")
+        .select("id", { count: "exact", head: true })
+        .eq("plan", "founder");
+      if (countError) {
+        logError("billing.founderCap", countError);
+        return { ok: false, error: "Could not check Founder availability. Try Solo instead." };
+      }
+      if (!canPurchaseFounder(count ?? 0)) {
+        return {
+          ok: false,
+          error: `Founder ($9) is limited to the first ${FOUNDER_CAP} workspaces. Choose Solo ($12).`,
+        };
+      }
+    }
 
     const client = getDodoClient();
     const productId = dodoProductId(parsed.data);

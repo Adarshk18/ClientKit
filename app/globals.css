@@ -28,6 +28,8 @@ html,
 body {
   background: var(--paper);
   color: var(--ink);
+  overflow-x: hidden;
+  max-width: 100%;
 }
 
 body {
@@ -73,4 +75,12 @@ button:disabled {
 .prose ul,
 .prose ol {
   margin: 0.5em 0 0.75em 1.1em;
+}
+
+h1,
+h2,
+h3,
+p,
+li {
+  overflow-wrap: anywhere;
 }

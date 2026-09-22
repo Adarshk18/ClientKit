@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { startPlanCheckoutAction } from "@/lib/actions/billing";
-import { PLAN_PRICES } from "@/lib/plans";
+import { FOUNDER_CAP, PLAN_PRICES } from "@/lib/plans";
 import { btnPrimary, btnSecondary } from "@/lib/ui";
 import type { Plan } from "@/lib/types";
 
@@ -36,7 +36,11 @@ export function CheckoutButtons({ current }: { current: Plan }) {
               <p className="text-[12px] text-stamp">{info.label}</p>
               <p className="mt-2 font-serif text-3xl">${info.usd}<span className="text-base">/mo</span></p>
               <p className="mt-2 text-sm text-muted">
-                {plan === "founder" ? "20 sent docs / month" : plan === "solo" ? "40 sent docs / month" : "Unlimited docs"}
+                {plan === "founder"
+                  ? `First ${FOUNDER_CAP} workspaces · 20 sent docs / month`
+                  : plan === "solo"
+                    ? "40 sent docs / month"
+                    : "Unlimited docs"}
               </p>
               <button
                 type="button"

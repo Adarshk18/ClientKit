@@ -1,7 +1,7 @@
 import { requireWorkspace } from "@/lib/auth";
 import { CheckoutButtons } from "@/components/checkout-buttons";
-import { SENT_LIMITS } from "@/lib/plans";
-import { effectivePlanStatus } from "@/lib/plans";
+import { countFounderWorkspaces } from "@/lib/actions/billing";
+import { FOUNDER_CAP, SENT_LIMITS, effectivePlanStatus } from "@/lib/plans";
 
 export default async function BillingPage({
   searchParams,
@@ -12,6 +12,8 @@ export default async function BillingPage({
   const { workspace } = await requireWorkspace();
   const status = effectivePlanStatus(workspace);
   const limit = SENT_LIMITS[workspace.plan];
+  const founderTaken = await countFounderWorkspaces();
+  const founderLeft = Math.max(0, FOUNDER_CAP - founderTaken);
 
   return (
     <div className="max-w-3xl space-y-8">
@@ -50,7 +52,11 @@ export default async function BillingPage({
         ) : null}
       </section>
 
-      <CheckoutButtons current={workspace.plan} />
+      <p className="text-sm text-muted">
+        Founder is $9/mo for the first {FOUNDER_CAP} workspaces ({founderLeft} left). After that, new accounts pay
+        Solo at $12/mo.
+      </p>
+      <CheckoutButtons current={workspace.plan} founderOpen={founderLeft > 0 || workspace.plan === "founder"} />
     </div>
   );
 }

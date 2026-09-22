@@ -54,7 +54,7 @@ export function PayPanel({
             note={title}
           />
           <div>
-            <p className="font-mono text-lg">{payoutValue}</p>
+            <p className="break-all font-mono text-base sm:text-lg">{payoutValue}</p>
             <div className="mt-2">
               <CopyButton value={payoutValue} label="Copy VPA" />
             </div>

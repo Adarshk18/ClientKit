@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { canSendDocument, effectivePlanStatus } from "@/lib/plans";
+import { canPurchaseFounder, canSendDocument, effectivePlanStatus, FOUNDER_CAP } from "@/lib/plans";
 import { workspacePatchFromSubscription } from "@/lib/billing-map";
 
 describe("canSendDocument", () => {
@@ -53,5 +53,22 @@ describe("workspacePatchFromSubscription", () => {
       metadata: { plan: "solo" },
     });
     expect(patch?.plan_status).toBeUndefined();
+  });
+});
+
+
+describe("FOUNDER_CAP", () => {
+  it("is exactly 50", () => {
+    expect(FOUNDER_CAP).toBe(50);
+  });
+
+  it("allows founder while under the cap", () => {
+    expect(canPurchaseFounder(0)).toBe(true);
+    expect(canPurchaseFounder(FOUNDER_CAP - 1)).toBe(true);
+  });
+
+  it("rejects founder at and above the cap", () => {
+    expect(canPurchaseFounder(FOUNDER_CAP)).toBe(false);
+    expect(canPurchaseFounder(FOUNDER_CAP + 10)).toBe(false);
   });
 });

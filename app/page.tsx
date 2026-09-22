@@ -35,7 +35,7 @@ export default function MarketingPage() {
           <div className="lg:col-span-7">
             <div className="border border-ink/15 bg-cream shadow-[6px_8px_0_0_rgba(28,25,23,0.06)]">
               <div className="flex items-center justify-between border-b border-line px-5 py-3">
-                <span className="text-[12px] text-muted">/s/acme-site</span>
+                <span className="text-[12px] text-muted">/s/demo-acme</span>
                 <span className="text-[12px] text-stamp">Awaiting signature</span>
               </div>
               <div className="px-5 py-6 sm:px-7">
@@ -55,13 +55,16 @@ export default function MarketingPage() {
                     <dd>$600</dd>
                   </div>
                 </dl>
-                <div className="mt-6 h-10 w-full bg-ink text-center text-[13px] font-medium leading-10 text-paper">
-                  Sign
-                </div>
+                <Link
+                  href="/s/demo-acme"
+                  className="mt-6 block h-10 w-full bg-ink text-center text-[13px] font-medium leading-10 text-paper hover:bg-ink/90"
+                >
+                  Open demo and sign
+                </Link>
               </div>
             </div>
             <p className="mt-4 max-w-[48ch] text-[13px] leading-5 text-muted">
-              After they pay, your list does not grow a pipeline. It just reads{" "}
+              Try the live demo at /s/demo-acme — type a fake name, sign, then see UPI. After they pay, your list does not grow a pipeline. It just reads{" "}
               <span className="text-ink">Acme — signed + $600 received.</span>
             </p>
           </div>
@@ -194,6 +197,12 @@ export default function MarketingPage() {
             <div>
               <dt className="font-medium">Do you take a cut of the client’s payment?</dt>
               <dd className="mt-1 text-muted">No. They pay your UPI or your hosted link. We never see the card.</dd>
+            </div>
+            <div>
+              <dt className="font-medium">What is Founder at $9?</dt>
+              <dd className="mt-1 text-muted">
+                Founder is $9/mo for the first 50 workspaces only. After that, new accounts pay Solo at $12.
+              </dd>
             </div>
             <div>
               <dt className="font-medium">Is the signature legally a digital certificate?</dt>

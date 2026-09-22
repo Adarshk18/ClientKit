@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { DEMO_PUBLIC_ID, ensureDemoDocument } from "@/lib/demo";
 import { loadPublicDocument, recordPublicView } from "@/lib/public-document";
 import { buildFrozenPayload, hashFrozenPayload } from "@/lib/hash";
 import { formatMoney } from "@/lib/money";
@@ -19,6 +20,9 @@ export default async function PublicDocumentPage({
   params: Promise<{ publicId: string }>;
 }) {
   const { publicId } = await params;
+  if (publicId === DEMO_PUBLIC_ID) {
+    await ensureDemoDocument();
+  }
   const doc = await loadPublicDocument(publicId);
   if (!doc) notFound();
 

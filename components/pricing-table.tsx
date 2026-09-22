@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PLAN_PRICES, SENT_LIMITS } from "@/lib/plans";
+import { FOUNDER_CAP, PLAN_PRICES, SENT_LIMITS } from "@/lib/plans";
 import { btnPrimary, btnSecondary } from "@/lib/ui";
 import type { Plan } from "@/lib/types";
 
@@ -7,7 +7,10 @@ const DETAILS: Record<
   Exclude<Plan, "free">,
   { blurb: string; limit: string }
 > = {
-  founder: { blurb: "For the first stretch.", limit: `${SENT_LIMITS.founder} sent jobs / month` },
+  founder: {
+    blurb: `First ${FOUNDER_CAP} workspaces only. Then Solo at $12.`,
+    limit: `${SENT_LIMITS.founder} sent jobs / month`,
+  },
   solo: { blurb: "Default plan.", limit: `${SENT_LIMITS.solo} sent jobs / month` },
   busy: { blurb: "When the calendar is full.", limit: "Unlimited sent jobs" },
 };

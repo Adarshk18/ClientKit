@@ -10,7 +10,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   return (
     <div className="min-h-full">
       <AppNav workspaceName={workspace.name} logoSrc={logo} email={user.email ?? ""} />
-      <main className="mx-auto w-full max-w-6xl px-4 py-8">{children}</main>
+      <main className="mx-auto w-full max-w-6xl px-3 py-6 sm:px-4 sm:py-8">{children}</main>
     </div>
   );
 }
