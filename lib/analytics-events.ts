@@ -6,6 +6,7 @@ export const ANALYTICS_EVENT_NAMES = [
   "signup_start",
   "signup_complete",
   "checkout_start",
+  "session_ping",
 ] as const;
 
 export type AnalyticsEventName = (typeof ANALYTICS_EVENT_NAMES)[number];

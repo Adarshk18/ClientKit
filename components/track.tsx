@@ -42,6 +42,29 @@ export function TrackPageView({
   return null;
 }
 
+const SESSION_PING_MS = 2 * 60 * 1000;
+
+/**
+ * Logged-in app session tracker: one page_view on mount, then session_ping
+ * every 2 minutes while the tab is visible. Mount only from app/(app)/layout.
+ */
+export function TrackAppSession() {
+  useEffect(() => {
+    track("page_view", { meta: { source: "app_session" } });
+
+    const ping = () => {
+      if (typeof document !== "undefined" && document.visibilityState === "visible") {
+        track("session_ping");
+      }
+    };
+
+    const id = window.setInterval(ping, SESSION_PING_MS);
+    return () => window.clearInterval(id);
+  }, []);
+
+  return null;
+}
+
 type TrackedLinkProps = {
   href: string;
   className?: string;

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase/admin";
+import { createSupabaseServer } from "@/lib/supabase/server";
 import { rateLimit, ANALYTICS_LIMIT } from "@/lib/rate-limit";
 import { clientIpFromHeaders } from "@/lib/request";
 import { isAnalyticsEventName } from "@/lib/analytics-events";
@@ -49,6 +50,25 @@ export async function POST(request: Request) {
     );
   }
 
+  let workspaceId: string | null = null;
+  try {
+    const supabase = await createSupabaseServer();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (user) {
+      const adminLookup = createSupabaseAdmin();
+      const { data: ws } = await adminLookup
+        .from("workspaces")
+        .select("id")
+        .eq("owner_id", user.id)
+        .maybeSingle();
+      workspaceId = ws?.id ?? null;
+    }
+  } catch {
+    // Soft-fail: anonymous / no session still records the event without workspace_id.
+  }
+
   try {
     const admin = createSupabaseAdmin();
     const { error } = await admin.from("analytics_events").insert({
@@ -57,6 +77,7 @@ export async function POST(request: Request) {
       meta,
       ip,
       user_agent: userAgent,
+      workspace_id: workspaceId,
     });
     if (error) {
       logError("analytics.insert", error);

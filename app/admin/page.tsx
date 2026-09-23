@@ -1,6 +1,7 @@
 import Link from "next/link";
+import { AdminExportButtons } from "@/components/admin-export-buttons";
 import { requireAdmin } from "@/lib/admin";
-import { loadAdminDashboard } from "@/lib/admin-metrics";
+import { formatActiveMinutes, loadAdminDashboard } from "@/lib/admin-metrics";
 
 export const metadata = {
   title: "Admin",
@@ -40,6 +41,22 @@ function fmtDay(iso: string): string {
   }
 }
 
+function fmtDayHeader(day: string): string {
+  try {
+    // day is YYYY-MM-DD in IST civil calendar — present as a noon IST instant.
+    const iso = `${day}T06:30:00.000Z`;
+    return new Date(iso).toLocaleDateString("en-IN", {
+      timeZone: "Asia/Calcutta",
+      weekday: "short",
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  } catch {
+    return day;
+  }
+}
+
 export default async function AdminPage() {
   const { admin } = await requireAdmin();
   const data = await loadAdminDashboard(admin);
@@ -50,16 +67,20 @@ export default async function AdminPage() {
   );
 
   const eventTypes = ["viewed", "signed", "paid", "resent", "voided", "expired", "payment_sent"];
+  const newAccounts30 = data.dailySignups.reduce((n, d) => n + d.accounts.length, 0);
 
   return (
     <main className="ck-page-pad mx-auto w-full max-w-6xl space-y-8 overflow-x-clip px-3 py-6 sm:space-y-10 sm:px-4 sm:py-8">
-      <div>
-        <p className="text-[13px] text-stamp">Founder dashboard</p>
-        <h1 className="mt-1 font-serif text-3xl">Product pulse</h1>
-        <p className="mt-2 max-w-2xl text-sm text-muted">
-          Signups, traffic, funnel, and plan mix. Analytics inserts need migration{" "}
-          <code className="text-ink">0002_admin_analytics.sql</code> applied in Supabase.
-        </p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <p className="text-[13px] text-stamp">Founder dashboard</p>
+          <h1 className="mt-1 font-serif text-3xl">Product pulse</h1>
+          <p className="mt-2 max-w-2xl text-sm text-muted">
+            Signups, traffic, funnel, and plan mix. Analytics inserts need migration{" "}
+            <code className="text-ink">0002_admin_analytics.sql</code> applied in Supabase.
+          </p>
+        </div>
+        <AdminExportButtons />
       </div>
 
       <div className="grid gap-px border border-line bg-line grid-cols-2 lg:grid-cols-4">
@@ -80,6 +101,62 @@ export default async function AdminPage() {
           hint={`page views 7d · ${data.analytics.ctaClicks7} CTA clicks`}
         />
       </div>
+
+      <Section title="New accounts by day">
+        <p className="mb-4 text-[12px] text-muted">
+          Showing last 30d IST · {newAccounts30} new accounts
+          {newAccounts30 === 0
+            ? ". Active time uses document timestamps and workspace-attributed analytics (session pings going forward)."
+            : ". Active time estimated from document + analytics stamps on the signup day (gaps capped at 5m)."}
+        </p>
+        {data.dailySignups.length === 0 ? (
+          <div className="border border-line bg-cream px-3 py-4 text-sm text-muted">
+            No new accounts in the last 30 days (IST).
+          </div>
+        ) : (
+          <div className="space-y-6">
+            {data.dailySignups.map((day) => (
+              <div key={day.day} className="border border-line bg-cream">
+                <div className="flex items-baseline justify-between gap-3 border-b border-line px-3 py-2">
+                  <h3 className="font-serif text-lg">
+                    {fmtDayHeader(day.day)}
+                    <span className="ml-2 text-[12px] font-sans text-muted">{day.day} IST</span>
+                  </h3>
+                  <span className="text-[12px] text-stamp tabular-nums">
+                    {day.accounts.length} new
+                  </span>
+                </div>
+                <div className="max-w-full overflow-x-auto overscroll-x-contain">
+                  <table className="w-full min-w-[40rem] text-left text-sm">
+                    <thead className="border-b border-line text-[12px] text-muted">
+                      <tr>
+                        <th className="px-3 py-2 font-medium">Name</th>
+                        <th className="px-3 py-2 font-medium">Email</th>
+                        <th className="px-3 py-2 font-medium">Plan</th>
+                        <th className="px-3 py-2 font-medium">Signed up</th>
+                        <th className="px-3 py-2 font-medium">Active that day</th>
+                        <th className="px-3 py-2 font-medium">Actions that day</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {day.accounts.map((a) => (
+                        <tr key={a.id} className="border-b border-line last:border-0">
+                          <td className="px-3 py-2 font-medium">{a.name}</td>
+                          <td className="px-3 py-2 text-muted">{a.email ?? "—"}</td>
+                          <td className="px-3 py-2 capitalize">{a.plan}</td>
+                          <td className="px-3 py-2 tabular-nums text-muted">{fmtDay(a.created_at)}</td>
+                          <td className="px-3 py-2 tabular-nums">{formatActiveMinutes(a.activeMinutes)}</td>
+                          <td className="px-3 py-2 tabular-nums">{a.actionCount}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </Section>
 
       <Section title="Plans">
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
