@@ -15,13 +15,41 @@ const serif = Literata({
   weight: ["400", "500", "600", "700"],
 });
 
+const titleDefault = "Client Kit - Proposal. Sign. Get paid.";
+const description =
+  "One page for a freelancer job: write the proposal, get a signature, collect the deposit. $12 a month. No CRM.";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_APP_URL || "https://client-kit-omega.vercel.app",
+  ),
   title: {
-    default: "Client Kit — Proposal. Sign. Get paid.",
+    default: titleDefault,
     template: "%s · Client Kit",
   },
-  description:
-    "One page for a freelancer job: write the proposal, get a signature, collect the deposit. $12 a month. No CRM.",
+  description,
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    siteName: "Client Kit",
+    title: titleDefault,
+    description,
+    url: "/",
+    images: [
+      {
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "Client Kit",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: titleDefault,
+    description,
+    images: ["/opengraph-image"],
+  },
 };
 
 export const viewport: Viewport = {
