@@ -5,7 +5,7 @@ import { buildFrozenPayload, hashFrozenPayload } from "@/lib/hash";
 import { formatMoney } from "@/lib/money";
 import { sanitizeScopeHtml } from "@/lib/sanitize";
 import { signedLogoUrl } from "@/lib/storage";
-import { canPay, canSign, effectiveStatus } from "@/lib/document-state";
+import { canClaimPayment, canSign, effectiveStatus } from "@/lib/document-state";
 import { ErrorState } from "@/components/empty-state";
 import { LogoMark } from "@/components/logo-mark";
 import { PayPanel } from "@/components/pay-panel";
@@ -55,7 +55,7 @@ export default async function PublicDocumentPage({
   });
   const hash = hashFrozenPayload(payload);
   const signable = canSign(status, doc.expires_at);
-  const payable = canPay(status, doc.expires_at);
+  const payable = canClaimPayment(status, doc.expires_at);
 
   if (status === "void") {
     return (
@@ -141,7 +141,7 @@ export default async function PublicDocumentPage({
               Download signed PDF
             </a>
           </div>
-        ) : status === "signed" || payable.ok ? (
+        ) : status === "signed" || status === "payment_sent" || payable.ok ? (
           <div className="space-y-6">
             <div>
               <h2 className="font-serif text-2xl">Signed</h2>
@@ -165,7 +165,8 @@ export default async function PublicDocumentPage({
                   payoutValue={workspace.payout_value}
                   workspaceName={workspace.name}
                   title={doc.title}
-                  alreadySent={doc.payment_status === "payment_sent"}
+                  alreadySent={status === "payment_sent" || doc.payment_status === "payment_sent"}
+                  paymentReference={doc.payment_reference}
                 />
               </div>
             </div>

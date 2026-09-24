@@ -25,7 +25,12 @@ export default async function JobsPage({
   const jobs = (data ?? []).filter((row) => {
     const status = effectiveStatus(row.status as DocStatus, row.expires_at);
     if (filter === "unpaid") {
-      return status === "signed" || (status === "paid" ? false : status === "sent" || status === "viewed");
+      return (
+        status === "signed" ||
+        status === "payment_sent" ||
+        status === "sent" ||
+        status === "viewed"
+      );
     }
     return true;
   });
@@ -81,7 +86,9 @@ export default async function JobsPage({
             const aha =
               status === "paid"
                 ? `${client?.name ?? "Client"} — signed + ${formatMoney(job.amount_due, job.currency)} received.`
-                : null;
+                : status === "payment_sent"
+                  ? `${client?.name ?? "Client"} — awaiting payment confirmation`
+                  : null;
             return (
               <li key={job.id}>
                 <Link href={`/jobs/${job.id}`} className="block min-h-11 px-3 py-4 hover:bg-white sm:px-4">

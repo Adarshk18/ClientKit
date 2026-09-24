@@ -8,7 +8,12 @@ import { buildFrozenPayload, hashFrozenPayload } from "@/lib/hash";
 import { normalizeScopeHtml } from "@/lib/sanitize";
 import { newPublicId } from "@/lib/public-id";
 import { documentInputSchema } from "@/lib/validators";
-import { canSoftDelete, effectiveStatus } from "@/lib/document-state";
+import {
+  canConfirmPayment,
+  canRejectPaymentClaim,
+  canSoftDelete,
+  effectiveStatus,
+} from "@/lib/document-state";
 import { sendDocumentToClient } from "@/lib/email";
 import { logError } from "@/lib/logger";
 import { assertSameOrigin, requestMeta } from "@/lib/request";
@@ -279,7 +284,7 @@ export async function saveAsNewVersionAction(
 
     const current = await loadDocBundle(existingId, workspace.id);
     if (!current) return { ok: false, error: "Not found" };
-    if (current.status === "signed" || current.status === "paid") {
+    if (current.status === "signed" || current.status === "payment_sent" || current.status === "paid") {
       return { ok: false, error: "Signed documents cannot be edited." };
     }
     if (current.status !== "sent" && current.status !== "viewed") {
@@ -353,7 +358,7 @@ export async function voidDocumentAction(documentId: string): Promise<ActionResu
       .eq("workspace_id", workspace.id)
       .maybeSingle();
     if (!doc) return { ok: false, error: "Not found" };
-    if (doc.status === "signed" || doc.status === "paid") {
+    if (doc.status === "signed" || doc.status === "payment_sent" || doc.status === "paid") {
       return { ok: false, error: "Signed documents cannot be voided. They are the record." };
     }
     const { ip, userAgent } = await requestMeta();
@@ -448,10 +453,10 @@ export async function markPaidAction(documentId: string): Promise<ActionResult> 
     const { supabase, workspace, user } = await requireWorkspace();
     const doc = await loadDocBundle(documentId, workspace.id);
     if (!doc) return { ok: false, error: "Not found" };
-    if (doc.status !== "signed" && doc.status !== "paid") {
+    if (doc.status === "paid") return { ok: true, data: undefined };
+    if (!canConfirmPayment(doc.status)) {
       return { ok: false, error: "Mark paid after the client signs." };
     }
-    if (doc.status === "paid") return { ok: true, data: undefined };
 
     const { ip, userAgent } = await requestMeta();
     const now = new Date().toISOString();
@@ -465,7 +470,7 @@ export async function markPaidAction(documentId: string): Promise<ActionResult> 
       })
       .eq("id", documentId)
       .eq("workspace_id", workspace.id)
-      .eq("status", "signed")
+      .in("status", ["signed", "payment_sent"])
       .select("id");
     if (error || !paidRows?.length) return { ok: false, error: "Could not mark paid." };
 
@@ -474,7 +479,7 @@ export async function markPaidAction(documentId: string): Promise<ActionResult> 
       type: "paid",
       ip,
       user_agent: userAgent,
-      meta: { by: user.id },
+      meta: { by: user.id, from_status: doc.status },
     });
 
     const { sendMarkedPaidToFreelancer } = await import("@/lib/email");
@@ -494,6 +499,55 @@ export async function markPaidAction(documentId: string): Promise<ActionResult> 
   } catch (error) {
     logError("documents.markPaid", error);
     return { ok: false, error: "Could not mark paid." };
+  }
+}
+
+/** Freelancer rejects a client payment claim → back to signed / awaiting payment. */
+export async function rejectPaymentClaimAction(documentId: string): Promise<ActionResult> {
+  try {
+    await assertSameOrigin();
+    const { supabase, workspace, user } = await requireWorkspace();
+    const doc = await loadDocBundle(documentId, workspace.id);
+    if (!doc) return { ok: false, error: "Not found" };
+    if (!canRejectPaymentClaim(doc.status)) {
+      return { ok: false, error: "No payment claim to reject." };
+    }
+
+    const { ip, userAgent } = await requestMeta();
+    const prior = {
+      reference: doc.payment_reference ?? null,
+      note: doc.payment_claim_note ?? null,
+      claimed_at: doc.payment_claimed_at ?? null,
+    };
+    const { data: rows, error } = await supabase
+      .from("documents")
+      .update({
+        status: "signed",
+        payment_status: "unpaid",
+        payment_claimed_at: null,
+        payment_reference: null,
+        payment_claim_note: null,
+      })
+      .eq("id", documentId)
+      .eq("workspace_id", workspace.id)
+      .eq("status", "payment_sent")
+      .select("id");
+    if (error || !rows?.length) return { ok: false, error: "Could not reject payment claim." };
+
+    await supabase.from("events").insert({
+      document_id: documentId,
+      type: "payment_rejected",
+      ip,
+      user_agent: userAgent,
+      meta: { by: user.id, prior_claim: prior },
+    });
+
+    revalidatePath("/jobs");
+    revalidatePath(`/jobs/${documentId}`);
+    return { ok: true, data: undefined };
+  } catch (error) {
+    logError("documents.rejectPaymentClaim", error);
+    return { ok: false, error: "Could not reject payment claim." };
   }
 }
 
@@ -545,7 +599,7 @@ export async function nudgeClientAction(documentId: string): Promise<ActionResul
     const doc = await loadDocBundle(documentId, workspace.id);
     if (!doc) return { ok: false, error: "Not found" };
     const status = effectiveStatus(doc.status, doc.expires_at);
-    if (status !== "sent" && status !== "viewed" && status !== "signed") {
+    if (status !== "sent" && status !== "viewed" && status !== "signed" && status !== "payment_sent") {
       return { ok: false, error: "Nothing to nudge. Send the job first, or it is already paid." };
     }
 
@@ -567,7 +621,7 @@ export async function nudgeClientAction(documentId: string): Promise<ActionResul
       workspaceName: workspace.name,
       title: doc.title,
       publicId: doc.public_id,
-      kind: status === "signed" ? "pay" : "sign",
+      kind: status === "signed" || status === "payment_sent" ? "pay" : "sign",
     });
 
     const { ip, userAgent } = await requestMeta();

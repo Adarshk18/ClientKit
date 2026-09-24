@@ -17,6 +17,7 @@ export function PayPanel({
   workspaceName,
   title,
   alreadySent,
+  paymentReference,
 }: {
   publicId: string;
   amountDue: number;
@@ -26,10 +27,29 @@ export function PayPanel({
   workspaceName: string;
   title: string;
   alreadySent: boolean;
+  paymentReference?: string | null;
 }) {
   const [sent, setSent] = useState(alreadySent);
+  const [savedReference, setSavedReference] = useState(paymentReference ?? "");
+  const [reference, setReference] = useState("");
+  const [note, setNote] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+
+  function claimPayment() {
+    startTransition(async () => {
+      const result = await markPaymentSentAction(publicId, {
+        reference: reference || undefined,
+        note: note || undefined,
+      });
+      if (!result.ok) {
+        setError(result.error);
+        return;
+      }
+      setSavedReference(reference.trim());
+      setSent(true);
+    });
+  }
 
   if (!payoutType || !payoutValue) {
     return (
@@ -38,6 +58,55 @@ export function PayPanel({
       </p>
     );
   }
+
+  const claimForm = sent ? (
+    <div className="rounded-sm border border-line bg-white p-3 space-y-1">
+      <p className="text-sm text-stamp font-medium">Waiting for freelancer to confirm</p>
+      <p className="text-sm text-muted">
+        You marked this as paid. Client Kit never holds the funds — they will confirm when it arrives.
+      </p>
+      {savedReference ? (
+        <p className="text-sm">
+          Reference: <span className="font-mono">{savedReference}</span>
+        </p>
+      ) : null}
+    </div>
+  ) : (
+    <div className="space-y-3 rounded-sm border border-line bg-white p-3">
+      <div>
+        <label htmlFor="pay-ref" className="block text-[12px] text-muted">
+          UPI / reference ID <span className="text-muted">(optional)</span>
+        </label>
+        <input
+          id="pay-ref"
+          type="text"
+          maxLength={120}
+          value={reference}
+          onChange={(e) => setReference(e.target.value)}
+          placeholder="e.g. UPI txn ID"
+          className="mt-1 w-full rounded-sm border border-line bg-paper px-3 py-2 text-sm outline-none focus:border-ink"
+        />
+      </div>
+      <div>
+        <label htmlFor="pay-note" className="block text-[12px] text-muted">
+          Note <span className="text-muted">(optional)</span>
+        </label>
+        <input
+          id="pay-note"
+          type="text"
+          maxLength={500}
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+          placeholder="Anything the freelancer should know"
+          className="mt-1 w-full rounded-sm border border-line bg-paper px-3 py-2 text-sm outline-none focus:border-ink"
+        />
+      </div>
+      <button type="button" disabled={pending} className={btnPrimary} onClick={claimPayment}>
+        {pending ? <Spinner label="Saving" /> : "I've paid"}
+      </button>
+      {error ? <p className="text-sm text-danger">{error}</p> : null}
+    </div>
+  );
 
   if (payoutType === "upi") {
     return (
@@ -61,25 +130,7 @@ export function PayPanel({
             </div>
           </div>
         </div>
-        {sent ? (
-          <p className="text-sm text-stamp">Marked as payment sent. The freelancer will confirm when it arrives.</p>
-        ) : (
-          <button
-            type="button"
-            disabled={pending}
-            className={btnSecondary}
-            onClick={() => {
-              startTransition(async () => {
-                const result = await markPaymentSentAction(publicId);
-                if (!result.ok) setError(result.error);
-                else setSent(true);
-              });
-            }}
-          >
-            {pending ? <Spinner label="Saving" /> : "I've sent the payment"}
-          </button>
-        )}
-        {error ? <p className="text-sm text-danger">{error}</p> : null}
+        {claimForm}
       </div>
     );
   }
@@ -87,26 +138,18 @@ export function PayPanel({
   return (
     <div className="space-y-4">
       <p className="text-sm">
-        Pay {formatMoney(amountDue, currency)} using the freelancer's payment link. Client Kit does not take this
+        Pay {formatMoney(amountDue, currency)} using the freelancer&apos;s payment link. Client Kit does not take this
         money.
       </p>
       <a
         href={payoutValue}
         target="_blank"
         rel="noopener noreferrer"
-        className={btnPrimary}
-        onClick={() => {
-          startTransition(async () => {
-            await markPaymentSentAction(publicId);
-            setSent(true);
-          });
-        }}
+        className={btnSecondary}
       >
-        Pay {formatMoney(amountDue, currency)}
+        Open payment link · {formatMoney(amountDue, currency)}
       </a>
-      {sent ? (
-        <p className="text-sm text-stamp">Payment link opened. The freelancer will mark this paid when it lands.</p>
-      ) : null}
+      {claimForm}
     </div>
   );
 }

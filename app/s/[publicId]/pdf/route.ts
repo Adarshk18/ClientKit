@@ -17,7 +17,7 @@ export async function GET(
     .is("deleted_at", null)
     .maybeSingle();
 
-  if (!doc || (doc.status !== "signed" && doc.status !== "paid")) {
+  if (!doc || (doc.status !== "signed" && doc.status !== "payment_sent" && doc.status !== "paid")) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 

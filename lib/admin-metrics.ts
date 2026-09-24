@@ -22,6 +22,7 @@ export function emptyDocStatusCounts(): DocStatusCounts {
     sent: 0,
     viewed: 0,
     signed: 0,
+    payment_sent: 0,
     paid: 0,
     expired: 0,
     void: 0,
@@ -462,7 +463,7 @@ export async function loadAdminDashboard(admin: SupabaseClient): Promise<AdminDa
   }));
 
   const recentDocs = docs
-    .filter((d) => d.status === "signed" || d.status === "paid")
+    .filter((d) => d.status === "signed" || d.status === "payment_sent" || d.status === "paid")
     .slice(0, 12)
     .map((d) => ({
       id: d.id,

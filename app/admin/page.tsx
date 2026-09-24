@@ -66,7 +66,7 @@ export default async function AdminPage() {
     ...data.analytics.byDay.flatMap((d) => [d.counts.page_view ?? 0, d.counts.cta_click ?? 0]),
   );
 
-  const eventTypes = ["viewed", "signed", "paid", "resent", "voided", "expired", "payment_sent"];
+  const eventTypes = ["viewed", "signed", "paid", "resent", "voided", "expired", "payment_sent", "payment_rejected"];
   const newAccounts30 = data.dailySignups.reduce((n, d) => n + d.accounts.length, 0);
 
   return (

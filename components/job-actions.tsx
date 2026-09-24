@@ -7,6 +7,7 @@ import {
   duplicateDocumentAction,
   markPaidAction,
   nudgeClientAction,
+  rejectPaymentClaimAction,
   resendDocumentAction,
   sendDocumentAction,
   voidDocumentAction,
@@ -19,10 +20,12 @@ export function JobActions({
   documentId,
   status,
   publicId,
+  paymentReference,
 }: {
   documentId: string;
   status: DocStatus;
   publicId: string;
+  paymentReference?: string | null;
 }) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
@@ -44,6 +47,18 @@ export function JobActions({
   return (
     <div className="space-y-3">
       {error ? <p className="text-sm text-danger">{error}</p> : null}
+      {status === "payment_sent" ? (
+        <div className="rounded-sm border border-line bg-cream p-3 text-sm">
+          <p className="text-stamp font-medium">Client says they paid — awaiting confirmation</p>
+          {paymentReference ? (
+            <p className="mt-1">
+              Reference: <span className="font-mono">{paymentReference}</span>
+            </p>
+          ) : (
+            <p className="mt-1 text-muted">No reference ID was provided.</p>
+          )}
+        </div>
+      ) : null}
       <div className="flex flex-wrap gap-2">
         {status === "draft" ? (
           <>
@@ -65,7 +80,7 @@ export function JobActions({
             </button>
           </>
         ) : null}
-        {status === "sent" || status === "viewed" || status === "signed" ? (
+        {status === "sent" || status === "viewed" || status === "signed" || status === "payment_sent" ? (
           <button
             type="button"
             disabled={pending}
@@ -105,6 +120,26 @@ export function JobActions({
             Mark paid
           </button>
         ) : null}
+        {status === "payment_sent" ? (
+          <>
+            <button
+              type="button"
+              disabled={pending}
+              className={btnPrimary}
+              onClick={() => run(() => markPaidAction(documentId))}
+            >
+              {pending ? <Spinner label="Saving" /> : "Confirm received"}
+            </button>
+            <button
+              type="button"
+              disabled={pending}
+              className={btnSecondary}
+              onClick={() => run(() => rejectPaymentClaimAction(documentId))}
+            >
+              Not received
+            </button>
+          </>
+        ) : null}
         {status === "void" || status === "expired" ? (
           <button
             type="button"
@@ -115,7 +150,7 @@ export function JobActions({
             Delete
           </button>
         ) : null}
-        {(status === "signed" || status === "paid") && (
+        {(status === "signed" || status === "payment_sent" || status === "paid") && (
           <a href={`/s/${publicId}/pdf`} className={btnSecondary}>
             Download signed PDF
           </a>

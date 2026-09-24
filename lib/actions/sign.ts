@@ -2,7 +2,7 @@
 
 import { createSupabaseAdmin } from "@/lib/supabase/admin";
 import { signInputSchema } from "@/lib/validators";
-import { canPay, canSign } from "@/lib/document-state";
+import { canClaimPayment, canSign } from "@/lib/document-state";
 import { buildFrozenPayload, hashFrozenPayload } from "@/lib/hash";
 import { rateLimit, SIGN_LIMIT, PAY_LIMIT } from "@/lib/rate-limit";
 import { requestMeta } from "@/lib/request";
@@ -12,7 +12,7 @@ import { logError } from "@/lib/logger";
 import { first } from "@/lib/one";
 import type { ActionResult, FrozenPayload, LineItemRow, WorkspaceRow } from "@/lib/types";
 
-const PUBLIC_STATUSES = ["sent", "viewed", "signed", "paid", "expired", "void"] as const;
+const PUBLIC_STATUSES = ["sent", "viewed", "signed", "payment_sent", "paid", "expired", "void"] as const;
 
 export async function signDocumentAction(
   _prev: ActionResult | null,
@@ -194,7 +194,10 @@ export async function signDocumentAction(
   }
 }
 
-export async function markPaymentSentAction(publicId: string): Promise<ActionResult> {
+export async function markPaymentSentAction(
+  publicId: string,
+  claim?: { reference?: string; note?: string },
+): Promise<ActionResult> {
   try {
     const { ip, userAgent } = await requestMeta();
     const limited = await rateLimit({
@@ -205,6 +208,9 @@ export async function markPaymentSentAction(publicId: string): Promise<ActionRes
       return { ok: false, error: "Too many attempts. Try again later." };
     }
 
+    const reference = (claim?.reference ?? "").trim().slice(0, 120) || null;
+    const note = (claim?.note ?? "").trim().slice(0, 500) || null;
+
     const admin = createSupabaseAdmin();
     const { data: doc } = await admin
       .from("documents")
@@ -213,13 +219,25 @@ export async function markPaymentSentAction(publicId: string): Promise<ActionRes
       .is("deleted_at", null)
       .maybeSingle();
     if (!doc) return { ok: false, error: "Not found" };
-    const payable = canPay(doc.status, doc.expires_at);
+    if (doc.status === "paid" || doc.payment_status === "paid") {
+      return { ok: true, data: undefined };
+    }
+    if (doc.status === "payment_sent") {
+      return { ok: true, data: undefined };
+    }
+    const payable = canClaimPayment(doc.status, doc.expires_at);
     if (!payable.ok) return { ok: false, error: payable.reason };
-    if (doc.payment_status === "paid") return { ok: true, data: undefined };
 
+    const claimedAt = new Date().toISOString();
     const { data: updated, error: updateError } = await admin
       .from("documents")
-      .update({ payment_status: "payment_sent" })
+      .update({
+        status: "payment_sent",
+        payment_status: "payment_sent",
+        payment_claimed_at: claimedAt,
+        payment_reference: reference,
+        payment_claim_note: note,
+      })
       .eq("id", doc.id)
       .eq("status", "signed")
       .neq("payment_status", "paid")
@@ -236,6 +254,7 @@ export async function markPaymentSentAction(publicId: string): Promise<ActionRes
       type: "payment_sent",
       ip,
       user_agent: userAgent,
+      meta: { reference, note },
     });
     return { ok: true, data: undefined };
   } catch (error) {

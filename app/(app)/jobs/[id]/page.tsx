@@ -36,7 +36,9 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
   const aha =
     status === "paid"
       ? `${client?.name ?? "Client"} — signed + ${formatMoney(job.amount_due, job.currency)} received.`
-      : null;
+      : status === "payment_sent"
+        ? `${client?.name ?? "Client"} — payment sent, awaiting your confirmation.`
+        : null;
 
   return (
     <div className="space-y-8">
@@ -50,7 +52,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
         <StatusChip status={status} />
       </div>
 
-      <JobActions documentId={job.id} status={status} publicId={job.public_id} />
+      <JobActions documentId={job.id} status={status} publicId={job.public_id} paymentReference={job.payment_reference} />
 
       {status !== "draft" && status !== "void" ? (
         <SharePanel

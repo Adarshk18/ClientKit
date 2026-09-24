@@ -19,7 +19,7 @@ export default async function EditJobPage({ params }: { params: Promise<{ id: st
 
   if (!job) notFound();
   const status = job.status as DocStatus;
-  if (status === "signed" || status === "paid") {
+  if (status === "signed" || status === "payment_sent" || status === "paid") {
     return <ErrorState title="Locked" body="Signed documents cannot be edited. The hash is frozen." />;
   }
   if (status === "void" || status === "expired") {

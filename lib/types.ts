@@ -3,6 +3,7 @@ export const DOC_STATUSES = [
   "sent",
   "viewed",
   "signed",
+  "payment_sent",
   "paid",
   "expired",
   "void",
@@ -86,6 +87,9 @@ export type DocumentRow = {
   paid_at: string | null;
   payment_marked_by: string | null;
   payment_status: "unpaid" | "payment_sent" | "paid";
+  payment_claimed_at: string | null;
+  payment_reference: string | null;
+  payment_claim_note: string | null;
   frozen_payload: FrozenPayload | null;
   frozen_hash: string | null;
   deleted_at: string | null;
