@@ -20,7 +20,7 @@ export function SignupForm({ error }: { error?: string }) {
       <form action={signUpAction} className="mt-8 space-y-4">
         <label className="block text-[13px]">
           Workspace name
-          <input name="workspace_name" required className={fieldClass} placeholder="Studio North" />
+          <input name="workspace_name" required className={fieldClass} placeholder="Your studio name" />
         </label>
         <label className="block text-[13px]">
           Email

@@ -76,8 +76,13 @@ export default async function AdminPage() {
           <p className="text-[13px] text-stamp">Founder dashboard</p>
           <h1 className="mt-1 font-serif text-3xl">Product pulse</h1>
           <p className="mt-2 max-w-2xl text-sm text-muted">
-            Signups, traffic, funnel, and plan mix. Analytics inserts need migration{" "}
-            <code className="text-ink">0002_admin_analytics.sql</code> applied in Supabase.
+            Real customers only. Demo workspace, ADMIN_EMAILS accounts, and this browser (founder
+            device cookie) are excluded
+            {data.excluded.workspaces || data.excluded.analytics
+              ? ` — ${data.excluded.workspaces} workspace${data.excluded.workspaces === 1 ? "" : "s"}, ${data.excluded.analytics} analytics event${data.excluded.analytics === 1 ? "" : "s"} dropped`
+              : ""}
+            . Analytics inserts need migration <code className="text-ink">0002_admin_analytics.sql</code>{" "}
+            applied in Supabase.
           </p>
         </div>
         <AdminExportButtons />

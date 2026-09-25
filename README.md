@@ -39,7 +39,7 @@ Open [http://localhost:3000](http://localhost:3000).
 2. Auth → enable Email and Google. Add redirect `{NEXT_PUBLIC_APP_URL}/auth/callback`.
 3. SQL editor: paste `supabase/migrations/0001_init.sql`, then `supabase/migrations/0002_admin_analytics.sql` (required for `/admin` traffic metrics and `POST /api/analytics`).
 4. Copy Project URL, anon key, and service role key into `.env.local`.
-5. Set `ADMIN_EMAILS` to a comma-separated list of emails allowed to open `/admin` (Unauthorized users get a 404).
+5. Set `ADMIN_EMAILS` to a comma-separated list of emails allowed to open `/admin` (unauthorized users get a 404). Those accounts, the demo workspace, and any browser that has opened `/admin` are excluded from the founder pulse.
 
 ### 2. Resend
 
@@ -96,7 +96,7 @@ Subscribe at least: `subscription.active`, `subscription.updated`, `subscription
 npm run seed
 ```
 
-Logs in as `demo@clientkit.dev` / `demo-password-change-me` (override with `SEED_EMAIL` / `SEED_PASSWORD`). Public demo link: `/s/demoAcmeSiteRebuild123`.
+Logs in as `demo@clientkit.dev` / `demo-password-change-me` (override with `SEED_EMAIL` / `SEED_PASSWORD`). Public demo link: `/s/demo-acme`. The public demo rotates to a fresh unsigned copy after someone signs, so strangers always get the aha path.
 
 ## Tests
 

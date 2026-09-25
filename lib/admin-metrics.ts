@@ -1,4 +1,9 @@
 import { FOUNDER_CAP, PLAN_PRICES, founderSeatsRemaining } from "@/lib/plans";
+import {
+  founderIpsFromAnalytics,
+  isInternalEmail,
+  shouldExcludeAnalyticsEvent,
+} from "@/lib/internal";
 import type { DocStatus, Plan, PlanStatus } from "@/lib/types";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
@@ -206,6 +211,7 @@ export type AdminDashboard = {
     path: string | null;
     created_at: string;
   }[];
+  excluded: { workspaces: number; analytics: number };
 };
 
 type DocRow = {
@@ -228,6 +234,13 @@ type AnalyticsRow = {
   path: string | null;
   created_at: string;
   workspace_id: string | null;
+  ip?: string | null;
+};
+
+type EventRow = {
+  type: string;
+  created_at: string;
+  document_id: string;
 };
 
 async function emailsForOwners(
@@ -352,21 +365,39 @@ export async function loadAdminDashboard(admin: SupabaseClient): Promise<AdminDa
       .is("deleted_at", null)
       .order("created_at", { ascending: false })
       .limit(5000),
-    admin.from("events").select("type, created_at").gte("created_at", d30).limit(10000),
+    admin.from("events").select("type, created_at, document_id").gte("created_at", d30).limit(10000),
     admin
       .from("analytics_events")
-      .select("id, name, path, created_at, workspace_id")
+      .select("id, name, path, created_at, workspace_id, ip")
       .gte("created_at", d31)
       .order("created_at", { ascending: false })
       .limit(10000),
     admin.from("documents").select("workspace_id").is("deleted_at", null).limit(10000),
   ]);
 
-  const workspaces = workspacesRes.data ?? [];
-  const docs = (docsRes.data ?? []) as DocRow[];
-  const events = eventsRes.data ?? [];
-  const analytics = (analyticsRes.data ?? []) as AnalyticsRow[];
-  const docWs = docsCountRes.data ?? [];
+  const allWorkspaces = workspacesRes.data ?? [];
+  const allDocs = (docsRes.data ?? []) as DocRow[];
+  const allEvents = (eventsRes.data ?? []) as EventRow[];
+  const allAnalytics = (analyticsRes.data ?? []) as AnalyticsRow[];
+  const allDocWs = docsCountRes.data ?? [];
+
+  const ownerIds = [...new Set(allWorkspaces.map((w) => w.owner_id as string))];
+  const emails = await emailsForOwners(admin, ownerIds);
+  const internalWorkspaceIds = new Set(
+    allWorkspaces
+      .filter((w) => isInternalEmail(emails.get(w.owner_id as string) ?? null))
+      .map((w) => w.id as string),
+  );
+  const founderIps = founderIpsFromAnalytics(allAnalytics, internalWorkspaceIds);
+
+  const workspaces = allWorkspaces.filter((w) => !internalWorkspaceIds.has(w.id));
+  const docs = allDocs.filter((d) => !internalWorkspaceIds.has(d.workspace_id));
+  const publicDocIds = new Set(docs.map((d) => d.id));
+  const events = allEvents.filter((e) => publicDocIds.has(e.document_id));
+  const analytics = allAnalytics.filter(
+    (a) => !shouldExcludeAnalyticsEvent(a, internalWorkspaceIds, founderIps),
+  );
+  const docWs = allDocWs.filter((row) => !internalWorkspaceIds.has(row.workspace_id));
 
   const planCounts = emptyPlanCounts();
   const planStatusCounts = emptyPlanStatusCounts();
@@ -414,14 +445,6 @@ export async function loadAdminDashboard(admin: SupabaseClient): Promise<AdminDa
   );
 
   const dayKeys = istDayKeys(30, now);
-  const recentOwnerIds = [
-    ...new Set(
-      workspaces
-        .filter((w) => dayKeys.includes(istDayKey(w.created_at)))
-        .map((w) => w.owner_id as string),
-    ),
-  ];
-  const emails = await emailsForOwners(admin, recentOwnerIds);
 
   const dailySignups = buildDailySignups({
     workspaces: workspaces.map((w) => ({
@@ -503,5 +526,9 @@ export async function loadAdminDashboard(admin: SupabaseClient): Promise<AdminDa
     recentWorkspaces,
     recentDocs,
     recentAnalytics,
+    excluded: {
+      workspaces: internalWorkspaceIds.size,
+      analytics: allAnalytics.length - analytics.length,
+    },
   };
 }

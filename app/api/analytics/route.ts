@@ -4,6 +4,7 @@ import { createSupabaseServer } from "@/lib/supabase/server";
 import { rateLimit, ANALYTICS_LIMIT } from "@/lib/rate-limit";
 import { clientIpFromHeaders } from "@/lib/request";
 import { isAnalyticsEventName } from "@/lib/analytics-events";
+import { isInternalEmail, hasInternalDeviceCookie } from "@/lib/internal";
 import { logError } from "@/lib/logger";
 
 export const runtime = "nodejs";
@@ -35,6 +36,10 @@ export async function POST(request: Request) {
       ? (body.meta as Record<string, unknown>)
       : null;
 
+  if (hasInternalDeviceCookie(request.headers.get("cookie"))) {
+    return NextResponse.json({ ok: true, ignored: true });
+  }
+
   const ip = clientIpFromHeaders(request.headers);
   const userAgent = (request.headers.get("user-agent") ?? "").slice(0, 512);
 
@@ -57,6 +62,9 @@ export async function POST(request: Request) {
       data: { user },
     } = await supabase.auth.getUser();
     if (user) {
+      if (isInternalEmail(user.email)) {
+        return NextResponse.json({ ok: true, ignored: true });
+      }
       const adminLookup = createSupabaseAdmin();
       const { data: ws } = await adminLookup
         .from("workspaces")

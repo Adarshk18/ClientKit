@@ -41,6 +41,8 @@ export function buildAdminCsv(data: AdminDashboard): string {
   lines.push(csvRow(["docs_sent_30d", data.docs.sent30]));
   lines.push(csvRow(["docs_signed_30d", data.docs.signed30]));
   lines.push(csvRow(["docs_paid_30d", data.docs.paid30]));
+  lines.push(csvRow(["excluded_workspaces", data.excluded.workspaces]));
+  lines.push(csvRow(["excluded_analytics", data.excluded.analytics]));
 
   section("Plan counts");
   lines.push(csvRow(["plan", "count"]));
@@ -156,6 +158,13 @@ export function buildAdminXls(data: AdminDashboard): string {
     ["KPI", "docs_sent_30d", data.docs.sent30],
     ["KPI", "docs_signed_30d", data.docs.signed30],
     ["KPI", "docs_paid_30d", data.docs.paid30],
+    ["KPI", "excluded_workspaces", data.excluded.workspaces],
+    ["KPI", "excluded_analytics", data.excluded.analytics],
+    [
+      "Note",
+      "exclusions",
+      "demo + ADMIN_EMAILS workspaces; founder-device cookie and matching IPs",
+    ],
   ];
   for (const plan of ["free", "founder", "solo", "busy"] as const) {
     overview.push(["Plan", plan, data.planCounts[plan]]);

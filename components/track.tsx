@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect } from "react";
 import type { AnalyticsEventName } from "@/lib/analytics-events";
+import { hasInternalDeviceCookie } from "@/lib/internal";
 
 /** Fire-and-forget analytics ping. Safe to call from click handlers. */
 export function track(
@@ -10,6 +11,9 @@ export function track(
   opts?: { path?: string; meta?: Record<string, unknown> },
 ): void {
   try {
+    if (typeof document !== "undefined" && hasInternalDeviceCookie(document.cookie)) {
+      return;
+    }
     const path =
       opts?.path ??
       (typeof window !== "undefined" ? window.location.pathname : undefined);

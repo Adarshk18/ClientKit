@@ -1,5 +1,7 @@
 "use server";
 
+import { cookies } from "next/headers";
+import { revalidatePath } from "next/cache";
 import { createSupabaseAdmin } from "@/lib/supabase/admin";
 import { signInputSchema } from "@/lib/validators";
 import { canClaimPayment, canSign } from "@/lib/document-state";
@@ -10,6 +12,8 @@ import { renderSignedPdf } from "@/lib/pdf";
 import { sendSignedToFreelancer } from "@/lib/email";
 import { logError } from "@/lib/logger";
 import { first } from "@/lib/one";
+import { DEMO_PUBLIC_ID } from "@/lib/demo";
+import { DEMO_DOC_COOKIE } from "@/lib/internal";
 import type { ActionResult, FrozenPayload, LineItemRow, WorkspaceRow } from "@/lib/types";
 
 const PUBLIC_STATUSES = ["sent", "viewed", "signed", "payment_sent", "paid", "expired", "void"] as const;
@@ -187,6 +191,15 @@ export async function signDocumentAction(
       });
     }
 
+    if (parsed.data.public_id === DEMO_PUBLIC_ID) {
+      const jar = await cookies();
+      jar.set(DEMO_DOC_COOKIE, doc.id, {
+        path: "/",
+        maxAge: 60 * 60 * 24,
+        sameSite: "lax",
+      });
+    }
+    revalidatePath(`/s/${parsed.data.public_id}`);
     return { ok: true, data: undefined };
   } catch (error) {
     logError("sign", error);

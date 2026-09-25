@@ -1,19 +1,9 @@
 import { notFound, redirect } from "next/navigation";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { createSupabaseAdmin } from "@/lib/supabase/admin";
+import { adminEmails, isAdminEmail } from "@/lib/admin-emails";
 
-/** Comma-separated admin emails from env. Never hardcode real addresses. */
-export function adminEmails(): string[] {
-  return (process.env.ADMIN_EMAILS ?? "")
-    .split(",")
-    .map((e) => e.trim().toLowerCase())
-    .filter(Boolean);
-}
-
-export function isAdminEmail(email: string | null | undefined): boolean {
-  if (!email) return false;
-  return adminEmails().includes(email.trim().toLowerCase());
-}
+export { adminEmails, isAdminEmail };
 
 /**
  * Gate /admin: logged-in user whose email is in ADMIN_EMAILS.

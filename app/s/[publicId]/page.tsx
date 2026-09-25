@@ -1,5 +1,8 @@
 import { notFound } from "next/navigation";
+import { cookies } from "next/headers";
 import { DEMO_PUBLIC_ID, ensureDemoDocument } from "@/lib/demo";
+import { DEMO_DOC_COOKIE } from "@/lib/internal";
+import { DemoSessionCookie } from "@/components/demo-session-cookie";
 import { loadPublicDocument, recordPublicView } from "@/lib/public-document";
 import { buildFrozenPayload, hashFrozenPayload } from "@/lib/hash";
 import { formatMoney } from "@/lib/money";
@@ -21,7 +24,8 @@ export default async function PublicDocumentPage({
 }) {
   const { publicId } = await params;
   if (publicId === DEMO_PUBLIC_ID) {
-    await ensureDemoDocument();
+    const jar = await cookies();
+    await ensureDemoDocument({ keepDocumentId: jar.get(DEMO_DOC_COOKIE)?.value ?? null });
   }
   const doc = await loadPublicDocument(publicId);
   if (!doc) notFound();
@@ -78,6 +82,7 @@ export default async function PublicDocumentPage({
 
   return (
     <PublicShell>
+      {publicId === DEMO_PUBLIC_ID ? <DemoSessionCookie documentId={doc.id} /> : null}
       <header className="flex items-center gap-3">
         <LogoMark name={workspace.name} src={logo} />
         <div>

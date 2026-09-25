@@ -56,6 +56,10 @@ function AdminPdfDoc({ data, generatedAt }: { data: AdminDashboard; generatedAt:
           left="Traffic 7d views / CTA"
           right={`${data.analytics.pageViews7} / ${data.analytics.ctaClicks7}`}
         />
+        <Row
+          left="Excluded (demo/admin/device)"
+          right={`${data.excluded.workspaces} workspaces · ${data.excluded.analytics} events`}
+        />
 
         <Text style={styles.section}>Plan mix</Text>
         {(["free", "founder", "solo", "busy"] as const).map((plan) => (

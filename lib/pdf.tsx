@@ -63,7 +63,7 @@ function SignedPdf({
         <Text style={styles.kicker}>Client Kit</Text>
         <Text style={styles.title}>{payload.title}</Text>
         <Text style={styles.meta}>
-          {payload.workspace_name} for {payload.client_name} ({payload.client_email})
+          {payload.workspace_name} · {payload.client_name} ({payload.client_email})
         </Text>
 
         <Text style={styles.section}>Scope</Text>

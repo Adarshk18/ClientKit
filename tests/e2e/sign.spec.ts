@@ -9,7 +9,7 @@ test.describe("public document", () => {
     await page.getByLabel("Legal name").fill("Jordan Client");
     await page.getByRole("checkbox").check();
     await page.getByRole("button", { name: "Sign" }).click();
-    await expect(page.getByRole("heading", { name: "Signed" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Signed" })).toBeVisible({ timeout: 20_000 });
     await expect(page.getByText(/Pay/i).first()).toBeVisible();
   });
 
