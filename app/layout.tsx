@@ -50,6 +50,9 @@ export const metadata: Metadata = {
     description,
     images: ["/opengraph-image"],
   },
+  verification: {
+    google: "ozHm5fjyDatWO1oTmhAtt2fvdMIdqP5UKpVET6F4F68",
+  },
 };
 
 export const viewport: Viewport = {
