@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
 import { DEMO_PUBLIC_ID, ensureDemoDocument } from "@/lib/demo";
@@ -14,8 +15,31 @@ import { LogoMark } from "@/components/logo-mark";
 import { PayPanel } from "@/components/pay-panel";
 import { SignForm } from "@/components/sign-form";
 import type { LineItemRow } from "@/lib/types";
+import { pageMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
+
+/** Client documents stay out of search. Only the public demo is indexable. No document query here. */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ publicId: string }>;
+}): Promise<Metadata> {
+  const { publicId } = await params;
+  if (publicId === DEMO_PUBLIC_ID) {
+    return pageMetadata({
+      title: "Live demo: a freelance proposal your client signs and pays",
+      description:
+        "Try Client Kit as a client would: read a sample proposal, type a name to e-sign, then see the UPI or payment link step. No account needed.",
+      path: `/s/${DEMO_PUBLIC_ID}`,
+      robots: { index: true, follow: true },
+    });
+  }
+  return {
+    title: "Proposal",
+    robots: { index: false, follow: false, nocache: true, googleBot: { index: false, follow: false } },
+  };
+}
 
 export default async function PublicDocumentPage({
   params,

@@ -2,29 +2,17 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { supabaseAnonKey, supabaseUrl } from "@/lib/env";
 
-const PUBLIC_PREFIXES = [
-  "/",
-  "/login",
-  "/signup",
-  "/s/",
-  "/auth/",
-  "/api/webhooks/",
-  "/api/cron/",
-  "/api/analytics",
-  "/admin",
-  "/terms",
-  "/privacy",
-  "/faq",
-  "/about",
-  "/pricing",
-];
+/**
+ * Only app routes need a session. Everything else (marketing pages, /s/ links, robots.txt,
+ * sitemap.xml, OG images, unknown paths) falls through to Next.js, so crawlers get real files
+ * and typos get a real 404 instead of a login redirect. /admin runs its own check.
+ */
+const PROTECTED_PREFIXES = ["/jobs", "/settings", "/api"];
+const PUBLIC_API_PREFIXES = ["/api/webhooks/", "/api/cron/", "/api/analytics"];
 
-function isPublicPath(pathname: string): boolean {
-  if (pathname === "/") return true;
-  return PUBLIC_PREFIXES.some((prefix) => {
-    if (prefix === "/") return false;
-    return pathname === prefix || pathname.startsWith(prefix);
-  });
+export function isProtectedPath(pathname: string): boolean {
+  if (PUBLIC_API_PREFIXES.some((prefix) => pathname.startsWith(prefix))) return false;
+  return PROTECTED_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
 }
 
 export async function updateSession(request: NextRequest) {
@@ -64,7 +52,7 @@ export async function updateSession(request: NextRequest) {
   }
 
   const { pathname } = request.nextUrl;
-  if (!user && !isPublicPath(pathname) && !pathname.startsWith("/_next")) {
+  if (!user && isProtectedPath(pathname)) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.searchParams.set("next", pathname);

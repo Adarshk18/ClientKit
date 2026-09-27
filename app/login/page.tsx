@@ -1,5 +1,13 @@
 import { SiteFooter, SiteHeader } from "@/components/site-header";
 import { LoginForm } from "@/components/login-form";
+import { pageMetadata } from "@/lib/seo";
+
+export const metadata = pageMetadata({
+  title: "Log in",
+  description: "Log in to your Client Kit workspace.",
+  path: "/login",
+  robots: { index: false, follow: true },
+});
 
 export const dynamic = "force-dynamic";
 

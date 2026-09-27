@@ -1,6 +1,14 @@
 import { SiteFooter, SiteHeader } from "@/components/site-header";
 import { SignupForm } from "@/components/signup-form";
 import { TrackPageView } from "@/components/track";
+import { pageMetadata } from "@/lib/seo";
+
+export const metadata = pageMetadata({
+  title: "Create a workspace",
+  description: "Create a free Client Kit workspace. Send your first proposal on one link your client can sign and pay.",
+  path: "/signup",
+  robots: { index: false, follow: true },
+});
 
 export const dynamic = "force-dynamic";
 

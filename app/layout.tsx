@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Literata, Source_Sans_3 } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import { SENT_LIMITS } from "@/lib/plans";
+import { OG_IMAGE, SITE_URL } from "@/lib/seo";
 import "./globals.css";
 
 const sans = Source_Sans_3({
@@ -16,13 +18,10 @@ const serif = Literata({
 });
 
 const titleDefault = "Client Kit - Proposal. Sign. Get paid.";
-const description =
-  "One page for a freelancer job: write the proposal, get a signature, collect the deposit. $12 a month. No CRM.";
+const description = `One page for a freelancer job: write the proposal, get a signature, collect the deposit. Free plan: ${SENT_LIMITS.free} sends a month. No CRM.`;
 
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_APP_URL || "https://client-kit-omega.vercel.app",
-  ),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: titleDefault,
     template: "%s · Client Kit",
@@ -34,21 +33,13 @@ export const metadata: Metadata = {
     siteName: "Client Kit",
     title: titleDefault,
     description,
-    url: "/",
-    images: [
-      {
-        url: "/opengraph-image",
-        width: 1200,
-        height: 630,
-        alt: "Client Kit",
-      },
-    ],
+    images: [OG_IMAGE],
   },
   twitter: {
     card: "summary_large_image",
     title: titleDefault,
     description,
-    images: ["/opengraph-image"],
+    images: [OG_IMAGE.url],
   },
 };
 

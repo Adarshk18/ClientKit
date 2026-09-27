@@ -1,10 +1,12 @@
 import { SiteFooter, SiteHeader } from "@/components/site-header";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata = {
-  title: "About",
+export const metadata = pageMetadata({
+  title: "About Client Kit, built by Adarsh Sharma in India",
   description:
-    "Client Kit is one public page for freelancers: write a proposal, get a signature, collect payment — without a CRM.",
-};
+    "Client Kit is one link for a freelance job: proposal, e-signature and deposit. Built by a solo founder in India. No CRM, no cut of your client's payment.",
+  path: "/about",
+});
 
 export default function AboutPage() {
   return (
@@ -18,6 +20,7 @@ export default function AboutPage() {
             Client Kit is for people who already send a Google Doc and a payment link. You still just need a
             proposal, a signature, and money in your account. This is that, on one URL.
           </p>
+          <p>Client Kit is built by Adarsh Sharma, a solo founder in India.</p>
           <p>
             It is not a CRM. There is no pipeline, calendar, Zoom, tasks, time tracking, client portal, or
             white-label agency layer. The second those show up, this stops being the cheap, obvious tool.
