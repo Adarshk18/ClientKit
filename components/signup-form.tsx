@@ -4,13 +4,14 @@ import Link from "next/link";
 import { signUpAction, signInWithGoogle } from "@/lib/actions/auth";
 import { GoogleMark } from "@/components/google-mark";
 import { SubmitButton } from "@/components/submit-button";
+import { SENT_LIMITS } from "@/lib/plans";
 import { btnPrimary, btnSecondary, fieldClass } from "@/lib/ui";
 
 export function SignupForm({ error }: { error?: string }) {
   return (
     <>
       <p className="mt-2 text-sm text-muted">
-        $12/mo after you pick a plan. Sending jobs starts on the free allowance.
+        Free plan: {SENT_LIMITS.free} sent jobs a month, never expires. Paid plans raise the limit.
       </p>
       {error === "rate" ? (
         <p className="mt-3 text-sm text-danger" role="alert">Too many attempts. Try again later.</p>

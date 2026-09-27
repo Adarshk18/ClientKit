@@ -26,6 +26,11 @@ const nextConfig: NextConfig = {
         source: "/:path*",
         headers: securityHeaders,
       },
+      {
+        // Client documents (and their PDFs) stay out of search. The public demo page is the only exception.
+        source: "/s/:path((?!demo-acme$).*)",
+        headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow, noarchive" }],
+      },
     ];
   },
 };

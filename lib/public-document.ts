@@ -2,6 +2,7 @@ import { createSupabaseAdmin } from "@/lib/supabase/admin";
 import { effectiveStatus, publicReadable } from "@/lib/document-state";
 import { rateLimit, VIEW_LIMIT } from "@/lib/rate-limit";
 import { requestMeta } from "@/lib/request";
+import { isLikelyBot } from "@/lib/bots";
 import { sendViewedToFreelancer } from "@/lib/email";
 import { logError } from "@/lib/logger";
 import { first } from "@/lib/one";
@@ -46,6 +47,7 @@ export async function loadPublicDocument(publicId: string) {
 export async function recordPublicView(publicId: string): Promise<void> {
   try {
     const { ip, userAgent } = await requestMeta();
+    if (isLikelyBot(userAgent)) return;
     const limited = await rateLimit({
       key: `view:${publicId}:${ip}`,
       ...VIEW_LIMIT,

@@ -42,7 +42,25 @@ export function PricingTable({
       <div className="max-w-xs">
         <CountrySelect value={country} onChange={setCountry} id="pricing-country" refreshOnChange />
       </div>
-      <div className="grid gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-3 landscape:sm:grid-cols-3">
+      <div className="grid gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
+        <div className="ck-pricing-card bg-cream p-5 sm:p-6">
+          <p className="text-[13px] text-stamp">Free</p>
+          <p className="mt-3 font-serif text-3xl tabular-nums sm:text-4xl landscape-short:text-3xl">Free</p>
+          <p className="mt-2 text-sm text-muted">Never expires.</p>
+          <ul className="mt-6 space-y-2 text-sm">
+            <li>{SENT_LIMITS.free} sent jobs / month</li>
+            <li>Proposal, sign, and pay on one link</li>
+            <li>Signed PDF + audit log</li>
+            <li>Payout to your UPI or payment URL</li>
+          </ul>
+          <TrackedLink
+            href={ctaHref}
+            className={`mt-8 w-full ${btnSecondary}`}
+            meta={{ cta: "pricing_free", plan: "free", country }}
+          >
+            Start free
+          </TrackedLink>
+        </div>
         {plans.map((plan) => {
           const featured = plan === "solo";
           const label = PLAN_LABELS[plan];

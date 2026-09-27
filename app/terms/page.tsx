@@ -1,4 +1,11 @@
 import { SiteFooter, SiteHeader } from "@/components/site-header";
+import { pageMetadata } from "@/lib/seo";
+
+export const metadata = pageMetadata({
+  title: "Terms",
+  description: "Client Kit terms of service: what the software does, how signatures work, and who holds job payments.",
+  path: "/terms",
+});
 
 export default function TermsPage() {
   return (

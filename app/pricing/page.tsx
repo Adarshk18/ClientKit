@@ -1,13 +1,16 @@
 import { SiteFooter, SiteHeader } from "@/components/site-header";
 import { PricingTable } from "@/components/pricing-table";
 import { TrackPageView } from "@/components/track";
+import { PLAN_PRICES, SENT_LIMITS } from "@/lib/plans";
+import { pageMetadata } from "@/lib/seo";
 import { getVisitorCountry } from "@/lib/visitor-country";
 
-export const metadata = {
-  title: "Pricing",
-  description:
-    "Free to try. Founder, Solo, and Busy plans for freelancers. No cut of job payments — clients pay you directly.",
-};
+export const metadata = pageMetadata({
+  title: `Pricing: Free, Founder $${PLAN_PRICES.founder.usd}, Solo $${PLAN_PRICES.solo.usd}, Busy $${PLAN_PRICES.busy.usd}`,
+  description: `Free plan with ${SENT_LIMITS.free} sends a month that never expires. Paid plans only raise your send limit. Clients pay you directly by UPI or your own payment link. No cut.`,
+  path: "/pricing",
+  socialTitle: "Client Kit pricing",
+});
 
 export default async function PricingPage() {
   const initialCountry = await getVisitorCountry();
@@ -20,8 +23,8 @@ export default async function PricingPage() {
         <p className="text-[13px] text-stamp">Pricing</p>
         <h1 className="mt-2 max-w-xl font-serif text-3xl">You pay for the software. Clients pay you.</h1>
         <p className="mt-4 max-w-xl text-sm leading-6 text-muted">
-          No cut of job payments. Free accounts can send a few jobs to try it. Paid plans raise the monthly send
-          limit.
+          No cut of job payments. The free plan sends {SENT_LIMITS.free} jobs a month and never expires. Paid plans
+          only raise the monthly send limit. Prices are in INR for India.
         </p>
         <div className="mt-10">
           <PricingTable initialCountry={initialCountry} />

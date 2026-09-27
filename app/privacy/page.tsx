@@ -1,4 +1,11 @@
 import { SiteFooter, SiteHeader } from "@/components/site-header";
+import { pageMetadata } from "@/lib/seo";
+
+export const metadata = pageMetadata({
+  title: "Privacy",
+  description: "What Client Kit stores to run the product, how document links and signed PDFs stay private, and which services we use.",
+  path: "/privacy",
+});
 
 export default function PrivacyPage() {
   return (

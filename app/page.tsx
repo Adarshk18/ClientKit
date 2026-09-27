@@ -1,10 +1,82 @@
 import Link from "next/link";
 import { SiteFooter, SiteHeader } from "@/components/site-header";
+import { JsonLd } from "@/components/json-ld";
 import { PricingTable } from "@/components/pricing-table";
 import { TrackPageView, TrackedLink } from "@/components/track";
 import { formatPlanPrice } from "@/lib/billing-regions";
+import { FOUNDER_CAP, PLAN_PRICES, SENT_LIMITS } from "@/lib/plans";
+import { pageMetadata, SITE_NAME, SITE_URL } from "@/lib/seo";
 import { btnPrimary } from "@/lib/ui";
 import { getVisitorCountry } from "@/lib/visitor-country";
+
+export const metadata = pageMetadata({
+  title: { absolute: "Client Kit: Freelance Proposals Clients Sign and Pay on One Link" },
+  description: `Send a proposal, get it e-signed, and collect the deposit on one link. Clients pay your UPI or payment link directly. Free plan: ${SENT_LIMITS.free} sends a month.`,
+  path: "/",
+});
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${SITE_URL}/#org`,
+      name: SITE_NAME,
+      url: SITE_URL,
+      logo: `${SITE_URL}/icon.svg`,
+      founder: { "@type": "Person", name: "Adarsh Sharma" },
+      address: { "@type": "PostalAddress", addressCountry: "IN" },
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${SITE_URL}/#website`,
+      url: SITE_URL,
+      name: SITE_NAME,
+      publisher: { "@id": `${SITE_URL}/#org` },
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": `${SITE_URL}/#app`,
+      name: SITE_NAME,
+      applicationCategory: "BusinessApplication",
+      operatingSystem: "Web",
+      url: SITE_URL,
+      description:
+        "One link for a freelance job: the client reads the proposal, e-signs it, and pays the freelancer directly by UPI or the freelancer's own payment link (Stripe, PayPal, Razorpay). Client Kit takes no cut of job payments.",
+      publisher: { "@id": `${SITE_URL}/#org` },
+      offers: [
+        {
+          "@type": "Offer",
+          name: "Free",
+          price: "0",
+          priceCurrency: "USD",
+          description: `${SENT_LIMITS.free} sent jobs per month, never expires`,
+        },
+        {
+          "@type": "Offer",
+          name: PLAN_PRICES.founder.label,
+          price: String(PLAN_PRICES.founder.usd),
+          priceCurrency: "USD",
+          description: `First ${FOUNDER_CAP} workspaces only. ${SENT_LIMITS.founder} sent jobs per month`,
+        },
+        {
+          "@type": "Offer",
+          name: PLAN_PRICES.solo.label,
+          price: String(PLAN_PRICES.solo.usd),
+          priceCurrency: "USD",
+          description: `${SENT_LIMITS.solo} sent jobs per month`,
+        },
+        {
+          "@type": "Offer",
+          name: PLAN_PRICES.busy.label,
+          price: String(PLAN_PRICES.busy.usd),
+          priceCurrency: "USD",
+          description: "Unlimited sent jobs",
+        },
+      ],
+    },
+  ],
+};
 
 export default async function MarketingPage() {
   const country = await getVisitorCountry();
@@ -13,13 +85,16 @@ export default async function MarketingPage() {
 
   return (
     <div className="flex min-h-dvh flex-col">
+      <JsonLd data={structuredData} />
       <TrackPageView />
       <SiteHeader />
 
       <main className="mx-auto w-full max-w-6xl px-4">
         <section className="ck-page-pad grid items-start gap-8 py-8 sm:gap-12 sm:py-12 lg:grid-cols-12 lg:gap-10 lg:py-16">
           <div className="lg:col-span-5">
-            <p className="text-[13px] text-stamp">from {soloPrice} a month</p>
+            <p className="text-[13px] text-stamp">
+              Free for {SENT_LIMITS.free} sent jobs a month. Solo is {soloPrice} a month.
+            </p>
             <h1 className="mt-3 font-serif text-[2.35rem] font-medium leading-[1.15] tracking-tight sm:text-[2.75rem]">
               Write the job. They sign. You get paid.
             </h1>
@@ -193,8 +268,8 @@ export default async function MarketingPage() {
         <section id="pricing" className="border-t border-line py-12 lg:py-16">
           <h2 className="font-serif text-2xl">Pricing</h2>
           <p className="mt-3 max-w-xl text-sm leading-6 text-muted">
-            You pay rent on the software. Clients pay you. Free accounts can send a few jobs; paid plans raise the
-            monthly send limit.
+            You pay rent on the software. Clients pay you. The free plan sends {SENT_LIMITS.free} jobs a month and
+            never expires. Paid plans only raise the monthly send limit.
           </p>
           <div className="mt-8">
             <PricingTable initialCountry={country} />
@@ -207,6 +282,13 @@ export default async function MarketingPage() {
             <div>
               <dt className="font-medium">Do you take a cut of the client’s payment?</dt>
               <dd className="mt-1 text-muted">No. They pay your UPI or your hosted link. We never see the card.</dd>
+            </div>
+            <div>
+              <dt className="font-medium">Is there a free plan?</dt>
+              <dd className="mt-1 text-muted">
+                Yes. The free plan sends {SENT_LIMITS.free} jobs a month and never expires. Paid plans only raise the
+                monthly send limit.
+              </dd>
             </div>
             <div>
               <dt className="font-medium">What is Founder at {founderPrice}?</dt>
