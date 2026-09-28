@@ -6,7 +6,7 @@ import { TrackPageView, TrackedLink } from "@/components/track";
 import { formatPlanPrice } from "@/lib/billing-regions";
 import { FOUNDER_CAP, PLAN_PRICES, SENT_LIMITS } from "@/lib/plans";
 import { pageMetadata, SITE_NAME, SITE_URL } from "@/lib/seo";
-import { btnPrimary } from "@/lib/ui";
+import { btnPrimary, btnSecondary } from "@/lib/ui";
 import { getVisitorCountry } from "@/lib/visitor-country";
 
 export const metadata = pageMetadata({
@@ -92,27 +92,35 @@ export default async function MarketingPage() {
       <main className="mx-auto w-full max-w-6xl px-4">
         <section className="ck-page-pad grid items-start gap-8 py-8 sm:gap-12 sm:py-12 lg:grid-cols-12 lg:gap-10 lg:py-16">
           <div className="lg:col-span-5">
-            <p className="text-[13px] text-stamp">
-              Free for {SENT_LIMITS.free} sent jobs a month. Solo is {soloPrice} a month.
+            <p className="text-[13px] font-medium text-stamp">
+              Free plan: {SENT_LIMITS.free} sends a month, never expires.
             </p>
-            <h1 className="mt-3 font-serif text-[2.35rem] font-medium leading-[1.15] tracking-tight sm:text-[2.75rem]">
-              Write the job. They sign. You get paid.
+            <h1 className="mt-3 font-serif text-[2.1rem] font-medium leading-[1.15] tracking-tight sm:text-[2.75rem]">
+              Send a proposal. Your client signs and pays you.
             </h1>
-            <p className="mt-5 max-w-[40ch] text-[16px] leading-7 text-muted">
-              One page does the three things a freelancer actually needs: a short proposal, a signature, and a
-              deposit. The money goes to your UPI or payment link — not to us.
+            <p className="mt-4 max-w-[40ch] text-[16px] leading-7 text-muted sm:mt-5">
+              One link does it all. Your client reads the proposal, e-signs it, and pays you directly by UPI or your
+              own payment link. Client Kit takes no cut.
             </p>
-            <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3">
-              <TrackedLink href="/signup" className={btnPrimary} meta={{ cta: "hero_get_started" }}>
-                Get started
-              </TrackedLink>
-              <Link
-                href="/login"
-                className="text-[13px] text-muted underline decoration-line underline-offset-4 hover:text-ink"
+            <div className="mt-6 grid grid-cols-2 gap-3 sm:mt-8 sm:flex sm:flex-wrap sm:items-center">
+              <TrackedLink
+                href="/s/demo-acme"
+                className={btnPrimary}
+                event="demo_open"
+                meta={{ cta: "hero_see_demo" }}
               >
+                See the demo
+              </TrackedLink>
+              <TrackedLink href="/signup" className={btnSecondary} meta={{ cta: "hero_get_started" }}>
+                Start free
+              </TrackedLink>
+            </div>
+            <p className="mt-4 text-[13px] text-muted">
+              No card needed.{" "}
+              <Link href="/login" className="underline decoration-line underline-offset-4 hover:text-ink">
                 I already have an account
               </Link>
-            </div>
+            </p>
           </div>
 
           <div className="lg:col-span-7">
@@ -149,8 +157,8 @@ export default async function MarketingPage() {
               </div>
             </div>
             <p className="mt-4 max-w-[48ch] text-[13px] leading-5 text-muted">
-              Try the live demo at /s/demo-acme — type a fake name, sign, then see UPI. After they pay, your list does not grow a pipeline. It just reads{" "}
-              <span className="text-ink">Acme — signed + $600 received.</span>
+              Try the live demo: type a fake name, sign, then see the UPI step. After they pay, your list does not
+              grow a pipeline. It just reads <span className="text-ink">Acme: signed, $600 received.</span>
             </p>
           </div>
         </section>
@@ -229,7 +237,7 @@ export default async function MarketingPage() {
               <li className="flex items-center justify-between gap-3 px-4 py-3">
                 <span>
                   Acme site rebuild
-                  <span className="mt-0.5 block text-[12px] text-muted">Acme — signed + $600 received</span>
+                  <span className="mt-0.5 block text-[12px] text-muted">Acme: signed, $600 received</span>
                 </span>
                 <span className="text-[12px] text-stamp">paid</span>
               </li>

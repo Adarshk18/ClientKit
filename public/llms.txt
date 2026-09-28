@@ -1,0 +1,32 @@
+# Client Kit
+
+> Client Kit is a web tool for freelancers. You send one link. Your client reads the proposal, e-signs it, and pays you directly by UPI or your own payment link (Stripe, PayPal, Razorpay). Client Kit takes no cut of job payments.
+
+Client Kit is built by Adarsh Sharma, a solo founder in India.
+
+## What it does
+
+- Proposal: scope, line items, deposit percent, expiry.
+- Signature: a simple electronic signature (legal name, intent checkbox, IP, time, document hash). It is not Aadhaar eSign and not a digital signature certificate.
+- Payment: the client pays your UPI VPA (with a QR code) or opens your own hosted payment link. The money never passes through Client Kit.
+- The client does not create an account. The link can be shared on WhatsApp.
+
+## What it does not do
+
+No invoicing, time tracking, escrow, CRM or pipeline, calendar booking, client portal, team seats, or white-label.
+
+## Pricing
+
+- Free: 3 sent jobs a month, never expires.
+- Founder: $9 a month, 20 sent jobs a month, first 50 workspaces only.
+- Solo: $12 a month, 40 sent jobs a month.
+- Busy: $29 a month, unlimited sent jobs.
+- India pricing is in INR.
+
+## Links
+
+- [Home](https://client-kit-omega.vercel.app/)
+- [Pricing](https://client-kit-omega.vercel.app/pricing)
+- [FAQ](https://client-kit-omega.vercel.app/faq)
+- [About](https://client-kit-omega.vercel.app/about)
+- [Live demo](https://client-kit-omega.vercel.app/s/demo-acme)

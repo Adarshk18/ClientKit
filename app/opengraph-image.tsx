@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { SENT_LIMITS } from "@/lib/plans";
 
 export const alt = "Client Kit";
 export const size = { width: 1200, height: 630 };
@@ -85,8 +86,7 @@ export default function OpenGraphImage() {
             fontWeight: 500,
           }}
         >
-          One page for a freelancer job — write the proposal, get a signature,
-          collect the deposit. $12 a month. No CRM.
+          {`Send a proposal on one link. Your client e-signs and pays you directly by UPI or your own payment link. No cut. Free plan: ${SENT_LIMITS.free} sends a month.`}
         </div>
 
         <div

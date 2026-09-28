@@ -8,7 +8,7 @@ const PAGES: {
   changeFrequency: "weekly" | "monthly" | "yearly";
   priority: number;
 }[] = [
-  { path: "/", lastModified: "2026-09-27", changeFrequency: "weekly", priority: 1 },
+  { path: "/", lastModified: "2026-09-28", changeFrequency: "weekly", priority: 1 },
   { path: "/pricing", lastModified: "2026-09-27", changeFrequency: "monthly", priority: 0.9 },
   { path: "/faq", lastModified: "2026-09-27", changeFrequency: "monthly", priority: 0.8 },
   { path: "/about", lastModified: "2026-09-27", changeFrequency: "yearly", priority: 0.6 },
