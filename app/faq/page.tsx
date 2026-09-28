@@ -17,12 +17,36 @@ const inr = (plan: "founder" | "solo" | "busy") => formatPlanPrice(plan, "IN");
 /** One list drives both the visible answers and the FAQPage structured data. */
 const faqs: { q: string; a: string }[] = [
   {
-    q: "Do you take a cut of client payments?",
-    a: "No. Clients pay you directly by UPI or your own payment link. Client Kit only charges for the software, and the free plan costs nothing.",
+    q: "What is Client Kit?",
+    a: "Client Kit puts a freelance proposal, the client's e-signature, and the payment on one link. You write the job, send the link, the client signs it, and then pays you directly by UPI or your own payment link.",
   },
   {
-    q: "Is there a free plan?",
-    a: `Yes. The free plan sends ${SENT_LIMITS.free} jobs a month and never expires. Paid plans only raise the monthly send limit.`,
+    q: "Is the free plan really free?",
+    a: `Yes. The free plan sends ${SENT_LIMITS.free} jobs a month, never expires, and does not ask for a card. Only sending counts: drafts, resends, and nudges are free. The count resets every 30 days. Paid plans only raise the send limit.`,
+  },
+  {
+    q: "Do you take a cut of client payments?",
+    a: "No. Client Kit makes money only from the monthly subscription, and the free plan costs nothing. The client pays you directly, so the only fees are whatever your own UPI app or payment provider charges.",
+  },
+  {
+    q: "How does the client pay me?",
+    a: "After signing, the client sees your UPI QR code or a button that opens your own hosted payment link (for example Stripe, PayPal, or Razorpay). The money goes straight to you. The client then taps \"I've paid\", and you confirm once you see it in your account.",
+  },
+  {
+    q: "What if the client says they paid?",
+    a: "The job shows that the client says they paid. Check your UPI app or payment provider. If the money is there, click Confirm received. If it is not, click Not received. Client Kit never sees the transfer, so you are the one who confirms.",
+  },
+  {
+    q: "Does the client need an account?",
+    a: "No. The client opens your link, reads the proposal, types their name and email, ticks a box to sign, and pays. There is no signup or password for them.",
+  },
+  {
+    q: "Can I ask for a deposit instead of the full amount?",
+    a: "Yes. Each job has a deposit percent from 0 to 100. The client page shows the amount due now, and that is what the client pays.",
+  },
+  {
+    q: "Does Client Kit hold or process the money?",
+    a: "No. Job money never goes through Client Kit. There is no escrow and no payout to wait for. You save one UPI ID or one https payment link, and the client pays that directly.",
   },
   {
     q: "What do the paid plans cost?",
@@ -34,23 +58,39 @@ const faqs: { q: string; a: string }[] = [
   },
   {
     q: "Is there pricing in INR for India?",
-    a: `Yes. In India the plans are ${inr("founder")} (Founder), ${inr("solo")} (Solo), and ${inr("busy")} (Busy) a month.`,
+    a: `Yes. In India the plans are ${inr("founder")} (Founder), ${inr("solo")} (Solo), and ${inr("busy")} (Busy) a month. Most other countries see US dollars, and a few (such as the UK, EU, Canada, and Australia) see fixed prices in their own currency. You can change the country on the pricing page.`,
+  },
+  {
+    q: "Can I get paid by UPI?",
+    a: "Yes. Save your UPI ID (like name@okaxis) in settings and the client gets a QR code to scan with any UPI app. For jobs priced in INR, the amount is filled in for them.",
+  },
+  {
+    q: "I am not in India. Can I still use it?",
+    a: "Yes. Save a payment link you already use, such as a Stripe, PayPal, or Razorpay link, and the client pays you there. Jobs can be priced in your own currency.",
+  },
+  {
+    q: "What happens if I hit my send limit?",
+    a: "You can keep writing drafts, but you cannot send a new job until the count resets or you move to a bigger plan. Jobs you already sent keep working.",
+  },
+  {
+    q: "What happens if my subscription payment fails?",
+    a: "You get a 3-day grace period. After that the workspace is read-only until billing is fixed. You can still open old jobs.",
   },
   {
     q: "Is this a qualified digital signature?",
-    a: "No. It is a simple electronic signature with a hashed snapshot, IP, and timestamp. The page footer says so.",
+    a: "No. It is a simple electronic signature with a hashed snapshot, IP, and timestamp. The page footer says so. It is not Aadhaar eSign or a digital signature certificate.",
+  },
+  {
+    q: "Does Client Kit do invoicing or client portals?",
+    a: "No. Client Kit is a proposal, a signature, and a deposit on one link. It does not do invoicing, time tracking, escrow, CRM, or client portals.",
+  },
+  {
+    q: "Can Client Kit replace an all-in-one tool like HoneyBook or Bonsai?",
+    a: "Only if all you need is the proposal, the signature, and getting paid. Client Kit does not do invoicing, a CRM, scheduling, or time tracking. If you rely on those, a bigger tool is a better fit.",
   },
   {
     q: "Can you add a calendar, CRM, or packages?",
     a: "No. That is a different product. Client Kit is three steps.",
-  },
-  {
-    q: "Does Client Kit do invoicing or client portals?",
-    a: "No. Client Kit is a proposal, a signature, and a deposit on one link. It does not do invoicing, time tracking, escrow, or client portals.",
-  },
-  {
-    q: "What if the client says they paid?",
-    a: "Check your UPI or payment link. Then click Mark paid. We do not see their transfer.",
   },
   {
     q: "Can I send the link on WhatsApp?",

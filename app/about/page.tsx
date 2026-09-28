@@ -27,8 +27,9 @@ export default function AboutPage() {
           </p>
           <p>
             Job money never hits our merchant account. You save one UPI VPA or a hosted payment URL you created
-            yourself. We charge you a monthly software fee. That is the whole business. Suites in 2026 still hold
-            card payouts 2–3 days and take ~3% of the job. We do neither.
+            yourself. We charge you a monthly software fee. That is the whole business. Big all-in-one tools
+            route the client’s payment through their own processor, so fees come out of your job and the money can
+            take days to reach you. Client Kit never touches the money.
           </p>
           <p>
             Share the public link on WhatsApp. If they stall, nudge them. Duplicate a finished job instead of

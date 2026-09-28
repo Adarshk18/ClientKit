@@ -163,6 +163,26 @@ export default async function MarketingPage() {
           </div>
         </section>
 
+        <section className="grid gap-10 border-t border-line py-12 sm:grid-cols-2 lg:gap-16 lg:py-16">
+          <div>
+            <h2 className="font-serif text-2xl">What Client Kit is</h2>
+            <ul className="mt-6 space-y-2 text-sm leading-6">
+              <li>A proposal your client reads on one link</li>
+              <li>An e-signature the client adds on that same page</li>
+              <li>The client pays you directly by UPI or your own payment link</li>
+            </ul>
+          </div>
+          <div>
+            <h2 className="font-serif text-2xl">What it isn’t</h2>
+            <ul className="mt-6 space-y-2 text-sm leading-6 text-muted">
+              <li>Not invoicing software</li>
+              <li>Not time tracking</li>
+              <li>Not escrow. It never holds your client’s money</li>
+              <li>Not a CRM or pipeline</li>
+            </ul>
+          </div>
+        </section>
+
         <section className="border-t border-line py-12 lg:py-16">
           <h2 className="font-serif text-2xl">How a job moves</h2>
           <ol className="mt-8 max-w-xl space-y-8">
@@ -200,28 +220,29 @@ export default async function MarketingPage() {
         </section>
 
         <section className="border-t border-line py-12 lg:py-16">
-          <h2 className="font-serif text-2xl">What people are leaving suites over right now</h2>
+          <h2 className="font-serif text-2xl">Why I built it this way</h2>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-muted">
-            August–September 2026 reviews keep repeating the same four problems. Client Kit is built around those,
-            not around a CRM.
+            I kept sending a Google Doc, then a separate payment link, then chasing both. The all-in-one tools I tried
+            fixed that by adding a lot more than I needed. Client Kit is built around four choices instead.
           </p>
           <ul className="mt-8 max-w-2xl space-y-5 text-sm leading-6">
             <li>
-              <strong className="text-ink">They hold your client’s money.</strong> Card payouts on the big tools take
-              2–3 business days; ACH a week. Disputes can freeze funds. Here the client pays your UPI or your own
-              payment link. We never touch the job money.
+              <strong className="text-ink">The money goes straight to you.</strong> Big all-in-one tools route the
+              client’s payment through their own processor, so fees come out of your job and the money can take days
+              to reach you. Here the client pays your UPI or your own payment link. Client Kit never touches the money.
             </li>
             <li>
-              <strong className="text-ink">They tax the invoice.</strong> Processing on a $5,000 job is over $140 on
-              top of a $36–$129/mo plan. We charge software rent. Zero cut of the job.
+              <strong className="text-ink">No cut of the job.</strong> You pay a flat monthly fee for the software, or
+              nothing on the free plan. Whatever the client pays is yours, minus only what your own UPI app or payment
+              provider charges.
             </li>
             <li>
-              <strong className="text-ink">The client has to make an account.</strong> Portals kill momentum on mobile.
-              Our client opens one link, signs, pays. Share it on WhatsApp. Nudge if they stall.
+              <strong className="text-ink">The client does not make an account.</strong> They open one link, sign, and
+              pay, on their phone if they like. Share it on WhatsApp. Nudge them if they stall.
             </li>
             <li>
-              <strong className="text-ink">India is an afterthought.</strong> New Stripe accounts are blocked for many
-              Indian founders; UPI is not a first-class button. UPI VPA + QR is a first-class payout method here.
+              <strong className="text-ink">UPI is a first-class option.</strong> Save your UPI ID and the client gets a
+              QR code and the exact amount. Freelancers outside India can use a payment link they already have.
             </li>
           </ul>
         </section>
