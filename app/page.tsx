@@ -3,11 +3,10 @@ import { SiteFooter, SiteHeader } from "@/components/site-header";
 import { JsonLd } from "@/components/json-ld";
 import { PricingTable } from "@/components/pricing-table";
 import { TrackPageView, TrackedLink } from "@/components/track";
-import { formatPlanPrice } from "@/lib/billing-regions";
+import { PlanPrice } from "@/components/plan-price";
 import { FOUNDER_CAP, PLAN_PRICES, SENT_LIMITS } from "@/lib/plans";
 import { pageMetadata, SITE_NAME, SITE_URL } from "@/lib/seo";
 import { btnPrimary, btnSecondary } from "@/lib/ui";
-import { getVisitorCountry } from "@/lib/visitor-country";
 
 export const metadata = pageMetadata({
   title: { absolute: "Client Kit: Freelance Proposals Clients Sign and Pay on One Link" },
@@ -78,11 +77,7 @@ const structuredData = {
   ],
 };
 
-export default async function MarketingPage() {
-  const country = await getVisitorCountry();
-  const soloPrice = formatPlanPrice("solo", country);
-  const founderPrice = formatPlanPrice("founder", country);
-
+export default function MarketingPage() {
   return (
     <div className="flex min-h-dvh flex-col">
       <JsonLd data={structuredData} />
@@ -115,51 +110,59 @@ export default async function MarketingPage() {
                 Start free
               </TrackedLink>
             </div>
-            <p className="mt-4 text-[13px] text-muted">
+            <p className="mt-4 text-[13px] leading-5 text-muted">
               No card needed.{" "}
-              <Link href="/login" className="underline decoration-line underline-offset-4 hover:text-ink">
+              <Link href="/pricing" className="inline-block py-1.5 underline decoration-line underline-offset-4 hover:text-ink">
+                See pricing
+              </Link>
+              {" · "}
+              <Link href="/login" className="inline-block py-1.5 underline decoration-line underline-offset-4 hover:text-ink">
                 I already have an account
               </Link>
             </p>
           </div>
 
           <div className="lg:col-span-7">
-            <div className="border border-line bg-cream">
-              <div className="flex items-center justify-between border-b border-line px-5 py-3">
-                <span className="text-[12px] text-muted">/s/demo-acme</span>
-                <span className="text-[12px] text-stamp">Awaiting signature</span>
+            {/* One link for the whole demo block, so a tap anywhere on the card or the caption opens the demo. */}
+            <TrackedLink
+              href="/s/demo-acme"
+              className="group block rounded-sm no-underline focus-visible:outline-2 focus-visible:outline-offset-4"
+              event="demo_open"
+              meta={{ cta: "open_demo" }}
+            >
+              <div className="border border-line bg-cream transition-colors group-hover:border-ink/40 group-focus-visible:border-ink/40">
+                <div className="flex items-center justify-between border-b border-line px-5 py-3">
+                  <span className="text-[12px] text-muted">/s/demo-acme</span>
+                  <span className="text-[12px] text-stamp">Awaiting signature</span>
+                </div>
+                <div className="px-5 py-6 sm:px-7">
+                  <p className="font-serif text-xl text-ink">Acme site rebuild</p>
+                  <p className="mt-1 text-[13px] text-muted">Studio North for Acme · due in 14 days</p>
+                  <p className="mt-5 max-w-[46ch] text-sm leading-6 text-ink">
+                    Homepage, CMS, and two rounds of revision. You send copy. We ship a static export you can host
+                    anywhere.
+                  </p>
+                  <dl className="mt-6 border-t border-line pt-4 text-sm text-ink">
+                    <div className="flex justify-between py-1.5">
+                      <dt>Homepage + CMS</dt>
+                      <dd>$1,200</dd>
+                    </div>
+                    <div className="flex justify-between py-1.5 font-medium">
+                      <dt>Due now (50%)</dt>
+                      <dd>$600</dd>
+                    </div>
+                  </dl>
+                  <span className="mt-6 block h-11 w-full bg-ink text-center text-[13px] font-medium leading-[2.75rem] text-paper group-hover:bg-ink/90">
+                    Open demo and sign
+                  </span>
+                </div>
               </div>
-              <div className="px-5 py-6 sm:px-7">
-                <p className="font-serif text-xl">Acme site rebuild</p>
-                <p className="mt-1 text-[13px] text-muted">Studio North for Acme · due in 14 days</p>
-                <p className="mt-5 max-w-[46ch] text-sm leading-6">
-                  Homepage, CMS, and two rounds of revision. You send copy. We ship a static export you can host
-                  anywhere.
-                </p>
-                <dl className="mt-6 border-t border-line pt-4 text-sm">
-                  <div className="flex justify-between py-1.5">
-                    <dt>Homepage + CMS</dt>
-                    <dd>$1,200</dd>
-                  </div>
-                  <div className="flex justify-between py-1.5 font-medium">
-                    <dt>Due now (50%)</dt>
-                    <dd>$600</dd>
-                  </div>
-                </dl>
-                <TrackedLink
-                  href="/s/demo-acme"
-                  className="mt-6 block h-10 w-full bg-ink text-center text-[13px] font-medium leading-10 text-paper hover:bg-ink/90"
-                  event="demo_open"
-                  meta={{ cta: "open_demo" }}
-                >
-                  Open demo and sign
-                </TrackedLink>
-              </div>
-            </div>
-            <p className="mt-4 max-w-[48ch] text-[13px] leading-5 text-muted">
-              Try the live demo: type a fake name, sign, then see the UPI step. After they pay, your list does not
-              grow a pipeline. It just reads <span className="text-ink">Acme: signed, $600 received.</span>
-            </p>
+              <p className="mt-4 max-w-[48ch] text-[13px] leading-5 text-muted">
+                Try the live demo: type a fake name, sign, then see the UPI step. After they pay, your list does not
+                grow a pipeline. It just reads <span className="text-ink">Acme: signed, $600 received.</span>{" "}
+                <span className="font-medium text-stamp underline decoration-line underline-offset-4">Open the demo</span>
+              </p>
+            </TrackedLink>
           </div>
         </section>
 
@@ -254,7 +257,8 @@ export default async function MarketingPage() {
               A list of jobs with status. Filter unpaid. Resend the email. Void a link and send a new version.
               Download the signed PDF. Nothing else is supposed to live here.
             </p>
-            <ul className="mt-6 divide-y divide-line border border-line bg-cream text-sm">
+            <p className="mt-6 text-[12px] text-muted">A sample of your job list.</p>
+            <ul className="mt-2 cursor-default select-none divide-y divide-line border border-line bg-cream text-sm">
               <li className="flex items-center justify-between gap-3 px-4 py-3">
                 <span>
                   Acme site rebuild
@@ -301,7 +305,7 @@ export default async function MarketingPage() {
             never expires. Paid plans only raise the monthly send limit.
           </p>
           <div className="mt-8">
-            <PricingTable initialCountry={country} />
+            <PricingTable />
           </div>
         </section>
 
@@ -320,10 +324,10 @@ export default async function MarketingPage() {
               </dd>
             </div>
             <div>
-              <dt className="font-medium">What is Founder at {founderPrice}?</dt>
+              <dt className="font-medium">What is Founder at <PlanPrice plan="founder" />?</dt>
               <dd className="mt-1 text-muted">
-                Founder is {founderPrice}/mo for the first 50 workspaces only. After that, new accounts pay Solo at{" "}
-                {soloPrice}.
+                Founder is <PlanPrice plan="founder" />/mo for the first 50 workspaces only. After that, new accounts pay
+                Solo at <PlanPrice plan="solo" />.
               </dd>
             </div>
             <div>

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { SiteFooter, SiteHeader } from "@/components/site-header";
 import { pageMetadata } from "@/lib/seo";
 
@@ -41,6 +42,17 @@ export default function AboutPage() {
             client page says so.
           </p>
         </div>
+        <p className="mt-10 border-t border-line pt-6">
+          Best way to judge it is to use it.{" "}
+          <Link href="/s/demo-acme" className="font-medium text-stamp underline decoration-line underline-offset-4">
+            Open the live demo
+          </Link>{" "}
+          and sign as a client, or{" "}
+          <Link href="/pricing" className="underline decoration-line underline-offset-4">
+            see pricing
+          </Link>
+          .
+        </p>
       </article>
       <SiteFooter />
     </div>

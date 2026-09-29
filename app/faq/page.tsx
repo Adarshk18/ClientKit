@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { SiteFooter, SiteHeader } from "@/components/site-header";
 import { JsonLd } from "@/components/json-ld";
 import { formatPlanPrice } from "@/lib/billing-regions";
@@ -127,6 +128,17 @@ export default function FaqPage() {
             </div>
           ))}
         </dl>
+        <p className="mt-10 border-t border-line pt-6 text-sm leading-6">
+          Want to see it as a client would?{" "}
+          <Link href="/s/demo-acme" className="font-medium text-stamp underline decoration-line underline-offset-4">
+            Open the live demo
+          </Link>
+          . Or{" "}
+          <Link href="/pricing" className="underline decoration-line underline-offset-4">
+            see pricing
+          </Link>
+          .
+        </p>
       </article>
       <SiteFooter />
     </div>

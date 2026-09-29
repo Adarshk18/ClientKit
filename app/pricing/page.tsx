@@ -5,7 +5,6 @@ import { TrackPageView } from "@/components/track";
 import { formatPlanPrice } from "@/lib/billing-regions";
 import { FOUNDER_CAP, PLAN_PRICES, SENT_LIMITS } from "@/lib/plans";
 import { pageMetadata } from "@/lib/seo";
-import { getVisitorCountry } from "@/lib/visitor-country";
 
 export const metadata = pageMetadata({
   title: `Pricing: Free, Founder $${PLAN_PRICES.founder.usd}, Solo $${PLAN_PRICES.solo.usd}, Busy $${PLAN_PRICES.busy.usd}`,
@@ -37,9 +36,7 @@ const pricingFaqs: { q: string; a: string }[] = [
   },
 ];
 
-export default async function PricingPage() {
-  const initialCountry = await getVisitorCountry();
-
+export default function PricingPage() {
   return (
     <div className="flex min-h-dvh flex-col">
       <TrackPageView meta={{ page: "pricing" }} />
@@ -52,7 +49,7 @@ export default async function PricingPage() {
           only raise the monthly send limit. Prices are in INR for India.
         </p>
         <div className="mt-10">
-          <PricingTable initialCountry={initialCountry} />
+          <PricingTable />
         </div>
         <p className="mt-8 max-w-xl text-[13px] leading-5 text-muted">
           Failed SaaS payments get a 3-day grace, then the workspace is read-only until billing is fixed. You can

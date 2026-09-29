@@ -8,7 +8,7 @@ import { supabaseAnonKey, supabaseUrl } from "@/lib/env";
  * and typos get a real 404 instead of a login redirect. /admin runs its own check.
  */
 const PROTECTED_PREFIXES = ["/jobs", "/settings", "/api"];
-const PUBLIC_API_PREFIXES = ["/api/webhooks/", "/api/cron/", "/api/analytics"];
+const PUBLIC_API_PREFIXES = ["/api/webhooks/", "/api/cron/", "/api/analytics", "/api/geo"];
 
 export function isProtectedPath(pathname: string): boolean {
   if (PUBLIC_API_PREFIXES.some((prefix) => pathname.startsWith(prefix))) return false;

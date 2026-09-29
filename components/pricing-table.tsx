@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { CountrySelect } from "@/components/country-select";
+import { setVisitorCountry, useVisitorCountry } from "@/components/use-visitor-country";
 import { TrackedLink } from "@/components/track";
 import { FOUNDER_CAP, SENT_LIMITS } from "@/lib/plans";
 import { formatPlanPrice } from "@/lib/billing-regions";
@@ -26,21 +26,20 @@ const PLAN_LABELS: Record<Exclude<Plan, "free">, string> = {
   busy: "Busy",
 };
 
-export function PricingTable({
-  ctaHref = "/signup",
-  initialCountry = "US",
-}: {
-  ctaHref?: string;
-  initialCountry?: string;
-}) {
-  const [country, setCountry] = useState(initialCountry);
+/**
+ * The server HTML always shows US dollars so the page can be static. The visitor's country is read
+ * after load (see use-visitor-country) and the prices swap in place. Card sizes do not depend on the
+ * currency, so nothing moves.
+ */
+export function PricingTable({ ctaHref = "/signup" }: { ctaHref?: string }) {
+  const { country } = useVisitorCountry();
   const plans = ["founder", "solo", "busy"] as const;
   const details = planDetails(country);
 
   return (
     <div className="space-y-4">
       <div className="max-w-xs">
-        <CountrySelect value={country} onChange={setCountry} id="pricing-country" refreshOnChange />
+        <CountrySelect value={country} onChange={setVisitorCountry} id="pricing-country" />
       </div>
       <div className="grid gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
         <div className="ck-pricing-card bg-cream p-5 sm:p-6">

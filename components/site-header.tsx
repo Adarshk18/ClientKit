@@ -9,11 +9,17 @@ export function SiteHeader({ showCta = true }: { showCta?: boolean }) {
       <div className="ck-safe-header mx-auto flex min-h-11 max-w-6xl flex-wrap items-center justify-between gap-x-3 gap-y-1 px-3 py-1.5 sm:min-h-12 sm:px-4 sm:py-2 landscape-short:min-h-10 landscape-short:py-1">
         <Wordmark />
         <nav className="flex max-w-full flex-wrap items-center justify-end gap-0.5 sm:gap-1">
-          <Link href="/about" className={btnGhost}>
-            About
+          <Link href="/s/demo-acme" className={`${btnGhost} hidden sm:inline-flex`}>
+            Demo
           </Link>
           <Link href="/pricing" className={btnGhost}>
             Pricing
+          </Link>
+          <Link href="/faq" className={btnGhost}>
+            FAQ
+          </Link>
+          <Link href="/about" className={`${btnGhost} hidden sm:inline-flex`}>
+            About
           </Link>
           <Link href="/login" className={btnGhost}>
             Log in
@@ -34,23 +40,26 @@ export function SiteFooter() {
     <footer className="mt-auto border-t border-line">
       <div className="ck-safe-bottom mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-5 text-[13px] text-muted">
         <p>Client Kit</p>
-        <p className="flex flex-wrap gap-4">
-          <Link href="/about" className="hover:text-ink">
-            About
+        <nav aria-label="Footer" className="flex flex-wrap gap-x-4 gap-y-1">
+          <Link href="/s/demo-acme" className="py-1 hover:text-ink">
+            Live demo
           </Link>
-          <Link href="/pricing" className="hover:text-ink">
+          <Link href="/pricing" className="py-1 hover:text-ink">
             Pricing
           </Link>
-          <Link href="/faq" className="hover:text-ink">
+          <Link href="/faq" className="py-1 hover:text-ink">
             FAQ
           </Link>
-          <Link href="/terms" className="hover:text-ink">
+          <Link href="/about" className="py-1 hover:text-ink">
+            About
+          </Link>
+          <Link href="/terms" className="py-1 hover:text-ink">
             Terms
           </Link>
-          <Link href="/privacy" className="hover:text-ink">
+          <Link href="/privacy" className="py-1 hover:text-ink">
             Privacy
           </Link>
-        </p>
+        </nav>
       </div>
     </footer>
   );

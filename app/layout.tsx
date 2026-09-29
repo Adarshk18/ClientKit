@@ -9,12 +9,15 @@ const sans = Source_Sans_3({
   variable: "--font-sans",
   subsets: ["latin"],
   weight: ["400", "500", "600"],
+  display: "swap",
 });
 
 const serif = Literata({
   variable: "--font-serif",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  // Headings only use regular and medium weights. Dropping 600/700 saves font downloads.
+  weight: ["400", "500"],
+  display: "swap",
 });
 
 const titleDefault = "Client Kit - Proposal. Sign. Get paid.";

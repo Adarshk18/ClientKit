@@ -36,6 +36,7 @@ describe("isProtectedPath", () => {
       "/api/webhooks/dodo",
       "/api/cron/expire",
       "/api/analytics",
+      "/api/geo",
     ]) {
       expect(isProtectedPath(path), path).toBe(false);
     }
@@ -79,6 +80,12 @@ describe("robots and sitemap", () => {
     const disallow = rules.flatMap((rule) => rule.disallow ?? []);
     expect(disallow).toContain("/jobs");
     expect(disallow.some((path) => path === "/s" || path.startsWith("/s/"))).toBe(false);
+  });
+
+  it("gives every sitemap entry a real lastModified date", () => {
+    for (const entry of sitemap()) {
+      expect(String(entry.lastModified), entry.url).toMatch(/^\d{4}-\d{2}-\d{2}/);
+    }
   });
 
   it("lists public pages only", () => {
