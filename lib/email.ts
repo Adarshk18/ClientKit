@@ -109,7 +109,7 @@ export async function sendSaasPaymentFailed(input: { to: string }): Promise<void
     input.to,
     "Client Kit payment failed",
     wrap(`
-      <p>We could not renew your Client Kit plan. You have 3 days of grace, then the workspace becomes read-only (you can view jobs, but you cannot send new documents).</p>
+      <p>We could not renew your Client Kit plan. You have 3 days of grace, then the workspace moves to the free plan (3 sends a month) until billing is fixed. Your proposals and history stay.</p>
       <p><a href="${appUrl()}/settings/billing">Update billing</a></p>
     `),
   );

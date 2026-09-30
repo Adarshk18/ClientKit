@@ -57,6 +57,8 @@ export type DodoWebhookPayload = {
     };
     product_id?: string;
     status?: string;
+    cancel_at_next_billing_date?: boolean;
+    next_billing_date?: string;
     metadata?: Record<string, string | number | boolean | null>;
     payment_id?: string;
   };

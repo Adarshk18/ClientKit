@@ -20,6 +20,9 @@ export function workspacePatchFromSubscription(input: {
   customerId?: string;
   metadata?: Record<string, string | number | boolean | null>;
   status?: string;
+  /** Dodo `cancel_at_next_billing_date` and `next_billing_date` from the subscription payload. */
+  cancelAtPeriodEnd?: boolean;
+  nextBillingDate?: string;
 }): {
   plan?: Plan;
   plan_status?: PlanStatus;
@@ -40,6 +43,14 @@ export function workspacePatchFromSubscription(input: {
     dodo_subscription_id?: string;
     grace_until?: string | null;
   } = {};
+
+  // Paid-through date for a cancellation. Only a cancel-at-period-end with a future date keeps paid access;
+  // cancel now, expired, or no date means the workspace drops to Free right away.
+  const paidThrough = (): string | null => {
+    if (!input.cancelAtPeriodEnd || !input.nextBillingDate) return null;
+    const end = new Date(input.nextBillingDate);
+    return Number.isNaN(end.getTime()) || end.getTime() <= Date.now() ? null : end.toISOString();
+  };
 
   if (input.subscriptionId) patch.dodo_subscription_id = input.subscriptionId;
   if (input.customerId) patch.dodo_customer_id = input.customerId;
@@ -62,6 +73,7 @@ export function workspacePatchFromSubscription(input: {
         patch.grace_until = new Date(Date.now() + GRACE_DAYS * 24 * 60 * 60 * 1000).toISOString();
       } else if (status === "cancelled" || status === "canceled" || status === "expired") {
         patch.plan_status = "canceled";
+        patch.grace_until = paidThrough();
       }
       break;
     }
@@ -72,8 +84,12 @@ export function workspacePatchFromSubscription(input: {
     case "subscription.failed":
       return patch;
     case "subscription.cancelled":
+      patch.plan_status = "canceled";
+      patch.grace_until = paidThrough();
+      break;
     case "subscription.expired":
       patch.plan_status = "canceled";
+      patch.grace_until = null;
       break;
     case "payment.succeeded":
       if (plan) patch.plan = plan;

@@ -71,6 +71,8 @@ async function applyDodoEvent(payload: DodoWebhookPayload): Promise<void> {
     customerId,
     metadata,
     status: data.status,
+    cancelAtPeriodEnd: data.cancel_at_next_billing_date,
+    nextBillingDate: data.next_billing_date,
   });
   if (!patch) return;
 

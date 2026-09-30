@@ -52,8 +52,8 @@ export default function PricingPage() {
           <PricingTable />
         </div>
         <p className="mt-8 max-w-xl text-[13px] leading-5 text-muted">
-          Failed SaaS payments get a 3-day grace, then the workspace is read-only until billing is fixed. You can
-          still open old jobs.
+          Failed SaaS payments get a 3-day grace. After that, or if you cancel, the workspace moves to the free plan
+          ({SENT_LIMITS.free} sends a month). Your proposals and history stay.
         </p>
 
         <section className="mt-12 border-t border-line pt-10">

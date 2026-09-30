@@ -75,7 +75,11 @@ const faqs: { q: string; a: string }[] = [
   },
   {
     q: "What happens if my subscription payment fails?",
-    a: "You get a 3-day grace period. After that the workspace is read-only until billing is fixed. You can still open old jobs.",
+    a: `You get a 3-day grace period. After that the workspace moves to the free plan (${SENT_LIMITS.free} sends a month) until billing is fixed. Your proposals and history stay.`,
+  },
+  {
+    q: "Can I cancel?",
+    a: `Yes, anytime. Sign in to the Dodo customer portal (customer.dodopayments.com) with the email you paid with and cancel there. If you cancel at the next billing date, you keep your paid plan until the end of the period you paid for, then your workspace goes back to the free plan (${SENT_LIMITS.free} sends a month). Your proposals and history stay.`,
   },
   {
     q: "Is this a qualified digital signature?",

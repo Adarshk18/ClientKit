@@ -30,6 +30,37 @@ export function sentLimit(plan: Plan): number {
   return SENT_LIMITS[plan];
 }
 
+/**
+ * The plan a workspace can actually use right now. This is the one place that decides
+ * what happens after cancellation or a failed payment.
+ * - active: the paid plan.
+ * - past_due: the paid plan while the 3-day grace runs, then Free.
+ * - canceled: the paid plan only while `grace_until` (paid-through date) is in the future, then Free.
+ * - read_only (grace ended): Free.
+ * Free never expires and nothing is deleted; only the monthly send limit changes.
+ */
+export function effectivePlan(input: {
+  plan: Plan;
+  plan_status: PlanStatus;
+  grace_until: string | null;
+  now?: Date;
+}): Plan {
+  if (input.plan === "free") return "free";
+  const now = input.now ?? new Date();
+  const until = input.grace_until ? new Date(input.grace_until) : null;
+  const untilValid = until !== null && !Number.isNaN(until.getTime());
+  const paidTimeLeft = untilValid && until.getTime() >= now.getTime();
+  switch (input.plan_status) {
+    case "active":
+      return input.plan;
+    case "past_due":
+    case "canceled":
+      return paidTimeLeft ? input.plan : "free";
+    default:
+      return "free";
+  }
+}
+
 export function canSendDocument(input: {
   plan: Plan;
   plan_status: PlanStatus;
@@ -42,34 +73,15 @@ export function canSendDocument(input: {
   const periodReset = new Date(input.period_reset_at);
   const sent = periodReset.getTime() <= now.getTime() ? 0 : input.docs_sent_this_period;
 
-  if (input.plan_status === "canceled") {
-    return { ok: false, reason: "Your plan is canceled. Upgrade to send documents.", code: "plan_canceled" };
-  }
-
-  if (input.plan_status === "read_only") {
-    return {
-      ok: false,
-      reason: "Your workspace is read-only after a failed payment. Update billing to send again.",
-      code: "read_only",
-    };
-  }
-
-  if (input.plan_status === "past_due") {
-    const grace = input.grace_until ? new Date(input.grace_until) : null;
-    if (grace && grace.getTime() < now.getTime()) {
-      return {
-        ok: false,
-        reason: "Payment failed and the 3-day grace period ended. Update billing to send again.",
-        code: "read_only",
-      };
-    }
-  }
-
-  const limit = sentLimit(input.plan);
+  const plan = effectivePlan({ ...input, now });
+  const limit = sentLimit(plan);
   if (sent >= limit) {
     return {
       ok: false,
-      reason: `You've sent ${sent} documents this period. Upgrade to send more.`,
+      reason:
+        plan === "free"
+          ? `You've used all ${limit} free sends this period. Upgrade to send more.`
+          : `You've sent ${sent} documents this period. Upgrade to send more.`,
       code: "plan_limit",
     };
   }

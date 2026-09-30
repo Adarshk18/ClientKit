@@ -119,7 +119,7 @@ EDGE CASES YOU MUST CODE
 - Webhook retries: idempotent
 - Dodo test vs live keys mixed: refuse to start if mismatch
 - Plan limit: solo 40 sent docs / month. Block send with clear upgrade checkout
-- Failed SaaS payment: grace 3 days, then read-only (can view, cannot send new)
+- Failed SaaS payment: grace 3 days, then the workspace falls back to Free (3 sends a month). Cancelled or expired subscriptions also fall back to Free; cancel-at-period-end keeps the paid plan until the paid-through date (stored in grace_until). Nothing is deleted
 - Logo missing: initials
 - Currency display: store minor units integers, format with Intl
 - Mobile sign on small screens
