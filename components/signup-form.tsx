@@ -11,14 +11,14 @@ export function SignupForm({ error }: { error?: string }) {
   return (
     <>
       <p className="mt-2 text-sm text-muted">
-        Free plan: {SENT_LIMITS.free} sent jobs a month, never expires. Paid plans raise the limit.
+        Free plan: {SENT_LIMITS.free} sends a month, never expires, no card.
       </p>
       {error === "rate" ? (
         <p className="mt-3 text-sm text-danger" role="alert">Too many attempts. Try again later.</p>
       ) : error ? (
         <p className="mt-3 text-sm text-danger" role="alert">Could not create the account. Try a different email.</p>
       ) : null}
-      <form action={signUpAction} className="mt-8 space-y-4">
+      <form action={signUpAction} className="mt-6 space-y-4">
         <label className="block text-[13px]">
           Workspace name
           <input name="workspace_name" required className={fieldClass} placeholder="Your studio name" />
@@ -48,7 +48,7 @@ export function SignupForm({ error }: { error?: string }) {
           Continue with Google
         </SubmitButton>
       </form>
-      <p className="mt-8 text-sm text-muted">
+      <p className="mt-6 text-sm text-muted">
         Already have an account?{" "}
         <Link href="/login" className="text-ink underline decoration-line underline-offset-4">
           Log in

@@ -14,6 +14,9 @@ import { ErrorState } from "@/components/empty-state";
 import { LogoMark } from "@/components/logo-mark";
 import { PayPanel } from "@/components/pay-panel";
 import { SignForm } from "@/components/sign-form";
+import { TrackedLink } from "@/components/track";
+import { btnPrimary } from "@/lib/ui";
+import { SENT_LIMITS } from "@/lib/plans";
 import type { LineItemRow } from "@/lib/types";
 import { pageMetadata } from "@/lib/seo";
 
@@ -212,6 +215,22 @@ export default async function PublicDocumentPage({
           <p className="text-sm">{signable.reason}</p>
         )}
       </section>
+
+      {publicId === DEMO_PUBLIC_ID ? (
+        <section className="mt-6 border border-line bg-cream p-4 sm:p-5">
+          <h2 className="font-serif text-xl">Want this for your own jobs?</h2>
+          <p className="mt-1 text-sm text-muted">
+            Free plan: {SENT_LIMITS.free} sends a month, never expires, no card.
+          </p>
+          <TrackedLink
+            href="/signup"
+            className={`${btnPrimary} mt-4`}
+            meta={{ cta: "demo_end_make_your_own" }}
+          >
+            Make your own, free
+          </TrackedLink>
+        </section>
+      ) : null}
 
       <footer className="mt-12 border-t border-line pt-4 text-xs text-muted">
         Simple electronic signature. Not a digital signature certificate.

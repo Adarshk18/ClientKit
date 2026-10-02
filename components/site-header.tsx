@@ -3,29 +3,43 @@ import { Wordmark } from "@/components/wordmark";
 import { TrackedLink } from "@/components/track";
 import { btnNav, btnGhost } from "@/lib/ui";
 
-export function SiteHeader({ showCta = true }: { showCta?: boolean }) {
+/**
+ * `mobileCta={false}` hides the filled "Get started" button below the sm breakpoint. The home page uses it
+ * so the hero button is the one obvious tap on a phone.
+ */
+export function SiteHeader({
+  showCta = true,
+  mobileCta = true,
+}: {
+  showCta?: boolean;
+  mobileCta?: boolean;
+}) {
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-paper/95 backdrop-blur-sm landscape-short:static">
       <div className="ck-safe-header mx-auto flex min-h-11 max-w-6xl flex-wrap items-center justify-between gap-x-3 gap-y-1 px-3 py-1.5 sm:min-h-12 sm:px-4 sm:py-2 landscape-short:min-h-10 landscape-short:py-1">
         <Wordmark />
         <nav className="flex max-w-full flex-wrap items-center justify-end gap-0.5 sm:gap-1">
-          <Link href="/s/demo-acme" className={`${btnGhost} hidden sm:inline-flex`}>
+          <Link href="/s/demo-acme" className={`${btnGhost} max-sm:hidden`}>
             Demo
           </Link>
           <Link href="/pricing" className={btnGhost}>
             Pricing
           </Link>
-          <Link href="/faq" className={btnGhost}>
+          <Link href="/faq" className={`${btnGhost} max-[440px]:hidden`}>
             FAQ
           </Link>
-          <Link href="/about" className={`${btnGhost} hidden sm:inline-flex`}>
+          <Link href="/about" className={`${btnGhost} max-sm:hidden`}>
             About
           </Link>
           <Link href="/login" className={btnGhost}>
             Log in
           </Link>
           {showCta ? (
-            <TrackedLink href="/signup" className={btnNav} meta={{ cta: "header_get_started" }}>
+            <TrackedLink
+              href="/signup"
+              className={`${btnNav}${mobileCta ? "" : " max-sm:hidden"}`}
+              meta={{ cta: "header_get_started" }}
+            >
               Get started
             </TrackedLink>
           ) : null}

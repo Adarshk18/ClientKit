@@ -15,6 +15,12 @@ export function LoginForm({
 }) {
   return (
     <>
+      <p className="mt-2 text-sm text-muted">
+        New here?{" "}
+        <Link href="/signup" className="font-medium text-stamp underline decoration-line underline-offset-4">
+          Create a free account
+        </Link>
+      </p>
       {checkEmail ? (
         <p className="mt-3 text-sm text-stamp">Check your email to confirm the account, then log in.</p>
       ) : null}
@@ -23,7 +29,7 @@ export function LoginForm({
       ) : error ? (
         <p className="mt-3 text-sm text-danger" role="alert">Could not sign in. Check email and password.</p>
       ) : null}
-      <form action={signInAction} className="mt-8 space-y-4">
+      <form action={signInAction} className="mt-6 space-y-4">
         <label className="block text-[13px]">
           Email
           <input name="email" type="email" required className={fieldClass} autoComplete="email" />
@@ -49,12 +55,6 @@ export function LoginForm({
           Continue with Google
         </SubmitButton>
       </form>
-      <p className="mt-8 text-sm text-muted">
-        No account?{" "}
-        <Link href="/signup" className="text-ink underline decoration-line underline-offset-4">
-          Sign up
-        </Link>
-      </p>
     </>
   );
 }

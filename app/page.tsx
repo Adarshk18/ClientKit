@@ -6,7 +6,7 @@ import { TrackPageView, TrackedLink } from "@/components/track";
 import { PlanPrice } from "@/components/plan-price";
 import { FOUNDER_CAP, PLAN_PRICES, SENT_LIMITS } from "@/lib/plans";
 import { pageMetadata, SITE_NAME, SITE_URL } from "@/lib/seo";
-import { btnPrimary, btnSecondary } from "@/lib/ui";
+import { btnPrimary } from "@/lib/ui";
 
 export const metadata = pageMetadata({
   title: { absolute: "Client Kit: Freelance Proposals Clients Sign and Pay on One Link" },
@@ -82,22 +82,22 @@ export default function MarketingPage() {
     <div className="flex min-h-dvh flex-col">
       <JsonLd data={structuredData} />
       <TrackPageView />
-      <SiteHeader />
+      <SiteHeader mobileCta={false} />
 
       <main className="mx-auto w-full max-w-6xl px-4">
-        <section className="ck-page-pad grid items-start gap-8 py-8 sm:gap-12 sm:py-12 lg:grid-cols-12 lg:gap-10 lg:py-16">
+        <section className="ck-page-pad grid items-start gap-6 py-5 sm:gap-12 sm:py-12 lg:grid-cols-12 lg:gap-10 lg:py-16">
           <div className="lg:col-span-5">
             <p className="text-[13px] font-medium text-stamp">
-              Free plan: {SENT_LIMITS.free} sends a month, never expires.
+              Free plan: {SENT_LIMITS.free} sends a month, never expires, no card.
             </p>
-            <h1 className="mt-3 font-serif text-[2.1rem] font-medium leading-[1.15] tracking-tight sm:text-[2.75rem]">
+            <h1 className="mt-2 font-serif text-[2rem] font-medium leading-[1.15] tracking-tight sm:mt-3 sm:text-[2.75rem]">
               Send a proposal. Your client signs and pays you.
             </h1>
-            <p className="mt-4 max-w-[40ch] text-[16px] leading-7 text-muted sm:mt-5">
+            <p className="mt-3 max-w-[40ch] text-[15px] leading-6 text-muted sm:mt-5 sm:text-[16px] sm:leading-7">
               One link does it all. Your client reads the proposal, e-signs it, and pays you directly by UPI or your
               own payment link. Client Kit takes no cut.
             </p>
-            <div className="mt-6 grid grid-cols-2 gap-3 sm:mt-8 sm:flex sm:flex-wrap sm:items-center">
+            <div className="mt-5 sm:mt-8 sm:flex sm:flex-wrap sm:items-center sm:gap-5">
               <TrackedLink
                 href="/s/demo-acme"
                 className={btnPrimary}
@@ -106,20 +106,25 @@ export default function MarketingPage() {
               >
                 See the demo
               </TrackedLink>
-              <TrackedLink href="/signup" className={btnSecondary} meta={{ cta: "hero_get_started" }}>
-                Start free
+              <TrackedLink
+                href="/signup"
+                className="flex min-h-11 items-center justify-center text-[13px] font-medium text-ink underline decoration-line underline-offset-4 hover:text-stamp sm:inline-flex"
+                meta={{ cta: "hero_get_started" }}
+              >
+                Or start free
               </TrackedLink>
             </div>
-            <p className="mt-4 text-[13px] leading-5 text-muted">
-              No card needed.{" "}
-              <Link href="/pricing" className="inline-block py-1.5 underline decoration-line underline-offset-4 hover:text-ink">
-                See pricing
-              </Link>
-              {" · "}
-              <Link href="/login" className="inline-block py-1.5 underline decoration-line underline-offset-4 hover:text-ink">
-                I already have an account
-              </Link>
-            </p>
+            <ol
+              data-strip
+              className="mt-3 grid grid-cols-3 gap-3 border-y border-line py-3 text-[13px] leading-5 sm:mt-4 sm:max-w-md"
+            >
+              {["Send the link", "Client signs", "You get paid by UPI"].map((step, i) => (
+                <li key={step} className="flex items-start gap-2">
+                  <span className="font-serif text-base leading-5 tabular-nums text-stamp">{i + 1}</span>
+                  <span>{step}</span>
+                </li>
+              ))}
+            </ol>
           </div>
 
           <div className="lg:col-span-7">
@@ -157,16 +162,15 @@ export default function MarketingPage() {
                   </span>
                 </div>
               </div>
-              <p className="mt-4 max-w-[48ch] text-[13px] leading-5 text-muted">
-                Try the live demo: type a fake name, sign, then see the UPI step. After they pay, your list does not
-                grow a pipeline. It just reads <span className="text-ink">Acme: signed, $600 received.</span>{" "}
+              <p className="mt-3 max-w-[48ch] text-[13px] leading-5 text-muted sm:mt-4">
+                Try it as a client would: type a fake name, sign, then see the UPI step. No account needed.{" "}
                 <span className="font-medium text-stamp underline decoration-line underline-offset-4">Open the demo</span>
               </p>
             </TrackedLink>
           </div>
         </section>
 
-        <section className="grid gap-10 border-t border-line py-12 sm:grid-cols-2 lg:gap-16 lg:py-16">
+        <section className="grid gap-8 border-t border-line py-8 sm:grid-cols-2 sm:gap-10 sm:py-12 lg:gap-16 lg:py-16">
           <div>
             <h2 className="font-serif text-2xl">What Client Kit is</h2>
             <ul className="mt-6 space-y-2 text-sm leading-6">
@@ -186,7 +190,7 @@ export default function MarketingPage() {
           </div>
         </section>
 
-        <section className="border-t border-line py-12 lg:py-16">
+        <section className="border-t border-line py-8 sm:py-12 lg:py-16">
           <h2 className="font-serif text-2xl">How a job moves</h2>
           <ol className="mt-8 max-w-xl space-y-8">
             <li className="grid grid-cols-[2rem_1fr] gap-4">
@@ -222,7 +226,7 @@ export default function MarketingPage() {
           </ol>
         </section>
 
-        <section className="border-t border-line py-12 lg:py-16">
+        <section className="border-t border-line py-8 sm:py-12 lg:py-16">
           <h2 className="font-serif text-2xl">Why I built it this way</h2>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-muted">
             I kept sending a Google Doc, then a separate payment link, then chasing both. The all-in-one tools I tried
@@ -250,7 +254,7 @@ export default function MarketingPage() {
           </ul>
         </section>
 
-        <section className="grid gap-10 border-t border-line py-12 lg:grid-cols-2 lg:gap-16 lg:py-16">
+        <section className="grid gap-8 border-t border-line py-8 sm:gap-10 sm:py-12 lg:grid-cols-2 lg:gap-16 lg:py-16">
           <div>
             <h2 className="font-serif text-2xl">Your side</h2>
             <p className="mt-3 text-sm leading-6 text-muted">
@@ -258,7 +262,7 @@ export default function MarketingPage() {
               Download the signed PDF. Nothing else is supposed to live here.
             </p>
             <p className="mt-6 text-[12px] text-muted">A sample of your job list.</p>
-            <ul className="mt-2 cursor-default select-none divide-y divide-line border border-line bg-cream text-sm">
+            <ul className="mt-2 cursor-default select-none divide-y divide-line border-y border-line text-sm">
               <li className="flex items-center justify-between gap-3 px-4 py-3">
                 <span>
                   Acme site rebuild
@@ -298,7 +302,7 @@ export default function MarketingPage() {
           </div>
         </section>
 
-        <section id="pricing" className="border-t border-line py-12 lg:py-16">
+        <section id="pricing" className="border-t border-line py-8 sm:py-12 lg:py-16">
           <h2 className="font-serif text-2xl">Pricing</h2>
           <p className="mt-3 max-w-xl text-sm leading-6 text-muted">
             You pay rent on the software. Clients pay you. The free plan sends {SENT_LIMITS.free} jobs a month and
@@ -309,7 +313,7 @@ export default function MarketingPage() {
           </div>
         </section>
 
-        <section className="border-t border-line py-12 lg:py-16">
+        <section className="border-t border-line py-8 sm:py-12 lg:py-16">
           <h2 className="font-serif text-2xl">Questions we actually get</h2>
           <dl className="mt-8 max-w-2xl space-y-6 text-sm leading-6">
             <div>
@@ -349,7 +353,7 @@ export default function MarketingPage() {
           </p>
         </section>
 
-        <section className="border-t border-line py-12 lg:py-16">
+        <section className="border-t border-line py-8 sm:py-12 lg:py-16">
           <h2 className="font-serif text-3xl">Send the next job on one link.</h2>
           <p className="mt-3 max-w-md text-sm leading-6 text-muted">
             Create a workspace, write a document, copy the URL. That is the product.
