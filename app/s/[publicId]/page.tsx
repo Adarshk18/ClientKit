@@ -167,7 +167,7 @@ export default async function PublicDocumentPage({
           <div>
             <h2 className="font-serif text-2xl">Paid</h2>
             <p className="mt-2 text-sm">
-              {client.name} — signed + {formatMoney(doc.amount_due, doc.currency)} received.
+              {client.name}, signed and {formatMoney(doc.amount_due, doc.currency)} received.
             </p>
             <a href={`/s/${publicId}/pdf`} className="mt-4 inline-block text-sm underline decoration-line underline-offset-4">
               Download signed PDF

@@ -15,15 +15,21 @@ export function LoginForm({
 }) {
   return (
     <>
+      {checkEmail ? (
+        <div
+          role="status"
+          className="mt-4 border border-stamp border-l-4 bg-cream px-3 py-3 text-sm leading-6 text-ink"
+        >
+          <p className="font-medium text-stamp">Account created.</p>
+          <p>Check your email and click the confirmation link, then log in here.</p>
+        </div>
+      ) : null}
       <p className="mt-2 text-sm text-muted">
         New here?{" "}
         <Link href="/signup" className="font-medium text-stamp underline decoration-line underline-offset-4">
           Create a free account
         </Link>
       </p>
-      {checkEmail ? (
-        <p className="mt-3 text-sm text-stamp">Check your email to confirm the account, then log in.</p>
-      ) : null}
       {error === "rate" ? (
         <p className="mt-3 text-sm text-danger" role="alert">Too many attempts. Try again later.</p>
       ) : error ? (
