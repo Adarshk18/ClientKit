@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { FollowUpActions } from "@/components/follow-up-actions";
+import { buildFollowUp } from "@/lib/followups";
 import { formatMoney } from "@/lib/money";
-import { advanceState, balanceOutstanding, type PaymentFields } from "@/lib/job-payments";
+import { advanceState, balanceOutstanding, stageAmount, type PaymentFields } from "@/lib/job-payments";
 import { nudgeReasonLabel, type Nudge } from "@/lib/nudges";
 import { btnPrimary } from "@/lib/ui";
 import type { DocStatus } from "@/lib/types";
@@ -34,7 +36,7 @@ function waiting(days: number): string {
   return days === 1 ? "1 day" : `${days} days`;
 }
 
-export function NudgeList({ items }: { items: NudgeItem[] }) {
+export function NudgeList({ items, appOrigin, workspaceName }: { items: NudgeItem[]; appOrigin: string; workspaceName: string }) {
   if (items.length === 0) return null;
   return (
     <section className="mt-6" aria-labelledby="needs-nudge">
@@ -42,12 +44,27 @@ export function NudgeList({ items }: { items: NudgeItem[] }) {
         Needs a nudge today
       </h2>
       <p className="mt-1 text-sm text-muted">
-        These jobs are waiting on the client. Open one to see where it stands.
+        These jobs are waiting on the client. Client Kit never sends anything for you. Pick a message and send it yourself.
       </p>
       <ul className="mt-3 divide-y divide-line border border-line bg-cream" data-testid="nudge-list">
         {items.map((item) => {
           const advance = advanceState(item.payment);
           const balance = balanceOutstanding(item.payment);
+          const link = `${appOrigin}/s/${item.publicId}`;
+          const isConfirm = item.nudge.reason === "awaiting_confirmation";
+          const base =
+            isConfirm
+              ? null
+              : {
+                  reason: item.nudge.reason as Exclude<Nudge["reason"], "awaiting_confirmation">,
+                  clientName: item.clientName,
+                  freelancerName: workspaceName,
+                  title: item.title,
+                  link,
+                  amount: stageAmount(item.payment),
+                  currency: item.currency,
+                  dueAt: item.balanceDueAt,
+                };
           return (
             <li key={item.id} className="p-3 sm:p-4" data-testid="nudge-item">
               <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
@@ -57,7 +74,7 @@ export function NudgeList({ items }: { items: NudgeItem[] }) {
                 </Link>
                 <span className="text-[12px] text-stamp">
                   {nudgeReasonLabel(item.nudge.reason)}
-                  {item.nudge.reason === "awaiting_confirmation" ? "" : ` · waiting ${waiting(item.nudge.daysWaiting)}`}
+                  {isConfirm ? "" : ` · waiting ${waiting(item.nudge.daysWaiting)}`}
                 </span>
               </div>
               <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-4">
@@ -66,11 +83,21 @@ export function NudgeList({ items }: { items: NudgeItem[] }) {
                 <Fact label="Advance paid" value={advance === "none" ? "No advance" : advance === "yes" ? "Yes" : "No"} />
                 <Fact label="Balance due" value={formatMoney(balance, item.currency)} strong />
               </dl>
-              <div className="mt-3">
-                <Link href={`/jobs/${item.id}`} className={btnPrimary}>
-                  {item.nudge.reason === "awaiting_confirmation" ? "Check and confirm" : "Open job"}
-                </Link>
-              </div>
+              {isConfirm ? (
+                <div className="mt-3">
+                  <Link href={`/jobs/${item.id}`} className={btnPrimary}>
+                    Check and confirm
+                  </Link>
+                </div>
+              ) : base ? (
+                <FollowUpActions
+                  documentId={item.id}
+                  clientEmail={item.clientEmail}
+                  polite={buildFollowUp({ ...base, step: 1 })}
+                  firm={buildFollowUp({ ...base, step: 2 })}
+                  initialStep={item.nudge.step}
+                />
+              ) : null}
             </li>
           );
         })}

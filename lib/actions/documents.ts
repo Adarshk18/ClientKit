@@ -753,10 +753,49 @@ export async function nudgeClientAction(documentId: string): Promise<ActionResul
       user_agent: userAgent,
       meta: { by: user.id, kind: "nudge" },
     });
+    await supabase
+      .from("documents")
+      .update({ last_nudged_at: new Date().toISOString(), nudge_count: (doc.nudge_count ?? 0) + 1 })
+      .eq("id", documentId)
+      .eq("workspace_id", workspace.id);
+    revalidatePath("/jobs");
     revalidatePath(`/jobs/${documentId}`);
     return { ok: true, data: undefined };
   } catch (error) {
     logError("documents.nudge", error);
     return { ok: false, error: "Could not send the reminder." };
+  }
+}
+
+/**
+ * The freelancer tapped a follow-up button (WhatsApp, email, or copy). Client Kit sends nothing here.
+ * We only remember when, so the "Needs a nudge today" list does not bring the job back for a couple of days.
+ */
+export async function markNudgedAction(documentId: string): Promise<ActionResult> {
+  try {
+    await assertSameOrigin();
+    const { supabase, workspace } = await requireWorkspace();
+    const doc = await loadDocBundle(documentId, workspace.id);
+    if (!doc || doc.deleted_at) return { ok: false, error: "Not found" };
+    const status = effectiveStatus(doc.status, doc.expires_at);
+    if (!["sent", "viewed", "signed", "payment_sent"].includes(status)) {
+      return { ok: false, error: "Nothing to follow up on." };
+    }
+    // Ignore a double tap within a minute so the count stays honest.
+    if (doc.last_nudged_at && Date.now() - new Date(doc.last_nudged_at).getTime() < 60_000) {
+      return { ok: true, data: undefined };
+    }
+    const { error } = await supabase
+      .from("documents")
+      .update({ last_nudged_at: new Date().toISOString(), nudge_count: (doc.nudge_count ?? 0) + 1 })
+      .eq("id", documentId)
+      .eq("workspace_id", workspace.id);
+    if (error) return { ok: false, error: "Could not save that." };
+    revalidatePath("/jobs");
+    revalidatePath(`/jobs/${documentId}`);
+    return { ok: true, data: undefined };
+  } catch (error) {
+    logError("documents.markNudged", error);
+    return { ok: false, error: "Could not save that." };
   }
 }

@@ -8,7 +8,10 @@ import { appUrl } from "@/lib/env";
 import { JobActions } from "@/components/job-actions";
 import { BalanceDueForm } from "@/components/payment-progress";
 import { revisionClause, revisionTermsFrom } from "@/lib/revisions";
-import { amountConfirmed, hasBalanceStage, paymentStage } from "@/lib/job-payments";
+import { amountConfirmed, hasBalanceStage, paymentStage, stageAmount } from "@/lib/job-payments";
+import { FollowUpActions } from "@/components/follow-up-actions";
+import { buildFollowUp } from "@/lib/followups";
+import { nudgeFor, nudgeReasonLabel } from "@/lib/nudges";
 import { SharePanel } from "@/components/share-panel";
 import { StatusChip } from "@/components/status-chip";
 import { btnSecondary } from "@/lib/ui";
@@ -37,6 +40,20 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
   const publicLink = `${appUrl()}/s/${job.public_id}`;
 
   const revisions = revisionTermsFrom(job);
+  const nudge = nudgeFor(job);
+  const followBase =
+    nudge && nudge.reason !== "awaiting_confirmation"
+      ? {
+          reason: nudge.reason,
+          clientName: client?.name ?? "there",
+          freelancerName: workspace.name,
+          title: job.title as string,
+          link: publicLink,
+          amount: stageAmount({ ...job, status }),
+          currency: job.currency as string,
+          dueAt: job.balance_due_at as string | null,
+        }
+      : null;
   const stage = paymentStage({ ...job, status });
   const split = hasBalanceStage(job);
   const advanceDone = Boolean(job.advance_paid_at) || (status === "paid" && split);
@@ -70,6 +87,29 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
         paymentReference={job.payment_reference}
         stage={stage}
       />
+
+      {followBase && nudge ? (
+        <section className="border border-line bg-cream p-4" data-testid="job-followup">
+          <h2 className="font-serif text-lg">Time to follow up</h2>
+          <p className="mt-1 text-sm text-muted">
+            {nudgeReasonLabel(nudge.reason)}, waiting {nudge.daysWaiting} {nudge.daysWaiting === 1 ? "day" : "days"}.
+          </p>
+          <FollowUpActions
+            documentId={job.id}
+            clientEmail={client?.email ?? ""}
+            polite={buildFollowUp({ ...followBase, step: 1 })}
+            firm={buildFollowUp({ ...followBase, step: 2 })}
+            initialStep={nudge.step}
+          />
+        </section>
+      ) : null}
+
+      {job.last_nudged_at ? (
+        <p className="text-sm text-muted">
+          Last followed up {formatDateTime(job.last_nudged_at)}
+          {job.nudge_count > 1 ? ` (${job.nudge_count} times)` : ""}.
+        </p>
+      ) : null}
 
       {status !== "draft" && status !== "void" ? (
         <SharePanel

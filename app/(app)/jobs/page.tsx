@@ -5,6 +5,7 @@ import { formatDateTime } from "@/lib/dates";
 import { effectiveStatus } from "@/lib/document-state";
 import { EmptyState } from "@/components/empty-state";
 import { NudgeList, type NudgeItem } from "@/components/nudge-list";
+import { appUrl } from "@/lib/env";
 import { amountConfirmed, balanceOutstanding } from "@/lib/job-payments";
 import { compareNudges, nudgeFor } from "@/lib/nudges";
 import { StatusChip } from "@/components/status-chip";
@@ -75,7 +76,7 @@ export default async function JobsPage({
         </Link>
       </div>
 
-      <NudgeList items={nudgeItems} />
+      <NudgeList items={nudgeItems} appOrigin={appUrl()} workspaceName={workspace.name} />
 
       <div className="mt-6 flex gap-3 text-sm">
         <Link
