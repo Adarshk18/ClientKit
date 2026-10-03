@@ -5,7 +5,7 @@ import { formatDateTime } from "@/lib/dates";
 import { effectiveStatus } from "@/lib/document-state";
 import { EmptyState } from "@/components/empty-state";
 import { NudgeList, type NudgeItem } from "@/components/nudge-list";
-import { balanceOutstanding } from "@/lib/job-payments";
+import { amountConfirmed, balanceOutstanding } from "@/lib/job-payments";
 import { compareNudges, nudgeFor } from "@/lib/nudges";
 import { StatusChip } from "@/components/status-chip";
 import { btnPrimary } from "@/lib/ui";
@@ -115,7 +115,7 @@ export default async function JobsPage({
             const client = Array.isArray(job.clients) ? job.clients[0] : job.clients;
             const aha =
               status === "paid"
-                ? `${client?.name ?? "Client"}: signed + ${formatMoney(job.amount_due, job.currency)} received.`
+                ? `${client?.name ?? "Client"}: signed + ${formatMoney(amountConfirmed({ ...job, status }), job.currency)} received.`
                 : status === "payment_sent"
                   ? `${client?.name ?? "Client"}: awaiting payment confirmation`
                   : null;

@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { requireWorkspace } from "@/lib/auth";
 import { canSendDocument } from "@/lib/plans";
 import { computeAmounts } from "@/lib/money";
+import { paymentStage, stageAmount } from "@/lib/job-payments";
 import { buildFrozenPayload, hashFrozenPayload } from "@/lib/hash";
 import { normalizeScopeHtml } from "@/lib/sanitize";
 import { newPublicId } from "@/lib/public-id";
@@ -460,26 +461,55 @@ export async function markPaidAction(documentId: string): Promise<ActionResult> 
 
     const { ip, userAgent } = await requestMeta();
     const now = new Date().toISOString();
-    const { data: paidRows, error } = await supabase
-      .from("documents")
-      .update({
-        status: "paid",
-        payment_status: "paid",
-        paid_at: now,
-        payment_marked_by: user.id,
-      })
-      .eq("id", documentId)
-      .eq("workspace_id", workspace.id)
-      .in("status", ["signed", "payment_sent"])
-      .select("id");
-    if (error || !paidRows?.length) return { ok: false, error: "Could not mark paid." };
+    const stage = paymentStage(doc);
+    const amount = stageAmount(doc);
+    const claim = {
+      reference: doc.payment_reference ?? null,
+      note: doc.payment_claim_note ?? null,
+      claimed_at: doc.payment_claimed_at ?? null,
+    };
+
+    if (stage === "advance") {
+      // The advance is in. The job goes back to "signed" so the balance is next. Nothing is paid in full yet.
+      const { data: advRows, error } = await supabase
+        .from("documents")
+        .update({
+          status: "signed",
+          payment_status: "unpaid",
+          advance_paid_at: now,
+          payment_marked_by: user.id,
+          payment_claimed_at: null,
+          payment_reference: null,
+          payment_claim_note: null,
+        })
+        .eq("id", documentId)
+        .eq("workspace_id", workspace.id)
+        .in("status", ["signed", "payment_sent"])
+        .is("advance_paid_at", null)
+        .select("id");
+      if (error || !advRows?.length) return { ok: false, error: "Could not mark the advance paid." };
+    } else {
+      const { data: paidRows, error } = await supabase
+        .from("documents")
+        .update({
+          status: "paid",
+          payment_status: "paid",
+          paid_at: now,
+          payment_marked_by: user.id,
+        })
+        .eq("id", documentId)
+        .eq("workspace_id", workspace.id)
+        .in("status", ["signed", "payment_sent"])
+        .select("id");
+      if (error || !paidRows?.length) return { ok: false, error: "Could not mark paid." };
+    }
 
     await supabase.from("events").insert({
       document_id: documentId,
       type: "paid",
       ip,
       user_agent: userAgent,
-      meta: { by: user.id, from_status: doc.status },
+      meta: { by: user.id, from_status: doc.status, stage, amount, claim },
     });
 
     const { sendMarkedPaidToFreelancer } = await import("@/lib/email");
@@ -488,8 +518,9 @@ export async function markPaidAction(documentId: string): Promise<ActionResult> 
         to: user.email,
         clientName: doc.clients.name,
         title: doc.title,
-        amount: doc.amount_due,
+        amount,
         currency: doc.currency,
+        stage: stage === "advance" || stage === "balance" ? stage : "single",
       });
     }
 
@@ -499,6 +530,71 @@ export async function markPaidAction(documentId: string): Promise<ActionResult> 
   } catch (error) {
     logError("documents.markPaid", error);
     return { ok: false, error: "Could not mark paid." };
+  }
+}
+
+/** The freelancer marked the advance paid by mistake. Only while no balance claim is waiting. */
+export async function undoAdvancePaidAction(documentId: string): Promise<ActionResult> {
+  try {
+    await assertSameOrigin();
+    const { supabase, workspace, user } = await requireWorkspace();
+    const doc = await loadDocBundle(documentId, workspace.id);
+    if (!doc) return { ok: false, error: "Not found" };
+    if (doc.status !== "signed" || !doc.advance_paid_at) {
+      return { ok: false, error: "The advance is not marked paid, or the job has moved on." };
+    }
+    const { ip, userAgent } = await requestMeta();
+    const { data: rows, error } = await supabase
+      .from("documents")
+      .update({ advance_paid_at: null })
+      .eq("id", documentId)
+      .eq("workspace_id", workspace.id)
+      .eq("status", "signed")
+      .not("advance_paid_at", "is", null)
+      .select("id");
+    if (error || !rows?.length) return { ok: false, error: "Could not change that." };
+    await supabase.from("events").insert({
+      document_id: documentId,
+      type: "payment_rejected",
+      ip,
+      user_agent: userAgent,
+      meta: { by: user.id, stage: "advance", reason: "advance_unmarked" },
+    });
+    revalidatePath("/jobs");
+    revalidatePath(`/jobs/${documentId}`);
+    return { ok: true, data: undefined };
+  } catch (error) {
+    logError("documents.undoAdvance", error);
+    return { ok: false, error: "Could not change that." };
+  }
+}
+
+/** Optional date the freelancer expects the balance by. Only used to decide when to suggest a follow-up. */
+export async function setBalanceDueAction(documentId: string, dateIso: string | null): Promise<ActionResult> {
+  try {
+    await assertSameOrigin();
+    const { supabase, workspace } = await requireWorkspace();
+    let value: string | null = null;
+    if (dateIso) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(dateIso)) return { ok: false, error: "Pick a valid date." };
+      const d = new Date(`${dateIso}T23:59:59.000Z`);
+      if (Number.isNaN(d.getTime())) return { ok: false, error: "Pick a valid date." };
+      value = d.toISOString();
+    }
+    const { data: rows, error } = await supabase
+      .from("documents")
+      .update({ balance_due_at: value })
+      .eq("id", documentId)
+      .eq("workspace_id", workspace.id)
+      .in("status", ["signed", "payment_sent"])
+      .select("id");
+    if (error || !rows?.length) return { ok: false, error: "Could not save the date." };
+    revalidatePath("/jobs");
+    revalidatePath(`/jobs/${documentId}`);
+    return { ok: true, data: undefined };
+  } catch (error) {
+    logError("documents.balanceDue", error);
+    return { ok: false, error: "Could not save the date." };
   }
 }
 

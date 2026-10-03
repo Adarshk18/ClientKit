@@ -93,12 +93,20 @@ export async function sendMarkedPaidToFreelancer(input: {
   title: string;
   amount: number;
   currency: string;
+  stage?: "single" | "advance" | "balance";
 }): Promise<void> {
+  const money = formatMoney(input.amount, input.currency);
+  const what =
+    input.stage === "advance"
+      ? `advance ${money} received`
+      : input.stage === "balance"
+        ? `balance ${money} received`
+        : `signed + ${money} received`;
   await send(
     input.to,
-    `${input.clientName}: signed + ${formatMoney(input.amount, input.currency)} received`,
+    `${input.clientName}: ${what}`,
     wrap(`
-      <p><strong>${escapeHtml(input.clientName)}</strong>: signed + ${escapeHtml(formatMoney(input.amount, input.currency))} received.</p>
+      <p><strong>${escapeHtml(input.clientName)}</strong>: ${escapeHtml(what)}.</p>
       <p>${escapeHtml(input.title)}</p>
     `),
   );

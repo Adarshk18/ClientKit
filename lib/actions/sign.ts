@@ -5,6 +5,8 @@ import { revalidatePath } from "next/cache";
 import { createSupabaseAdmin } from "@/lib/supabase/admin";
 import { signInputSchema } from "@/lib/validators";
 import { canClaimPayment, canSign } from "@/lib/document-state";
+import { buildAgreedTerms } from "@/lib/agreed-terms";
+import { paymentStage } from "@/lib/job-payments";
 import { buildFrozenPayload, hashFrozenPayload } from "@/lib/hash";
 import { rateLimit, SIGN_LIMIT, PAY_LIMIT } from "@/lib/rate-limit";
 import { requestMeta } from "@/lib/request";
@@ -126,6 +128,7 @@ export async function signDocumentAction(
       ip,
       user_agent: userAgent,
       document_hash: hash,
+      agreed_terms: buildAgreedTerms(payload),
     });
 
     if (signError) {
@@ -227,7 +230,7 @@ export async function markPaymentSentAction(
     const admin = createSupabaseAdmin();
     const { data: doc } = await admin
       .from("documents")
-      .select("id, status, expires_at, payment_status")
+      .select("id, status, expires_at, payment_status, advance_paid_at, subtotal, amount_due, remainder_amount")
       .eq("public_id", publicId)
       .is("deleted_at", null)
       .maybeSingle();
@@ -267,7 +270,17 @@ export async function markPaymentSentAction(
       type: "payment_sent",
       ip,
       user_agent: userAgent,
-      meta: { reference, note },
+      meta: {
+        reference,
+        note,
+        stage: paymentStage({
+          status: "signed",
+          subtotal: doc.subtotal,
+          amount_due: doc.amount_due,
+          remainder_amount: doc.remainder_amount,
+          advance_paid_at: doc.advance_paid_at,
+        }),
+      },
     });
     return { ok: true, data: undefined };
   } catch (error) {

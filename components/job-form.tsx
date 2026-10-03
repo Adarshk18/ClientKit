@@ -14,6 +14,9 @@ import { btnPrimary, btnSecondary, fieldArea, fieldClass } from "@/lib/ui";
 
 type Item = { label: string; qty: string; price: string };
 
+/** What the freelancer can pick. 0 means the client pays the whole amount in one go. */
+const ADVANCE_OPTIONS = [0, 30, 40, 50];
+
 export function JobForm({
   mode,
   documentId,
@@ -39,7 +42,10 @@ export function JobForm({
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   const [currency, setCurrency] = useState(defaultValues?.currency ?? workspaceCurrency);
-  const [deposit, setDeposit] = useState(String(defaultValues?.deposit_percent ?? 100));
+  // New jobs start with a 30% advance. An old 100% means "pay in full", which is the same as no advance.
+  const initialAdvance = defaultValues ? (defaultValues.deposit_percent === 100 ? 0 : defaultValues.deposit_percent) : 30;
+  const [deposit, setDeposit] = useState(String(initialAdvance));
+  const advanceOptions = ADVANCE_OPTIONS.includes(initialAdvance) ? ADVANCE_OPTIONS : [...ADVANCE_OPTIONS, initialAdvance].sort((a, b) => a - b);
   const [items, setItems] = useState<Item[]>(
     defaultValues?.line_items.length
       ? defaultValues.line_items.map((item) => ({
@@ -230,16 +236,17 @@ export function JobForm({
           />
         </label>
         <label className="text-sm">
-          Deposit %
-          <input
-            type="number"
-            min={0}
-            max={100}
-            value={deposit}
-            onChange={(e) => setDeposit(e.target.value)}
-            className={field}
-          />
-          <span className="mt-1 block text-xs text-muted">0% and 100% both collect the full amount now.</span>
+          Advance
+          <select value={deposit} onChange={(e) => setDeposit(e.target.value)} className={field}>
+            {advanceOptions.map((pct) => (
+              <option key={pct} value={String(pct)}>
+                {pct === 0 ? "No advance, pay in full" : `${pct}% advance`}
+              </option>
+            ))}
+          </select>
+          <span className="mt-1 block text-xs text-muted">
+            The client pays this part right after signing. The balance comes later.
+          </span>
         </label>
         <label className="text-sm">
           Expires
@@ -247,18 +254,18 @@ export function JobForm({
         </label>
       </section>
 
-      <div className="border border-line bg-cream p-4 text-sm">
+      <div className="border border-line bg-cream p-4 text-sm" data-testid="amount-summary">
         <div className="flex justify-between">
           <span>Subtotal</span>
           <span>{formatMoney(amounts.subtotal, currency)}</span>
         </div>
         <div className="mt-1 flex justify-between">
-          <span>Due now</span>
+          <span>{amounts.remainder_amount > 0 ? `Advance after signing (${amounts.deposit_percent}%)` : "Due after signing"}</span>
           <span>{formatMoney(amounts.amount_due, currency)}</span>
         </div>
         {amounts.remainder_amount > 0 ? (
           <div className="mt-1 flex justify-between text-muted">
-            <span>Due later (not collected in v1)</span>
+            <span>Balance, due later</span>
             <span>{formatMoney(amounts.remainder_amount, currency)}</span>
           </div>
         ) : null}

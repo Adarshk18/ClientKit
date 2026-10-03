@@ -70,3 +70,20 @@ describe("payment stages", () => {
     expect(balanceOutstanding(f({ status: "paid", subtotal: 0, amount_due: 0, remainder_amount: 0 }))).toBe(0);
   });
 });
+
+describe("agreed terms saved with the signature", () => {
+  it("records the advance and balance, and zero advance for a single payment", async () => {
+    const { buildAgreedTerms } = await import("@/lib/agreed-terms");
+    const base = {
+      title: "t", scope_html: "", currency: "INR", line_items: [], subtotal: 100000,
+      deposit_percent: 30, deposit_amount: 30000, amount_due: 30000, remainder_amount: 70000,
+      client_name: "A", client_email: "a@b.co", workspace_name: "W",
+    };
+    expect(buildAgreedTerms(base)).toEqual({
+      currency: "INR", subtotal: 100000, advance_percent: 30, advance_amount: 30000, balance_amount: 70000,
+    });
+    expect(
+      buildAgreedTerms({ ...base, deposit_percent: 0, deposit_amount: 100000, amount_due: 100000, remainder_amount: 0 }),
+    ).toMatchObject({ advance_percent: 0, advance_amount: 100000, balance_amount: 0 });
+  });
+});

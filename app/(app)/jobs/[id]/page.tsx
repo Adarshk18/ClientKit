@@ -6,6 +6,8 @@ import { formatDateTime } from "@/lib/dates";
 import { effectiveStatus } from "@/lib/document-state";
 import { appUrl } from "@/lib/env";
 import { JobActions } from "@/components/job-actions";
+import { BalanceDueForm } from "@/components/payment-progress";
+import { amountConfirmed, hasBalanceStage, paymentStage } from "@/lib/job-payments";
 import { SharePanel } from "@/components/share-panel";
 import { StatusChip } from "@/components/status-chip";
 import { btnSecondary } from "@/lib/ui";
@@ -33,12 +35,19 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
   );
   const publicLink = `${appUrl()}/s/${job.public_id}`;
 
+  const stage = paymentStage({ ...job, status });
+  const split = hasBalanceStage(job);
+  const advanceDone = Boolean(job.advance_paid_at) || (status === "paid" && split);
+  const received = formatMoney(amountConfirmed({ ...job, status }), job.currency);
+
   const aha =
     status === "paid"
-      ? `${client?.name ?? "Client"}: signed + ${formatMoney(job.amount_due, job.currency)} received.`
+      ? `${client?.name ?? "Client"}: signed + ${received} received.`
       : status === "payment_sent"
         ? `${client?.name ?? "Client"}: payment sent, awaiting your confirmation.`
-        : null;
+        : stage === "balance"
+          ? `${client?.name ?? "Client"}: advance received, balance of ${formatMoney(job.remainder_amount, job.currency)} to go.`
+          : null;
 
   return (
     <div className="space-y-8">
@@ -52,7 +61,13 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
         <StatusChip status={status} />
       </div>
 
-      <JobActions documentId={job.id} status={status} publicId={job.public_id} paymentReference={job.payment_reference} />
+      <JobActions
+        documentId={job.id}
+        status={status}
+        publicId={job.public_id}
+        paymentReference={job.payment_reference}
+        stage={stage}
+      />
 
       {status !== "draft" && status !== "void" ? (
         <SharePanel
@@ -81,6 +96,39 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
         )}
       </div>
 
+      {split && status !== "draft" && status !== "sent" && status !== "viewed" && status !== "void" && status !== "expired" ? (
+        <section className="border border-line bg-cream p-5" data-testid="payment-progress">
+          <h2 className="font-serif text-lg">Payments</h2>
+          <ul className="mt-3 divide-y divide-line text-sm">
+            <li className="flex items-center justify-between gap-3 py-2">
+              <span>
+                Advance ({job.deposit_percent}%) · {formatMoney(job.amount_due, job.currency)}
+              </span>
+              <span className={advanceDone ? "text-stamp" : "text-muted"} data-testid="advance-status">
+                {advanceDone
+                  ? `Paid${job.advance_paid_at ? ` ${formatDateTime(job.advance_paid_at)}` : ""}`
+                  : status === "payment_sent"
+                    ? "Awaiting your confirmation"
+                    : "Not paid"}
+              </span>
+            </li>
+            <li className="flex items-center justify-between gap-3 py-2">
+              <span>Balance · {formatMoney(job.remainder_amount, job.currency)}</span>
+              <span className={status === "paid" && job.advance_paid_at ? "text-stamp" : "text-muted"} data-testid="balance-status">
+                {status === "paid" && job.advance_paid_at
+                  ? `Paid${job.paid_at ? ` ${formatDateTime(job.paid_at)}` : ""}`
+                  : stage === "balance" && status === "payment_sent"
+                    ? "Awaiting your confirmation"
+                    : "Not paid"}
+              </span>
+            </li>
+          </ul>
+          {stage === "balance" ? (
+            <BalanceDueForm documentId={job.id} current={job.balance_due_at ? String(job.balance_due_at).slice(0, 10) : ""} />
+          ) : null}
+        </section>
+      ) : null}
+
       <section className="border border-line bg-cream p-5">
         <h2 className="font-serif text-lg">Scope</h2>
         <div
@@ -98,12 +146,12 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
           ))}
         </ul>
         <div className="mt-4 flex justify-between text-sm">
-          <span>Due now</span>
+          <span>{split ? `Advance (${job.deposit_percent}%)` : "Due now"}</span>
           <span className="font-medium">{formatMoney(job.amount_due, job.currency)}</span>
         </div>
         {job.remainder_amount > 0 ? (
           <div className="mt-1 flex justify-between text-sm text-muted">
-            <span>Due later</span>
+            <span>{split ? "Balance, due later" : "Due later"}</span>
             <span>{formatMoney(job.remainder_amount, job.currency)}</span>
           </div>
         ) : null}

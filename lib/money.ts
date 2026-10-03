@@ -59,16 +59,18 @@ export function computeAmounts(
     return sum + Math.round(qty * item.unit_amount);
   }, 0);
 
-  const pct = Math.min(100, Math.max(0, Math.round(depositPercent)));
-  // 0% and 100% both mean pay in full on this page. 50% means half now,
-  // remainder shown as due later (v1 does not collect the remainder).
-  const payFull = pct === 0 || pct === 100;
-  const deposit_amount = payFull ? subtotal : Math.round((subtotal * pct) / 100);
+  const pct = Math.min(100, Math.max(0, Math.round(Number.isFinite(depositPercent) ? depositPercent : 0)));
+  // 0% and 100% both mean pay in full on this page. Any other percent is the advance paid after signing.
+  // The balance is subtotal minus the advance, so the two always add up to the subtotal exactly.
+  // If rounding makes the advance 0 or the whole amount, there is no real split, so it is a single payment.
+  const advance = Math.round((subtotal * pct) / 100);
+  const payFull = pct === 0 || pct === 100 || advance <= 0 || advance >= subtotal;
+  const deposit_amount = payFull ? subtotal : advance;
   const remainder_amount = subtotal - deposit_amount;
 
   return {
     subtotal,
-    deposit_percent: pct,
+    deposit_percent: payFull ? (pct === 100 ? 100 : 0) : pct,
     deposit_amount,
     amount_due: deposit_amount,
     remainder_amount,

@@ -11,6 +11,8 @@ import { formatMoney } from "@/lib/money";
 export function PayPanel({
   publicId,
   amountDue,
+  stage = "single",
+  advanceAmount,
   currency,
   payoutType,
   payoutValue,
@@ -21,6 +23,10 @@ export function PayPanel({
 }: {
   publicId: string;
   amountDue: number;
+  /** "advance" or "balance" when the job is split, "single" when it is paid in one go. */
+  stage?: "single" | "advance" | "balance";
+  /** The advance amount, shown as received once the stage is "balance". */
+  advanceAmount?: number;
   currency: string;
   payoutType: "upi" | "url" | null;
   payoutValue: string | null;
@@ -53,17 +59,31 @@ export function PayPanel({
 
   if (!payoutType || !payoutValue) {
     return (
-      <p className="text-sm text-muted">
-        This freelancer has not added a payout method yet. You can still sign. They will follow up for payment.
-      </p>
+      <div className="space-y-3">
+        {stage === "balance" && advanceAmount ? (
+          <p className="rounded-sm border border-line bg-white p-3 text-sm" data-testid="advance-received">
+            Advance of {formatMoney(advanceAmount, currency)} received. Thank you. The balance is next.
+          </p>
+        ) : null}
+        <p className="text-sm text-muted">
+          This freelancer has not added a payout method yet. You can still sign. They will follow up for payment.
+        </p>
+      </div>
     );
   }
 
+  const stageWord = stage === "advance" ? "the advance of " : stage === "balance" ? "the balance of " : "";
+  const receivedNote =
+    stage === "balance" && advanceAmount ? (
+      <p className="rounded-sm border border-line bg-white p-3 text-sm" data-testid="advance-received">
+        Advance of {formatMoney(advanceAmount, currency)} received. Thank you. The balance is next.
+      </p>
+    ) : null;
   const claimForm = sent ? (
     <div className="rounded-sm border border-line bg-white p-3 space-y-1">
       <p className="text-sm text-stamp font-medium">Waiting for freelancer to confirm</p>
       <p className="text-sm text-muted">
-        You marked this as paid. Client Kit never holds the funds. They will confirm when it arrives.
+        You marked {stage === "advance" ? "the advance" : stage === "balance" ? "the balance" : "this"} as paid. Client Kit never holds the funds. They will confirm when it arrives.
       </p>
       {savedReference ? (
         <p className="text-sm">
@@ -111,8 +131,9 @@ export function PayPanel({
   if (payoutType === "upi") {
     return (
       <div className="space-y-4">
+        {receivedNote}
         <p className="text-sm">
-          Pay {formatMoney(amountDue, currency)} to{" "}
+          Pay {stageWord}{formatMoney(amountDue, currency)} to{" "}
           <span className="font-medium">{workspaceName}</span> via UPI.
         </p>
         <div className="flex flex-col items-start gap-4 min-[480px]:flex-row landscape:flex-row">
@@ -121,7 +142,7 @@ export function PayPanel({
             payeeName={workspaceName}
             amountMinor={amountDue}
             currency={currency}
-            note={title}
+            note={stage === "advance" ? `${title} advance` : stage === "balance" ? `${title} balance` : title}
           />
           <div>
             <p className="break-all font-mono text-base sm:text-lg">{payoutValue}</p>
@@ -137,8 +158,9 @@ export function PayPanel({
 
   return (
     <div className="space-y-4">
+      {receivedNote}
       <p className="text-sm">
-        Pay {formatMoney(amountDue, currency)} using the freelancer&apos;s payment link. Client Kit does not take this
+        Pay {stageWord}{formatMoney(amountDue, currency)} using the freelancer&apos;s payment link. Client Kit does not take this
         money.
       </p>
       <a

@@ -89,12 +89,16 @@ function SignedPdf({
             <Text>{formatMoney(payload.subtotal, payload.currency)}</Text>
           </View>
           <View style={styles.row}>
-            <Text>Due now ({payload.deposit_percent}%)</Text>
+            <Text>
+              {payload.remainder_amount > 0 && payload.amount_due > 0
+                ? `Advance after signing (${payload.deposit_percent}%)`
+                : `Due now (${payload.deposit_percent}%)`}
+            </Text>
             <Text>{formatMoney(payload.amount_due, payload.currency)}</Text>
           </View>
           {payload.remainder_amount > 0 ? (
             <View style={styles.row}>
-              <Text>Due later</Text>
+              <Text>Balance, due later</Text>
               <Text>{formatMoney(payload.remainder_amount, payload.currency)}</Text>
             </View>
           ) : null}

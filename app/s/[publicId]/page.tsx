@@ -10,6 +10,7 @@ import { formatMoney } from "@/lib/money";
 import { sanitizeScopeHtml } from "@/lib/sanitize";
 import { signedLogoUrl } from "@/lib/storage";
 import { canClaimPayment, canSign, effectiveStatus } from "@/lib/document-state";
+import { amountConfirmed, hasBalanceStage, paymentStage, stageAmount } from "@/lib/job-payments";
 import { ErrorState } from "@/components/empty-state";
 import { LogoMark } from "@/components/logo-mark";
 import { PayPanel } from "@/components/pay-panel";
@@ -87,6 +88,9 @@ export default async function PublicDocumentPage({
   const hash = hashFrozenPayload(payload);
   const signable = canSign(status, doc.expires_at);
   const payable = canClaimPayment(status, doc.expires_at);
+  const split = hasBalanceStage(doc);
+  const stage = paymentStage({ ...doc, status });
+  const payAmount = stageAmount({ ...doc, status });
 
   if (status === "void") {
     return (
@@ -149,16 +153,31 @@ export default async function PublicDocumentPage({
             <span>Subtotal</span>
             <span>{formatMoney(doc.subtotal, doc.currency)}</span>
           </div>
-          <div className="flex justify-between font-medium">
-            <span>Due now{doc.deposit_percent === 0 || doc.deposit_percent === 100 ? "" : ` (${doc.deposit_percent}%)`}</span>
-            <span>{formatMoney(doc.amount_due, doc.currency)}</span>
-          </div>
-          {doc.remainder_amount > 0 ? (
-            <div className="flex justify-between text-muted">
-              <span>Due later</span>
-              <span>{formatMoney(doc.remainder_amount, doc.currency)}</span>
-            </div>
-          ) : null}
+          {split ? (
+            <>
+              <div className="flex justify-between font-medium">
+                <span>Advance ({doc.deposit_percent}%), paid after you sign</span>
+                <span>{formatMoney(doc.amount_due, doc.currency)}</span>
+              </div>
+              <div className="flex justify-between text-muted">
+                <span>Balance, due later</span>
+                <span>{formatMoney(doc.remainder_amount, doc.currency)}</span>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="flex justify-between font-medium">
+                <span>Due now{doc.deposit_percent === 0 || doc.deposit_percent === 100 ? "" : ` (${doc.deposit_percent}%)`}</span>
+                <span>{formatMoney(doc.amount_due, doc.currency)}</span>
+              </div>
+              {doc.remainder_amount > 0 ? (
+                <div className="flex justify-between text-muted">
+                  <span>Due later</span>
+                  <span>{formatMoney(doc.remainder_amount, doc.currency)}</span>
+                </div>
+              ) : null}
+            </>
+          )}
         </div>
       </section>
 
@@ -167,7 +186,7 @@ export default async function PublicDocumentPage({
           <div>
             <h2 className="font-serif text-2xl">Paid</h2>
             <p className="mt-2 text-sm">
-              {client.name}, signed and {formatMoney(doc.amount_due, doc.currency)} received.
+              {client.name}, signed and {formatMoney(amountConfirmed({ ...doc, status }), doc.currency)} received.
             </p>
             <a href={`/s/${publicId}/pdf`} className="mt-4 inline-block text-sm underline decoration-line underline-offset-4">
               Download signed PDF
@@ -187,11 +206,14 @@ export default async function PublicDocumentPage({
               </a>
             </div>
             <div>
-              <h3 className="font-serif text-xl">Pay</h3>
+              <h3 className="font-serif text-xl">{stage === "advance" ? "Pay the advance" : stage === "balance" ? "Pay the balance" : "Pay"}</h3>
               <div className="mt-3">
                 <PayPanel
+                  key={`${stage}-${status}`}
                   publicId={publicId}
-                  amountDue={doc.amount_due}
+                  amountDue={payAmount}
+                  stage={stage === "advance" || stage === "balance" ? stage : "single"}
+                  advanceAmount={doc.amount_due}
                   currency={doc.currency}
                   payoutType={workspace.payout_type}
                   payoutValue={workspace.payout_value}
@@ -206,7 +228,11 @@ export default async function PublicDocumentPage({
         ) : signable.ok ? (
           <div>
             <h2 className="font-serif text-2xl">Sign</h2>
-            <p className="mt-1 text-sm text-muted">Type your legal name. Then pay the amount due on this same page.</p>
+            <p className="mt-1 text-sm text-muted">
+              {split
+                ? `Type your legal name. Then pay the advance of ${formatMoney(doc.amount_due, doc.currency)} on this same page. The balance of ${formatMoney(doc.remainder_amount, doc.currency)} comes later.`
+                : "Type your legal name. Then pay the amount due on this same page."}
+            </p>
             <div className="mt-4">
               <SignForm publicId={publicId} documentHash={hash} defaultEmail={client.email} />
             </div>

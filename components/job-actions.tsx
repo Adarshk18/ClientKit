@@ -8,6 +8,7 @@ import {
   markPaidAction,
   nudgeClientAction,
   rejectPaymentClaimAction,
+  undoAdvancePaidAction,
   resendDocumentAction,
   sendDocumentAction,
   voidDocumentAction,
@@ -21,11 +22,13 @@ export function JobActions({
   status,
   publicId,
   paymentReference,
+  stage = "single",
 }: {
   documentId: string;
   status: DocStatus;
   publicId: string;
   paymentReference?: string | null;
+  stage?: "single" | "advance" | "balance" | "settled";
 }) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
@@ -48,7 +51,9 @@ export function JobActions({
       {error ? <p className="text-sm text-danger">{error}</p> : null}
       {status === "payment_sent" ? (
         <div className="rounded-sm border border-line bg-cream p-3 text-sm">
-          <p className="text-stamp font-medium">Client says they paid, awaiting confirmation</p>
+          <p className="text-stamp font-medium">
+            Client says they paid{stage === "advance" ? " the advance" : stage === "balance" ? " the balance" : ""}, awaiting confirmation
+          </p>
           {paymentReference ? (
             <p className="mt-1">
               Reference: <span className="font-mono">{paymentReference}</span>
@@ -110,14 +115,26 @@ export function JobActions({
           </>
         ) : null}
         {status === "signed" ? (
-          <button
-            type="button"
-            disabled={pending}
-            className={btnPrimary}
-            onClick={() => run(() => markPaidAction(documentId))}
-          >
-            Mark paid
-          </button>
+          <>
+            <button
+              type="button"
+              disabled={pending}
+              className={btnPrimary}
+              onClick={() => run(() => markPaidAction(documentId))}
+            >
+              {stage === "advance" ? "Mark advance paid" : stage === "balance" ? "Mark balance paid" : "Mark paid"}
+            </button>
+            {stage === "balance" ? (
+              <button
+                type="button"
+                disabled={pending}
+                className={btnSecondary}
+                onClick={() => run(() => undoAdvancePaidAction(documentId))}
+              >
+                Advance not paid after all
+              </button>
+            ) : null}
+          </>
         ) : null}
         {status === "payment_sent" ? (
           <>
@@ -127,7 +144,7 @@ export function JobActions({
               className={btnPrimary}
               onClick={() => run(() => markPaidAction(documentId))}
             >
-              {pending ? <Spinner label="Saving" /> : "Confirm received"}
+              {pending ? <Spinner label="Saving" /> : stage === "advance" ? "Confirm advance received" : stage === "balance" ? "Confirm balance received" : "Confirm received"}
             </button>
             <button
               type="button"
