@@ -61,6 +61,9 @@ export function SiteFooter() {
           <Link href="/pricing" className="py-1 hover:text-ink">
             Pricing
           </Link>
+          <Link href="/tools" className="py-1 hover:text-ink">
+            Free tools
+          </Link>
           <Link href="/faq" className="py-1 hover:text-ink">
             FAQ
           </Link>

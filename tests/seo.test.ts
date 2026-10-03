@@ -21,6 +21,10 @@ describe("isProtectedPath", () => {
       "/privacy",
       "/login",
       "/signup",
+      "/tools",
+      "/tools/advance-payment-request-message-generator",
+      "/tools/client-follow-up-message-generator",
+      "/tools/freelance-proposal-clause-generator",
       "/s/demo-acme",
       "/s/abc123/pdf",
       "/auth/callback",
@@ -90,7 +94,7 @@ describe("robots and sitemap", () => {
 
   it("lists public pages only", () => {
     const urls = sitemap().map((entry) => new URL(entry.url).pathname);
-    expect(urls).toEqual(expect.arrayContaining(["/", "/pricing", "/faq", "/about", "/s/demo-acme"]));
+    expect(urls).toEqual(expect.arrayContaining(["/", "/pricing", "/faq", "/about", "/s/demo-acme", "/tools", "/tools/advance-payment-request-message-generator", "/tools/client-follow-up-message-generator", "/tools/freelance-proposal-clause-generator"]));
     expect(urls.some((path) => path.startsWith("/jobs") || path.startsWith("/settings"))).toBe(false);
   });
 });

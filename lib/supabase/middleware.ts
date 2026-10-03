@@ -6,6 +6,7 @@ import { supabaseAnonKey, supabaseUrl } from "@/lib/env";
  * Only app routes need a session. Everything else (marketing pages, /s/ links, robots.txt,
  * sitemap.xml, OG images, unknown paths) falls through to Next.js, so crawlers get real files
  * and typos get a real 404 instead of a login redirect. /admin runs its own check.
+ * The free tools under /tools are public on purpose: they work without a login and crawlers must reach them.
  */
 const PROTECTED_PREFIXES = ["/jobs", "/settings", "/api"];
 const PUBLIC_API_PREFIXES = ["/api/webhooks/", "/api/cron/", "/api/analytics", "/api/geo"];

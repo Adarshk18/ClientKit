@@ -6,7 +6,7 @@ Client Kit is built by Adarsh Sharma, a solo founder in India.
 
 ## What it does
 
-- Proposal: scope, line items, deposit percent, expiry.
+- Proposal: scope, line items, an advance of 0, 30, 40 or 50 percent, an optional revision limit, expiry.
 - Signature: a simple electronic signature (legal name, intent checkbox, IP, time, document hash). It is not Aadhaar eSign and not a digital signature certificate.
 - Payment: the client pays your UPI VPA (with a QR code) or opens your own hosted payment link. The money never passes through Client Kit.
 - The client does not create an account. The link can be shared on WhatsApp.
@@ -30,3 +30,4 @@ No invoicing, time tracking, escrow, CRM or pipeline, calendar booking, client p
 - [FAQ](https://client-kit-omega.vercel.app/faq)
 - [About](https://client-kit-omega.vercel.app/about)
 - [Live demo](https://client-kit-omega.vercel.app/s/demo-acme)
+- [Free tools](https://client-kit-omega.vercel.app/tools): advance payment request, client follow-up and proposal clause makers, no login

@@ -198,7 +198,7 @@ export default function MarketingPage() {
               <div>
                 <h3 className="font-serif text-xl">You write it</h3>
                 <p className="mt-1 text-sm leading-6 text-muted">
-                  Client name, scope, line items, deposit percent, expiry. Save a draft or send. Sending emails the
+                  Client name, scope, line items, an advance of none, 30, 40 or 50 percent, how many revision rounds, expiry. Save a draft or send. Sending emails the
                   client a private link.
                 </p>
               </div>
@@ -245,7 +245,7 @@ export default function MarketingPage() {
             </li>
             <li>
               <strong className="text-ink">The client does not make an account.</strong> They open one link, sign, and
-              pay, on their phone if they like. Share it on WhatsApp. Nudge them if they stall.
+              pay, on their phone if they like. Share it on WhatsApp. Your dashboard lists who needs a nudge, with a message ready to send yourself.
             </li>
             <li>
               <strong className="text-ink">UPI is a first-class option.</strong> Save your UPI ID and the client gets a

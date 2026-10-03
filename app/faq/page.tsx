@@ -42,8 +42,8 @@ const faqs: { q: string; a: string }[] = [
     a: "No. The client opens your link, reads the proposal, types their name and email, ticks a box to sign, and pays. There is no signup or password for them.",
   },
   {
-    q: "Can I ask for a deposit instead of the full amount?",
-    a: "Yes. Each job has a deposit percent from 0 to 100. The client page shows the amount due now, and that is what the client pays.",
+    q: "Can I ask for an advance instead of the full amount?",
+    a: "Yes. Each job has an advance of none, 30, 40 or 50 percent. After the client signs, they pay only the advance. You confirm it, and then they pay the balance the same way. Jobs with no advance work as before: one payment for the full amount.",
   },
   {
     q: "Does Client Kit hold or process the money?",
@@ -103,7 +103,15 @@ const faqs: { q: string; a: string }[] = [
   },
   {
     q: "What if they viewed it and went quiet?",
-    a: "Click Nudge client. We email them once an hour max. Duplicate a finished job when the next one is the same shape.",
+    a: "Your dashboard has a list called Needs a nudge today. A job shows up when it was sent but not viewed or signed after 2 days, when it is signed but the advance is unpaid, when a balance date has passed, or when the client says they paid and you have not confirmed. Each one has a button that opens a ready WhatsApp or email message. Duplicate a finished job when the next one is the same shape.",
+  },
+  {
+    q: "Does Client Kit send follow-ups for me?",
+    a: "No. The WhatsApp and email buttons only open your own app with the message filled in, or copy the text. You read it and press send. Client Kit notes the time you nudged, so the job leaves the list for a couple of days. The separate Nudge client button on a sent job emails the client once you click it.",
+  },
+  {
+    q: "Can I limit how many revisions a client gets?",
+    a: "Yes. When you write a job you can set how many revision rounds are included and the price of an extra round. The client sees that on the proposal before they sign, and what they agreed is stored with their signature. If you leave it empty, the proposal says nothing about revisions.",
   },
 ];
 
