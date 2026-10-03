@@ -168,6 +168,8 @@ async function insertFreshDemoDocument(
     client_name: "Acme",
     client_email: "ops@acme.example",
     workspace_name: "Studio North",
+    revisions_included: 2,
+    revision_extra_price: 15000,
   });
   const frozenHash = hashFrozenPayload(frozen);
 
@@ -185,6 +187,8 @@ async function insertFreshDemoDocument(
       deposit_amount: 60000,
       amount_due: 60000,
       remainder_amount: 60000,
+      revisions_included: 2,
+      revision_extra_price: 15000,
       status: "sent",
       sent_at: new Date().toISOString(),
       frozen_payload: frozen,

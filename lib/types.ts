@@ -39,6 +39,8 @@ export type FrozenPayload = {
   client_name: string;
   client_email: string;
   workspace_name: string;
+  /** Only present when the freelancer set a revision clause. Old documents do not have it. */
+  revisions?: { included: number; extra_price: number | null };
 };
 
 export type WorkspaceRow = {

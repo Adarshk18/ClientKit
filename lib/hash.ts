@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { revisionTermsFrom } from "@/lib/revisions";
 import type { FrozenPayload } from "@/lib/types";
 
 export function stableStringify(value: unknown): string {
@@ -34,7 +35,10 @@ export function buildFrozenPayload(input: {
   client_name: string;
   client_email: string;
   workspace_name: string;
+  revisions_included?: number | null;
+  revision_extra_price?: number | null;
 }): FrozenPayload {
+  const revisions = revisionTermsFrom(input);
   return {
     title: input.title,
     scope_html: input.scope_html,
@@ -52,5 +56,7 @@ export function buildFrozenPayload(input: {
     client_name: input.client_name,
     client_email: input.client_email,
     workspace_name: input.workspace_name,
+    // Added only when set, so the hash of every older document stays exactly the same.
+    ...(revisions ? { revisions: { included: revisions.included, extra_price: revisions.extra_price } } : {}),
   };
 }

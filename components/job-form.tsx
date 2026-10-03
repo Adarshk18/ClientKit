@@ -33,6 +33,8 @@ export function JobForm({
     scope_html: string;
     currency: string;
     deposit_percent: number;
+    revisions_included?: number | null;
+    revision_extra_price?: number | null;
     expires_at: string;
     line_items: { label: string; qty: number; unit_amount: number }[];
   };
@@ -46,6 +48,16 @@ export function JobForm({
   const initialAdvance = defaultValues ? (defaultValues.deposit_percent === 100 ? 0 : defaultValues.deposit_percent) : 30;
   const [deposit, setDeposit] = useState(String(initialAdvance));
   const advanceOptions = ADVANCE_OPTIONS.includes(initialAdvance) ? ADVANCE_OPTIONS : [...ADVANCE_OPTIONS, initialAdvance].sort((a, b) => a - b);
+  const [revisions, setRevisions] = useState(
+    defaultValues?.revisions_included === null || defaultValues?.revisions_included === undefined
+      ? ""
+      : String(defaultValues.revisions_included),
+  );
+  const [extraPrice, setExtraPrice] = useState(
+    defaultValues?.revision_extra_price
+      ? String(fromMinorUnits(defaultValues.revision_extra_price, defaultValues?.currency ?? workspaceCurrency))
+      : "",
+  );
   const [items, setItems] = useState<Item[]>(
     defaultValues?.line_items.length
       ? defaultValues.line_items.map((item) => ({
@@ -75,6 +87,9 @@ export function JobForm({
     fd.set("line_items", JSON.stringify(parsedItems));
     fd.set("currency", currency);
     fd.set("deposit_percent", deposit);
+    fd.set("revisions_included", revisions);
+    const extra = parseMajorAmount(extraPrice);
+    fd.set("revision_extra_price", revisions !== "" && extra ? String(toMinorUnits(extra, currency)) : "");
     if (documentId) fd.set("document_id", documentId);
     const expires = fd.get("expires_at");
     if (typeof expires === "string" && expires) {
@@ -251,6 +266,34 @@ export function JobForm({
         <label className="text-sm">
           Expires
           <input name="expires_at" type="datetime-local" defaultValue={defaultValues?.expires_at} className={field} />
+        </label>
+      </section>
+
+      <section className="grid gap-4 sm:grid-cols-2" data-testid="revision-fields">
+        <label className="text-sm">
+          Revision rounds included
+          <select value={revisions} onChange={(e) => setRevisions(e.target.value)} className={field}>
+            <option value="">Not stated</option>
+            {[0, 1, 2, 3, 4, 5].map((n) => (
+              <option key={n} value={String(n)}>
+                {n === 0 ? "None included" : n === 1 ? "1 round" : `${n} rounds`}
+              </option>
+            ))}
+          </select>
+          <span className="mt-1 block text-xs text-muted">
+            The client reads this before signing and agrees to it when they sign.
+          </span>
+        </label>
+        <label className="text-sm">
+          Price per extra round ({currency || "currency"})
+          <input
+            inputMode="decimal"
+            value={extraPrice}
+            onChange={(e) => setExtraPrice(e.target.value)}
+            disabled={revisions === ""}
+            placeholder="Leave blank to quote case by case"
+            className={field}
+          />
         </label>
       </section>
 

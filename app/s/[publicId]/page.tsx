@@ -7,6 +7,7 @@ import { DemoSessionCookie } from "@/components/demo-session-cookie";
 import { loadPublicDocument, recordPublicView } from "@/lib/public-document";
 import { buildFrozenPayload, hashFrozenPayload } from "@/lib/hash";
 import { formatMoney } from "@/lib/money";
+import { revisionClause, revisionTermsFrom } from "@/lib/revisions";
 import { sanitizeScopeHtml } from "@/lib/sanitize";
 import { signedLogoUrl } from "@/lib/storage";
 import { canClaimPayment, canSign, effectiveStatus } from "@/lib/document-state";
@@ -84,7 +85,10 @@ export default async function PublicDocumentPage({
     client_name: client.name,
     client_email: client.email,
     workspace_name: workspace.name,
+    revisions_included: doc.revisions_included,
+    revision_extra_price: doc.revision_extra_price,
   });
+  const revisions = revisionTermsFrom(doc);
   const hash = hashFrozenPayload(payload);
   const signable = canSign(status, doc.expires_at);
   const payable = canClaimPayment(status, doc.expires_at);
@@ -131,6 +135,17 @@ export default async function PublicDocumentPage({
           dangerouslySetInnerHTML={{ __html: sanitizeScopeHtml(doc.scope_html || "<p></p>") }}
         />
       </section>
+
+      {revisions ? (
+        <section className="mt-8" data-testid="revision-clause">
+          <h2 className="font-serif text-xl">Revisions</h2>
+          <div className="mt-3 space-y-1 border-l-2 border-line pl-4 text-[15px] leading-relaxed">
+            {revisionClause(revisions, doc.currency).map((line) => (
+              <p key={line}>{line}</p>
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       <section className="mt-8">
         <h2 className="font-serif text-xl">Price</h2>
@@ -234,7 +249,7 @@ export default async function PublicDocumentPage({
                 : "Type your legal name. Then pay the amount due on this same page."}
             </p>
             <div className="mt-4">
-              <SignForm publicId={publicId} documentHash={hash} defaultEmail={client.email} />
+              <SignForm publicId={publicId} documentHash={hash} defaultEmail={client.email} hasRevisions={Boolean(revisions)} />
             </div>
           </div>
         ) : (

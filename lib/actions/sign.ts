@@ -86,6 +86,8 @@ export async function signDocumentAction(
       client_name: client.name,
       client_email: client.email,
       workspace_name: workspace.name,
+      revisions_included: doc.revisions_included,
+      revision_extra_price: doc.revision_extra_price,
     });
     const hash = hashFrozenPayload(payload);
     const submittedHash = String(formData.get("document_hash") ?? "");

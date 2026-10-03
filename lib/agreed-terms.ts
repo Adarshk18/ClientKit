@@ -11,6 +11,8 @@ export type AgreedTerms = {
   advance_percent: number;
   advance_amount: number;
   balance_amount: number;
+  /** Present only when the proposal had a revision clause. */
+  revisions?: { included: number; extra_price: number | null };
 };
 
 export function buildAgreedTerms(payload: FrozenPayload): AgreedTerms {
@@ -21,5 +23,6 @@ export function buildAgreedTerms(payload: FrozenPayload): AgreedTerms {
     advance_percent: split ? payload.deposit_percent : 0,
     advance_amount: payload.amount_due,
     balance_amount: payload.remainder_amount,
+    ...(payload.revisions ? { revisions: payload.revisions } : {}),
   };
 }

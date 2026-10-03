@@ -1,7 +1,17 @@
 import { Document, Page, Text, View, StyleSheet, renderToBuffer } from "@react-pdf/renderer";
-import { formatMoney } from "@/lib/money";
+import { revisionSummary } from "@/lib/revisions";
+import { formatMoney as formatMoneyRaw } from "@/lib/money";
 import { htmlToPlainText } from "@/lib/sanitize";
 import type { FrozenPayload } from "@/lib/types";
+
+/** The built-in PDF fonts have no rupee sign (it printed as a stray character), so spell it out. */
+function pdfSafe(text: string): string {
+  return text.replaceAll("\u20B9", "INR ");
+}
+
+function formatMoney(minor: number, currency: string): string {
+  return pdfSafe(formatMoneyRaw(minor, currency));
+}
 
 const styles = StyleSheet.create({
   page: {
@@ -68,6 +78,13 @@ function SignedPdf({
 
         <Text style={styles.section}>Scope</Text>
         <Text>{scope}</Text>
+
+        {payload.revisions ? (
+          <>
+            <Text style={styles.section}>Revisions</Text>
+            <Text>{pdfSafe(revisionSummary(payload.revisions, payload.currency))}</Text>
+          </>
+        ) : null}
 
         <Text style={styles.section}>Line items</Text>
         {payload.line_items.length === 0 ? (

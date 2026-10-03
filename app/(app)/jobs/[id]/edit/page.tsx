@@ -54,6 +54,8 @@ export default async function EditJobPage({ params }: { params: Promise<{ id: st
             scope_html: htmlToPlainText(job.scope_html),
             currency: job.currency,
             deposit_percent: job.deposit_percent,
+            revisions_included: job.revisions_included,
+            revision_extra_price: job.revision_extra_price,
             expires_at: toDatetimeLocal(job.expires_at),
             line_items: items.map((item: { label: string; qty: number; unit_amount: number }) => ({
               label: item.label,

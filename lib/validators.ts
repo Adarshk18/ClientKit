@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { MAX_REVISION_ROUNDS } from "@/lib/revisions";
 import { MAX_LINE_ITEMS, MAX_SCOPE_LENGTH, MAX_TITLE_LENGTH } from "@/lib/sanitize";
 
 export const emailSchema = z.string().trim().email().max(320);
@@ -19,6 +20,8 @@ export const documentInputSchema = z.object({
     .length(3)
     .transform((v) => v.toUpperCase()),
   deposit_percent: z.number().int().min(0).max(100),
+  revisions_included: z.number().int().min(0).max(MAX_REVISION_ROUNDS).nullable().default(null),
+  revision_extra_price: z.number().int().min(0).max(1_000_000_000).nullable().default(null),
   expires_at: z.string().datetime().nullable().optional(),
   line_items: z.array(lineItemSchema).max(MAX_LINE_ITEMS),
 });

@@ -21,6 +21,22 @@ import { assertSameOrigin, requestMeta } from "@/lib/request";
 import { assertWorkspaceOwns } from "@/lib/workspace";
 import type { ActionResult, DocumentRow, LineItemRow } from "@/lib/types";
 
+/** "" or missing means not set. Anything that is not a whole number stays NaN so validation rejects it. */
+function parseOptionalInt(raw: FormDataEntryValue | null): number | null {
+  if (raw === null) return null;
+  const text = String(raw).trim();
+  if (text === "") return null;
+  return Number(text);
+}
+
+function revisionColumns(input: { revisions_included: number | null; revision_extra_price: number | null }) {
+  const set = input.revisions_included !== null;
+  return {
+    revisions_included: set ? input.revisions_included : null,
+    revision_extra_price: set && input.revision_extra_price ? input.revision_extra_price : null,
+  };
+}
+
 function parseDocumentForm(formData: FormData) {
   let lineItems: unknown = [];
   const raw = formData.get("line_items");
@@ -40,6 +56,8 @@ function parseDocumentForm(formData: FormData) {
     scope_html: formData.get("scope_html") ?? "",
     currency: formData.get("currency"),
     deposit_percent: Number(formData.get("deposit_percent") ?? 100),
+    revisions_included: parseOptionalInt(formData.get("revisions_included")),
+    revision_extra_price: parseOptionalInt(formData.get("revision_extra_price")),
     expires_at,
     line_items: lineItems,
   });
@@ -127,6 +145,7 @@ export async function saveDraftAction(
           scope_html,
           currency: input.currency,
           ...amounts,
+          ...revisionColumns(input),
           expires_at: input.expires_at ?? null,
         })
         .eq("id", existingId)
@@ -148,6 +167,7 @@ export async function saveDraftAction(
         scope_html,
         currency: input.currency,
         ...amounts,
+        ...revisionColumns(input),
         expires_at: input.expires_at ?? null,
         status: "draft",
       })
@@ -208,6 +228,8 @@ export async function sendDocumentAction(documentId: string): Promise<ActionResu
       client_name: doc.clients.name,
       client_email: doc.clients.email,
       workspace_name: workspace.name,
+      revisions_included: doc.revisions_included,
+      revision_extra_price: doc.revision_extra_price,
     });
     const contentHash = hashFrozenPayload(payload);
 
@@ -331,6 +353,7 @@ export async function saveAsNewVersionAction(
         scope_html,
         currency: input.currency,
         ...amounts,
+        ...revisionColumns(input),
         expires_at: input.expires_at ?? null,
         status: "draft",
         version: current.version + 1,
@@ -668,6 +691,8 @@ export async function duplicateDocumentAction(documentId: string): Promise<Actio
         deposit_amount: doc.deposit_amount,
         amount_due: doc.amount_due,
         remainder_amount: doc.remainder_amount,
+        revisions_included: doc.revisions_included,
+        revision_extra_price: doc.revision_extra_price,
         expires_at: null,
         status: "draft",
       })

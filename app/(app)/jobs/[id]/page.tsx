@@ -7,6 +7,7 @@ import { effectiveStatus } from "@/lib/document-state";
 import { appUrl } from "@/lib/env";
 import { JobActions } from "@/components/job-actions";
 import { BalanceDueForm } from "@/components/payment-progress";
+import { revisionClause, revisionTermsFrom } from "@/lib/revisions";
 import { amountConfirmed, hasBalanceStage, paymentStage } from "@/lib/job-payments";
 import { SharePanel } from "@/components/share-panel";
 import { StatusChip } from "@/components/status-chip";
@@ -35,6 +36,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
   );
   const publicLink = `${appUrl()}/s/${job.public_id}`;
 
+  const revisions = revisionTermsFrom(job);
   const stage = paymentStage({ ...job, status });
   const split = hasBalanceStage(job);
   const advanceDone = Boolean(job.advance_paid_at) || (status === "paid" && split);
@@ -135,6 +137,12 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
           className="prose mt-3 max-w-none text-sm"
           dangerouslySetInnerHTML={{ __html: sanitizeScopeHtml(job.scope_html || "<p>No scope written.</p>") }}
         />
+        {revisions ? (
+          <div className="mt-6 text-sm" data-testid="revision-clause">
+            <h3 className="font-medium">Revisions</h3>
+            <p className="mt-1 text-muted">{revisionClause(revisions, job.currency).join(" ")}</p>
+          </div>
+        ) : null}
         <ul className="mt-6 divide-y divide-line text-sm">
           {items.map((item: { id: string; label: string; qty: number; unit_amount: number }) => (
             <li key={item.id} className="flex justify-between py-2">
