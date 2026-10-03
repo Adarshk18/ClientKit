@@ -96,9 +96,9 @@ export async function sendMarkedPaidToFreelancer(input: {
 }): Promise<void> {
   await send(
     input.to,
-    `${input.clientName} — signed + ${formatMoney(input.amount, input.currency)} received`,
+    `${input.clientName}: signed + ${formatMoney(input.amount, input.currency)} received`,
     wrap(`
-      <p><strong>${escapeHtml(input.clientName)}</strong> — signed + ${escapeHtml(formatMoney(input.amount, input.currency))} received.</p>
+      <p><strong>${escapeHtml(input.clientName)}</strong>: signed + ${escapeHtml(formatMoney(input.amount, input.currency))} received.</p>
       <p>${escapeHtml(input.title)}</p>
     `),
   );

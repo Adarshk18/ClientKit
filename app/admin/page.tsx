@@ -43,7 +43,7 @@ function fmtDay(iso: string): string {
 
 function fmtDayHeader(day: string): string {
   try {
-    // day is YYYY-MM-DD in IST civil calendar — present as a noon IST instant.
+    // day is YYYY-MM-DD in IST civil calendar, so present as a noon IST instant.
     const iso = `${day}T06:30:00.000Z`;
     return new Date(iso).toLocaleDateString("en-IN", {
       timeZone: "Asia/Calcutta",
@@ -79,7 +79,7 @@ export default async function AdminPage() {
             Real customers only. Demo workspace, ADMIN_EMAILS accounts, and this browser (founder
             device cookie) are excluded
             {data.excluded.workspaces || data.excluded.analytics
-              ? ` — ${data.excluded.workspaces} workspace${data.excluded.workspaces === 1 ? "" : "s"}, ${data.excluded.analytics} analytics event${data.excluded.analytics === 1 ? "" : "s"} dropped`
+              ? `: ${data.excluded.workspaces} workspace${data.excluded.workspaces === 1 ? "" : "s"}, ${data.excluded.analytics} analytics event${data.excluded.analytics === 1 ? "" : "s"} dropped`
               : ""}
             . Analytics inserts need migration <code className="text-ink">0002_admin_analytics.sql</code>{" "}
             applied in Supabase.
@@ -147,7 +147,7 @@ export default async function AdminPage() {
                       {day.accounts.map((a) => (
                         <tr key={a.id} className="border-b border-line last:border-0">
                           <td className="px-3 py-2 font-medium">{a.name}</td>
-                          <td className="px-3 py-2 text-muted">{a.email ?? "—"}</td>
+                          <td className="px-3 py-2 text-muted">{a.email ?? "-"}</td>
                           <td className="px-3 py-2 capitalize">{a.plan}</td>
                           <td className="px-3 py-2 tabular-nums text-muted">{fmtDay(a.created_at)}</td>
                           <td className="px-3 py-2 tabular-nums">{formatActiveMinutes(a.activeMinutes)}</td>
@@ -331,7 +331,7 @@ export default async function AdminPage() {
                 <li key={a.id} className="px-3 py-2">
                   <span className="font-medium">{a.name}</span>
                   <span className="mt-0.5 block text-[12px] text-muted">
-                    {a.path ?? "—"} · {fmtDay(a.created_at)} IST
+                    {a.path ?? "-"} · {fmtDay(a.created_at)} IST
                   </span>
                 </li>
               ))

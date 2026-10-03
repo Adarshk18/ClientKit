@@ -35,9 +35,9 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
 
   const aha =
     status === "paid"
-      ? `${client?.name ?? "Client"} — signed + ${formatMoney(job.amount_due, job.currency)} received.`
+      ? `${client?.name ?? "Client"}: signed + ${formatMoney(job.amount_due, job.currency)} received.`
       : status === "payment_sent"
-        ? `${client?.name ?? "Client"} — payment sent, awaiting your confirmation.`
+        ? `${client?.name ?? "Client"}: payment sent, awaiting your confirmation.`
         : null;
 
   return (
@@ -60,6 +60,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
           clientName={client?.name ?? "there"}
           title={job.title}
           workspaceName={workspace.name}
+          origin={appUrl()}
         />
       ) : null}
 

@@ -4,6 +4,9 @@ import { formatMoney } from "@/lib/money";
 import { formatDateTime } from "@/lib/dates";
 import { effectiveStatus } from "@/lib/document-state";
 import { EmptyState } from "@/components/empty-state";
+import { NudgeList, type NudgeItem } from "@/components/nudge-list";
+import { balanceOutstanding } from "@/lib/job-payments";
+import { compareNudges, nudgeFor } from "@/lib/nudges";
 import { StatusChip } from "@/components/status-chip";
 import { btnPrimary } from "@/lib/ui";
 import type { DocStatus } from "@/lib/types";
@@ -21,6 +24,31 @@ export default async function JobsPage({
     .eq("workspace_id", workspace.id)
     .is("deleted_at", null)
     .order("created_at", { ascending: false });
+
+  const nudgeItems: NudgeItem[] = (data ?? [])
+    .flatMap((row) => {
+      const nudge = nudgeFor(row);
+      if (!nudge) return [];
+      const client = Array.isArray(row.clients) ? row.clients[0] : row.clients;
+      const status = effectiveStatus(row.status as DocStatus, row.expires_at);
+      return [
+        {
+          id: row.id as string,
+          title: row.title as string,
+          currency: row.currency as string,
+          publicId: row.public_id as string,
+          status,
+          clientName: (client?.name as string | undefined) ?? "Client",
+          clientEmail: (client?.email as string | undefined) ?? "",
+          viewedAt: row.viewed_at as string | null,
+          signedAt: row.signed_at as string | null,
+          balanceDueAt: row.balance_due_at as string | null,
+          payment: { ...row, status } as NudgeItem["payment"],
+          nudge,
+        },
+      ];
+    })
+    .sort((a, b) => compareNudges(a.nudge, b.nudge));
 
   const jobs = (data ?? []).filter((row) => {
     const status = effectiveStatus(row.status as DocStatus, row.expires_at);
@@ -46,6 +74,8 @@ export default async function JobsPage({
           New job
         </Link>
       </div>
+
+      <NudgeList items={nudgeItems} />
 
       <div className="mt-6 flex gap-3 text-sm">
         <Link
@@ -85,9 +115,9 @@ export default async function JobsPage({
             const client = Array.isArray(job.clients) ? job.clients[0] : job.clients;
             const aha =
               status === "paid"
-                ? `${client?.name ?? "Client"} — signed + ${formatMoney(job.amount_due, job.currency)} received.`
+                ? `${client?.name ?? "Client"}: signed + ${formatMoney(job.amount_due, job.currency)} received.`
                 : status === "payment_sent"
-                  ? `${client?.name ?? "Client"} — awaiting payment confirmation`
+                  ? `${client?.name ?? "Client"}: awaiting payment confirmation`
                   : null;
             return (
               <li key={job.id}>
@@ -96,7 +126,10 @@ export default async function JobsPage({
                     <div className="min-w-0">
                       <p className="break-words font-medium">{job.title}</p>
                       <p className="text-sm text-muted">
-                        {aha ?? `${client?.name ?? "Client"} · ${formatMoney(job.amount_due, job.currency)} due now`}
+                        {aha ??
+                          (status === "sent" || status === "viewed" || status === "signed"
+                            ? `${client?.name ?? "Client"} · balance due ${formatMoney(balanceOutstanding({ ...job, status }), job.currency)}`
+                            : `${client?.name ?? "Client"} · ${formatMoney(job.amount_due, job.currency)} due now`)}
                       </p>
                     </div>
                     <div className="flex items-center gap-3">

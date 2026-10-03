@@ -36,7 +36,7 @@ export function canClaimPayment(status: DocStatus, expiresAt: string | null, now
   return { ok: true };
 }
 
-/** @deprecated Prefer canClaimPayment — same gate for client pay panel. */
+/** @deprecated Prefer canClaimPayment, same gate for client pay panel. */
 export function canPay(status: DocStatus, expiresAt: string | null, now = new Date()) {
   return canClaimPayment(status, expiresAt, now);
 }

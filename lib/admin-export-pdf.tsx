@@ -41,7 +41,7 @@ function AdminPdfDoc({ data, generatedAt }: { data: AdminDashboard; generatedAt:
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        <Text style={styles.title}>Client Kit — Admin export</Text>
+        <Text style={styles.title}>Client Kit: Admin export</Text>
         <Text style={styles.subtitle}>Generated {generatedAt} (Asia/Calcutta)</Text>
 
         <Text style={styles.section}>KPIs</Text>
@@ -66,7 +66,7 @@ function AdminPdfDoc({ data, generatedAt }: { data: AdminDashboard; generatedAt:
           <Row key={plan} left={plan} right={String(data.planCounts[plan])} />
         ))}
 
-        <Text style={styles.section}>Funnel — docs by status</Text>
+        <Text style={styles.section}>Funnel: docs by status</Text>
         {Object.entries(data.docs.byStatus).map(([status, count]) => (
           <Row key={status} left={status} right={String(count)} />
         ))}
@@ -92,7 +92,7 @@ function AdminPdfDoc({ data, generatedAt }: { data: AdminDashboard; generatedAt:
         ))}
 
         <Text style={styles.section}>
-          New accounts by day (IST) — {totalNew} in window
+          New accounts by day (IST): {totalNew} in window
         </Text>
         {data.dailySignups.length === 0 ? (
           <Text style={styles.muted}>No signups in last 30d IST.</Text>
@@ -105,7 +105,7 @@ function AdminPdfDoc({ data, generatedAt }: { data: AdminDashboard; generatedAt:
               {day.accounts.map((a) => (
                 <Row
                   key={a.id}
-                  left={`${a.name} · ${a.email ?? "—"} · ${a.plan}`}
+                  left={`${a.name} · ${a.email ?? "-"} · ${a.plan}`}
                   right={`${formatActiveMinutes(a.activeMinutes)} · ${a.actionCount} actions`}
                 />
               ))}
@@ -134,7 +134,7 @@ function AdminPdfDoc({ data, generatedAt }: { data: AdminDashboard; generatedAt:
           <Text style={styles.muted}>None</Text>
         ) : (
           data.recentAnalytics.map((a) => (
-            <Row key={a.id} left={`${a.name} · ${a.path ?? "—"}`} right={a.created_at.slice(0, 16)} />
+            <Row key={a.id} left={`${a.name} · ${a.path ?? "-"}`} right={a.created_at.slice(0, 16)} />
           ))
         )}
       </Page>

@@ -31,7 +31,7 @@ export default async function BillingPage({
       {checkout === "return" ? (
         <p className="border border-line bg-cream px-4 py-3 text-sm">
           If this page still shows the old plan, wait a moment and refresh. Access is granted only after a verified
-          Dodo webhook — never from this return URL.
+          Dodo webhook, never from this return URL.
         </p>
       ) : null}
       {error ? (

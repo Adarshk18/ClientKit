@@ -309,7 +309,7 @@ export async function saveAsNewVersionAction(
       .in("status", ["sent", "viewed"])
       .select("id");
     if (voidError || !voided?.length) {
-      return { ok: false, error: "Document changed — refresh and try again." };
+      return { ok: false, error: "Document changed. Refresh and try again." };
     }
 
     await supabase.from("events").insert({
@@ -639,5 +639,3 @@ export async function nudgeClientAction(documentId: string): Promise<ActionResul
     return { ok: false, error: "Could not send the reminder." };
   }
 }
-
-

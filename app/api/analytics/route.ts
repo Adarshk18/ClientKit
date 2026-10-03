@@ -25,7 +25,7 @@ export async function POST(request: Request) {
 
   const name = typeof body.name === "string" ? body.name.trim() : "";
   if (!isAnalyticsEventName(name)) {
-    // Ignore unknown names quietly — do not teach scrapers the allowlist via errors.
+    // Ignore unknown names quietly. Do not teach scrapers the allowlist via errors.
     return NextResponse.json({ ok: true, ignored: true });
   }
 
@@ -89,7 +89,7 @@ export async function POST(request: Request) {
     });
     if (error) {
       logError("analytics.insert", error);
-      // Table may not exist yet if migration not applied — fail soft for clients.
+      // Table may not exist yet if migration not applied, so fail soft for clients.
       return NextResponse.json({ ok: false }, { status: 503 });
     }
   } catch (error) {

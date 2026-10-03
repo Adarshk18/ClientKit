@@ -30,7 +30,6 @@ export function JobActions({
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
-  const appUrl = typeof window !== "undefined" ? window.location.origin : "";
 
   function run(fn: () => Promise<{ ok: boolean; error?: string }>, next?: string) {
     startTransition(async () => {
@@ -49,7 +48,7 @@ export function JobActions({
       {error ? <p className="text-sm text-danger">{error}</p> : null}
       {status === "payment_sent" ? (
         <div className="rounded-sm border border-line bg-cream p-3 text-sm">
-          <p className="text-stamp font-medium">Client says they paid — awaiting confirmation</p>
+          <p className="text-stamp font-medium">Client says they paid, awaiting confirmation</p>
           {paymentReference ? (
             <p className="mt-1">
               Reference: <span className="font-mono">{paymentReference}</span>
@@ -155,11 +154,11 @@ export function JobActions({
             Download signed PDF
           </a>
         )}
-        {appUrl && status !== "draft" && status !== "void" ? (
+        {status !== "draft" && status !== "void" ? (
           <button
             type="button"
             className={btnSecondary}
-            onClick={() => navigator.clipboard.writeText(`${appUrl}/s/${publicId}`)}
+            onClick={() => navigator.clipboard.writeText(`${window.location.origin}/s/${publicId}`)}
           >
             Copy link
           </button>

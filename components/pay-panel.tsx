@@ -63,7 +63,7 @@ export function PayPanel({
     <div className="rounded-sm border border-line bg-white p-3 space-y-1">
       <p className="text-sm text-stamp font-medium">Waiting for freelancer to confirm</p>
       <p className="text-sm text-muted">
-        You marked this as paid. Client Kit never holds the funds — they will confirm when it arrives.
+        You marked this as paid. Client Kit never holds the funds. They will confirm when it arrives.
       </p>
       {savedReference ? (
         <p className="text-sm">

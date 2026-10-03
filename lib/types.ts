@@ -90,6 +90,12 @@ export type DocumentRow = {
   payment_claimed_at: string | null;
   payment_reference: string | null;
   payment_claim_note: string | null;
+  advance_paid_at: string | null;
+  balance_due_at: string | null;
+  revisions_included: number | null;
+  revision_extra_price: number | null;
+  last_nudged_at: string | null;
+  nudge_count: number;
   frozen_payload: FrozenPayload | null;
   frozen_hash: string | null;
   deleted_at: string | null;

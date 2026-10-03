@@ -33,7 +33,7 @@ export function jobTemplates(currency: string): JobTemplate[] {
     {
       slug: "coaching",
       label: "Coaching month",
-      title: "Coaching — one month",
+      title: "Coaching, one month",
       scope: "Four calls this month. Async notes between sessions. Cancel with 48 hours notice.",
       deposit_percent: 100,
       line_items: [{ label: "Month retainer", qty: 1, unit_amount: u(600) }],

@@ -8,14 +8,15 @@ export function SharePanel({
   clientName,
   title,
   workspaceName,
+  origin,
 }: {
   publicId: string;
   clientName: string;
   title: string;
   workspaceName: string;
+  origin: string;
 }) {
   const [copied, setCopied] = useState<string | null>(null);
-  const origin = typeof window !== "undefined" ? window.location.origin : "";
   const link = `${origin}/s/${publicId}`;
   const message = `Hi ${clientName}, ${workspaceName} sent you “${title}”. Review, sign, and pay on this page (no account needed): ${link}`;
 

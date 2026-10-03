@@ -1,5 +1,5 @@
 export function formatDateTime(iso: string | null, locale = "en"): string {
-  if (!iso) return "—";
+  if (!iso) return "-";
   return new Intl.DateTimeFormat(locale, {
     dateStyle: "medium",
     timeStyle: "short",
@@ -7,7 +7,7 @@ export function formatDateTime(iso: string | null, locale = "en"): string {
 }
 
 export function formatDate(iso: string | null, locale = "en"): string {
-  if (!iso) return "—";
+  if (!iso) return "-";
   return new Intl.DateTimeFormat(locale, { dateStyle: "medium" }).format(new Date(iso));
 }
 
