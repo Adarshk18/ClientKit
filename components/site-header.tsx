@@ -1,11 +1,17 @@
 import Link from "next/link";
 import { Wordmark } from "@/components/wordmark";
 import { HeaderAuth } from "@/components/header-auth";
-import { btnGhost } from "@/lib/ui";
+
+/** Header links use slightly tighter padding on phones so Free tools, Pricing and the auth buttons fit on one row. */
+const navLink =
+  "inline-flex min-h-11 items-center justify-center rounded-sm px-2 text-[13px] font-medium text-ink hover:text-stamp sm:px-3 sm:whitespace-nowrap";
 
 /**
  * `mobileCta={false}` hides the filled "Sign up" button below the sm breakpoint. The home page uses it
  * so the hero button is the one obvious tap on a phone.
+ *
+ * Phones below 420px drop the Pricing link where the Sign up button is shown (Pricing is still in the footer and on
+ * the home page), because Free tools, Pricing, Log in and Sign up do not fit on one row at 390px.
  *
  * This is the one header for every marketing page. The server HTML is always the signed-out version, so it
  * stays static and cacheable; HeaderAuth swaps in "Dashboard" on the client for signed-in visitors.
@@ -22,16 +28,19 @@ export function SiteHeader({
       <div className="ck-safe-header mx-auto flex min-h-11 max-w-6xl flex-wrap items-center justify-between gap-x-3 gap-y-1 px-3 py-1.5 sm:min-h-12 sm:px-4 sm:py-2 landscape-short:min-h-10 landscape-short:py-1">
         <Wordmark />
         <nav className="flex max-w-full flex-wrap items-center justify-end gap-0.5 sm:gap-1">
-          <Link href="/s/demo-acme" className={`${btnGhost} max-sm:hidden`}>
+          <Link href="/s/demo-acme" className={`${navLink} max-sm:hidden`}>
             Demo
           </Link>
-          <Link href="/pricing" className={btnGhost}>
+          <Link href="/tools" className={navLink}>
+            Free tools
+          </Link>
+          <Link href="/pricing" className={`${navLink}${showCta && mobileCta ? " max-[420px]:hidden" : ""}`}>
             Pricing
           </Link>
-          <Link href="/faq" className={`${btnGhost} max-[440px]:hidden`}>
+          <Link href="/faq" className={`${navLink} max-[440px]:hidden`}>
             FAQ
           </Link>
-          <Link href="/about" className={`${btnGhost} max-sm:hidden`}>
+          <Link href="/about" className={`${navLink} max-sm:hidden`}>
             About
           </Link>
           <HeaderAuth showCta={showCta} mobileCta={mobileCta} />
