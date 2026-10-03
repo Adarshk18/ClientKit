@@ -75,6 +75,8 @@ type TrackedLinkProps = {
   children: React.ReactNode;
   event?: AnalyticsEventName;
   meta?: Record<string, unknown>;
+  /** Set to "pending" or "ready" on links that change with the session (see globals.css). */
+  session?: "pending" | "ready";
 };
 
 /** Link that records a CTA / conversion click before navigating. */
@@ -84,11 +86,13 @@ export function TrackedLink({
   children,
   event = "cta_click",
   meta,
+  session,
 }: TrackedLinkProps) {
   return (
     <Link
       href={href}
       className={className}
+      data-session={session}
       onClick={() => track(event, { meta: { href, ...meta } })}
     >
       {children}

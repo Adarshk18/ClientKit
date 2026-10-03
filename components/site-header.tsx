@@ -1,11 +1,14 @@
 import Link from "next/link";
 import { Wordmark } from "@/components/wordmark";
-import { TrackedLink } from "@/components/track";
-import { btnNav, btnGhost } from "@/lib/ui";
+import { HeaderAuth } from "@/components/header-auth";
+import { btnGhost } from "@/lib/ui";
 
 /**
  * `mobileCta={false}` hides the filled "Get started" button below the sm breakpoint. The home page uses it
  * so the hero button is the one obvious tap on a phone.
+ *
+ * This is the one header for every marketing page. The server HTML is always the signed-out version, so it
+ * stays static and cacheable; HeaderAuth swaps in "Dashboard" on the client for signed-in visitors.
  */
 export function SiteHeader({
   showCta = true,
@@ -31,18 +34,7 @@ export function SiteHeader({
           <Link href="/about" className={`${btnGhost} max-sm:hidden`}>
             About
           </Link>
-          <Link href="/login" className={btnGhost}>
-            Log in
-          </Link>
-          {showCta ? (
-            <TrackedLink
-              href="/signup"
-              className={`${btnNav}${mobileCta ? "" : " max-sm:hidden"}`}
-              meta={{ cta: "header_get_started" }}
-            >
-              Get started
-            </TrackedLink>
-          ) : null}
+          <HeaderAuth showCta={showCta} mobileCta={mobileCta} />
         </nav>
       </div>
     </header>

@@ -197,3 +197,20 @@ li {
   white-space: nowrap;
   border-width: 0;
 }
+
+/*
+ * Session-aware CTAs. The server HTML is the signed-out version. For returning visitors only (html[data-ck-auth]
+ * is set by a tiny script in the layout when a Supabase session cookie exists), the CTAs keep their space but
+ * stay invisible until the session check answers, so a signed-in visitor never sees "Log in" flash by.
+ * If the check never answers, the CTAs appear after 3 seconds.
+ */
+html[data-ck-auth="maybe"] [data-session="pending"] {
+  visibility: hidden;
+  animation: ck-session-reveal 0s linear 3s forwards;
+}
+
+@keyframes ck-session-reveal {
+  to {
+    visibility: visible;
+  }
+}

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { JsonLd } from "@/components/json-ld";
 import { SiteFooter, SiteHeader } from "@/components/site-header";
 import { TrackPageView, TrackedLink } from "@/components/track";
+import { SessionLink } from "@/components/session-link";
 import { SITE_URL } from "@/lib/seo";
 import {
   CTA,
@@ -143,13 +144,12 @@ export function ToolCta({ tool }: { tool: ToolInfo }) {
       <p className="mt-2 max-w-[60ch] text-[15px] leading-6">{cta.body}</p>
       <p className="mt-1 max-w-[60ch] text-[15px] leading-6">{FOUNDER_LINE}</p>
       <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center">
-        <TrackedLink
-          href="/signup"
+        <SessionLink
+          signedOut={{ href: "/signup", label: "Send this as a proposal in Client Kit" }}
+          signedIn={{ href: "/jobs/new", label: "Send this as a proposal in Client Kit" }}
           className={btnPrimary}
           meta={{ cta: `tool_${tool.slug}`, source: "tool" }}
-        >
-          Send this as a proposal in Client Kit
-        </TrackedLink>
+        />
         <TrackedLink
           href={cta.secondaryHref}
           className={btnSecondary}

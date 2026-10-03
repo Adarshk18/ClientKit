@@ -3,6 +3,7 @@ import { Literata, Source_Sans_3 } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SENT_LIMITS } from "@/lib/plans";
 import { OG_IMAGE, SITE_URL } from "@/lib/seo";
+import { AUTH_COOKIE_PATTERN } from "@/lib/session-cta";
 import "./globals.css";
 
 const sans = Source_Sans_3({
@@ -58,8 +59,15 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${sans.variable} ${serif.variable} h-full`}>
+    <html lang="en" className={`${sans.variable} ${serif.variable} h-full`} suppressHydrationWarning>
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            // Flags returning visitors (a Supabase session cookie exists) before first paint, so only they wait
+            // for the session check before the sign-in buttons show. Everyone else sees the page unchanged.
+            __html: `try{if(new RegExp(${JSON.stringify(AUTH_COOKIE_PATTERN)}).test(document.cookie))document.documentElement.setAttribute("data-ck-auth","maybe")}catch(e){}`,
+          }}
+        />
         <script
           dangerouslySetInnerHTML={{
             __html: `(function(c,l,a,r,i,t,y){

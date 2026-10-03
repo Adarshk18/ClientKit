@@ -3,6 +3,8 @@ import { JsonLd } from "@/components/json-ld";
 import { Breadcrumb } from "@/components/tools/tool-shell";
 import { SiteFooter, SiteHeader } from "@/components/site-header";
 import { TrackPageView } from "@/components/track";
+import { SessionLink } from "@/components/session-link";
+import { DASHBOARD_HREF } from "@/lib/session-cta";
 import { pageMetadata, SITE_URL } from "@/lib/seo";
 import { TOOLS, TOOL_DISCLOSURE } from "@/lib/tools/content";
 
@@ -65,7 +67,15 @@ export default function ToolsHub() {
           <Link href="/s/demo-acme" className="underline underline-offset-2">
             demo
           </Link>{" "}
-          or <Link href="/signup" className="underline underline-offset-2">start free</Link>.
+          or{" "}
+          <SessionLink
+            signedOut={{ href: "/signup", label: "start free" }}
+            signedIn={{ href: DASHBOARD_HREF, label: "open your dashboard" }}
+            className="underline underline-offset-2"
+            meta={{ cta: "tools_hub_start_free" }}
+            signedInMeta={{ cta: "tools_hub_dashboard" }}
+          />
+          .
         </p>
       </main>
       <SiteFooter />

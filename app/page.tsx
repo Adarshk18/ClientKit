@@ -3,6 +3,9 @@ import { SiteFooter, SiteHeader } from "@/components/site-header";
 import { JsonLd } from "@/components/json-ld";
 import { PricingTable } from "@/components/pricing-table";
 import { TrackPageView, TrackedLink } from "@/components/track";
+import { FreePlanBadge } from "@/components/free-plan-badge";
+import { SessionLink } from "@/components/session-link";
+import { DASHBOARD_HREF } from "@/lib/session-cta";
 import { PlanPrice } from "@/components/plan-price";
 import { FOUNDER_CAP, PLAN_PRICES, SENT_LIMITS } from "@/lib/plans";
 import { pageMetadata, SITE_NAME, SITE_URL } from "@/lib/seo";
@@ -87,9 +90,7 @@ export default function MarketingPage() {
       <main className="mx-auto w-full max-w-6xl px-4">
         <section className="ck-page-pad grid items-start gap-6 py-5 sm:gap-12 sm:py-12 lg:grid-cols-12 lg:gap-10 lg:py-16">
           <div className="lg:col-span-5">
-            <p className="text-[13px] font-medium text-stamp">
-              Free plan: {SENT_LIMITS.free} sends a month, never expires, no card.
-            </p>
+            <FreePlanBadge />
             <h1 className="mt-2 font-serif text-[2rem] font-medium leading-[1.15] tracking-tight sm:mt-3 sm:text-[2.75rem]">
               Send a proposal. Your client signs and pays you.
             </h1>
@@ -98,20 +99,21 @@ export default function MarketingPage() {
               own payment link. Client Kit takes no cut.
             </p>
             <div className="mt-5 sm:mt-8 sm:flex sm:flex-wrap sm:items-center sm:gap-5">
+              <SessionLink
+                signedOut={{ href: "/signup", label: "Start free" }}
+                signedIn={{ href: DASHBOARD_HREF, label: "Go to dashboard" }}
+                className={btnPrimary}
+                meta={{ cta: "hero_get_started" }}
+                signedInMeta={{ cta: "hero_dashboard" }}
+              />
+              {/* Phones hide the header Demo link, so this is their demo link. From sm up the header Demo and the mockup button below already cover it. */}
               <TrackedLink
                 href="/s/demo-acme"
-                className={btnPrimary}
+                className="flex min-h-11 items-center justify-center text-[13px] font-medium text-muted underline decoration-line underline-offset-4 hover:text-stamp sm:hidden"
                 event="demo_open"
-                meta={{ cta: "hero_see_demo" }}
+                meta={{ cta: "hero_try_demo" }}
               >
-                See the demo
-              </TrackedLink>
-              <TrackedLink
-                href="/signup"
-                className="flex min-h-11 items-center justify-center text-[13px] font-medium text-ink underline decoration-line underline-offset-4 hover:text-stamp sm:inline-flex"
-                meta={{ cta: "hero_get_started" }}
-              >
-                Or start free
+                Try the demo first
               </TrackedLink>
             </div>
             <ol
@@ -128,7 +130,7 @@ export default function MarketingPage() {
           </div>
 
           <div className="lg:col-span-7">
-            {/* One link for the whole demo block, so a tap anywhere on the card or the caption opens the demo. */}
+            {/* One link for the whole demo card, so a tap anywhere on the card opens the demo. The caption below is plain text. */}
             <TrackedLink
               href="/s/demo-acme"
               className="group block rounded-sm no-underline focus-visible:outline-2 focus-visible:outline-offset-4"
@@ -162,11 +164,10 @@ export default function MarketingPage() {
                   </span>
                 </div>
               </div>
-              <p className="mt-3 max-w-[48ch] text-[13px] leading-5 text-muted sm:mt-4">
-                Try it as a client would: type a fake name, sign, then see the UPI step. No account needed.{" "}
-                <span className="font-medium text-stamp underline decoration-line underline-offset-4">Open the demo</span>
-              </p>
             </TrackedLink>
+            <p className="mt-3 max-w-[48ch] text-[13px] leading-5 text-muted sm:mt-4">
+              Try it as a client would: type a fake name, sign, then see the UPI step. No account needed.
+            </p>
           </div>
         </section>
 
@@ -358,9 +359,13 @@ export default function MarketingPage() {
           <p className="mt-3 max-w-md text-sm leading-6 text-muted">
             Create a workspace, write a document, copy the URL. That is the product.
           </p>
-          <TrackedLink href="/signup" className={`${btnPrimary} mt-6`} meta={{ cta: "footer_get_started" }}>
-            Get started
-          </TrackedLink>
+          <SessionLink
+            signedOut={{ href: "/signup", label: "Get started" }}
+            signedIn={{ href: DASHBOARD_HREF, label: "Go to dashboard" }}
+            className={`${btnPrimary} mt-6`}
+            meta={{ cta: "footer_get_started" }}
+            signedInMeta={{ cta: "footer_dashboard" }}
+          />
         </section>
       </main>
 

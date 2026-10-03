@@ -9,7 +9,7 @@ import { supabaseAnonKey, supabaseUrl } from "@/lib/env";
  * The free tools under /tools are public on purpose: they work without a login and crawlers must reach them.
  */
 const PROTECTED_PREFIXES = ["/jobs", "/settings", "/api"];
-const PUBLIC_API_PREFIXES = ["/api/webhooks/", "/api/cron/", "/api/analytics", "/api/geo"];
+const PUBLIC_API_PREFIXES = ["/api/webhooks/", "/api/cron/", "/api/analytics", "/api/geo", "/api/session"];
 
 export function isProtectedPath(pathname: string): boolean {
   if (PUBLIC_API_PREFIXES.some((prefix) => pathname.startsWith(prefix))) return false;

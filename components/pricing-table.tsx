@@ -3,6 +3,9 @@
 import { CountrySelect } from "@/components/country-select";
 import { setVisitorCountry, useVisitorCountry } from "@/components/use-visitor-country";
 import { TrackedLink } from "@/components/track";
+import { SessionLink } from "@/components/session-link";
+import { useSessionStatus } from "@/components/use-session";
+import { DASHBOARD_HREF, pickCta } from "@/lib/session-cta";
 import { FOUNDER_CAP, SENT_LIMITS } from "@/lib/plans";
 import { formatPlanPrice } from "@/lib/billing-regions";
 import { btnPrimary, btnSecondary } from "@/lib/ui";
@@ -35,6 +38,9 @@ export function PricingTable({ ctaHref = "/signup" }: { ctaHref?: string }) {
   const { country } = useVisitorCountry();
   const plans = ["founder", "solo", "busy"] as const;
   const details = planDetails(country);
+  const status = useSessionStatus();
+  // Signed-in visitors go to the dashboard (Free) or the billing page (paid plans) instead of signup.
+  const paidHref = pickCta(status, ctaHref, "/settings/billing");
 
   return (
     <div className="space-y-4">
@@ -52,13 +58,13 @@ export function PricingTable({ ctaHref = "/signup" }: { ctaHref?: string }) {
             <li>Signed PDF + audit log</li>
             <li>Payout to your UPI or payment URL</li>
           </ul>
-          <TrackedLink
-            href={ctaHref}
+          <SessionLink
+            signedOut={{ href: ctaHref, label: "Start free" }}
+            signedIn={{ href: DASHBOARD_HREF, label: "Go to dashboard" }}
             className={`mt-8 w-full ${btnSecondary}`}
             meta={{ cta: "pricing_free", plan: "free", country }}
-          >
-            Start free
-          </TrackedLink>
+            signedInMeta={{ cta: "pricing_dashboard", plan: "free", country }}
+          />
         </div>
         {plans.map((plan) => {
           const featured = plan === "solo";
@@ -81,7 +87,7 @@ export function PricingTable({ ctaHref = "/signup" }: { ctaHref?: string }) {
                 <li>Payout to your UPI or payment URL</li>
               </ul>
               <TrackedLink
-                href={ctaHref}
+                href={paidHref}
                 className={`mt-8 w-full ${featured ? btnPrimary : btnSecondary}`}
                 meta={{ cta: `pricing_${plan}`, plan, country }}
               >
