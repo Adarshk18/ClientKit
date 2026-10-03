@@ -2,9 +2,10 @@ import { describe, expect, it } from "vitest";
 import { DEFAULT_ADVANCE, advanceAmounts, generateAdvanceMessages, type AdvanceInput } from "@/lib/tools/advance-message";
 import { DEFAULT_CLAUSE, generateClauses, type ClauseInput } from "@/lib/tools/clauses";
 import { CTA, FOUNDER_LINE, TOOLS, CTA_FACTS } from "@/lib/tools/content";
-import { moneyText, mailtoLink, whatsappLink, daysPhrase } from "@/lib/tools/format";
+import { moneyText, mailtoLink, whatsappLink, daysPhrase, firstName } from "@/lib/tools/format";
 import { DEFAULT_LADDER, SITUATIONS, generateLadder, suggestStartStep, type LadderInput } from "@/lib/tools/follow-up-ladder";
 import { FOUNDER_CAP, PLAN_PRICES, SENT_LIMITS } from "@/lib/plans";
+import { formatPlanPrice } from "@/lib/billing-regions";
 
 const EM = "\u2014";
 const BAD = /undefined|NaN|\[object|null/;
@@ -226,5 +227,47 @@ describe("format helpers", () => {
   it("builds wa.me and mailto links that only open a prefilled message", () => {
     expect(whatsappLink("Hi & bye")).toBe("https://wa.me/?text=Hi%20%26%20bye");
     expect(mailtoLink("A b", "Line 1\nLine 2")).toBe("mailto:?subject=A%20b&body=Line%201%0ALine%202");
+  });
+});
+
+describe("fixes after the live check", () => {
+  it("keeps a title with the surname and never leaves a lone title", () => {
+    expect(firstName("Mr. Rao")).toBe("Mr. Rao");
+    expect(firstName("dr Rao")).toBe("Dr. Rao");
+    expect(firstName("Mr.")).toBe("there");
+    expect(firstName("  ")).toBe("there");
+    expect(firstName("Ananya Rao")).toBe("Ananya");
+    const body = generateAdvanceMessages({ ...DEFAULT_ADVANCE, channel: "email", style: "indian", clientName: "Mr. Rao" }).versions[0]!.body;
+    expect(body).toContain("Dear Mr. Rao,");
+    expect(generateAdvanceMessages({ ...DEFAULT_ADVANCE, channel: "email", style: "indian", clientName: "Mr." }).versions[0]!.body).not.toMatch(/Dear Mr\.,/);
+  });
+
+  it("gives step 3 a real deadline even when none is typed, and never a hard-coded date", () => {
+    for (const s of SITUATIONS) {
+      const steps = generateLadder({ ...DEFAULT_LADDER, situation: s.value, deadline: "" }).steps;
+      const all = steps.map((x) => x.body).join("\n");
+      expect(all, s.value).not.toMatch(/within the next few days/);
+      expect(all).not.toMatch(/(Mon|Tues|Wednes|Thurs|Fri|Satur|Sun)day \d/);
+    }
+    expect(generateLadder({ ...DEFAULT_LADDER, deadline: "" }).steps[2]!.body).toContain("by the end of this week");
+    expect(generateLadder({ ...DEFAULT_LADDER, deadline: "Friday" }).steps[2]!.body).toContain("by Friday");
+  });
+
+  it("makes no unsourced claim about reply rates", () => {
+    const tips = generateLadder(DEFAULT_LADDER).tips.join(" ");
+    expect(tips).not.toMatch(/more often|percent|%/);
+    expect(tips).toContain("easier to answer");
+  });
+
+  it("quotes the rupee Founder price from the pricing table, not from memory", () => {
+    expect(FOUNDER_LINE).toContain(formatPlanPrice("founder", "IN"));
+    expect(FOUNDER_LINE).toContain("priced in rupees in India");
+    expect(FOUNDER_LINE).toContain(`first ${FOUNDER_CAP} workspaces`);
+  });
+
+  it("says accurately when Client Kit emails the client", () => {
+    const all = JSON.stringify(CTA) + JSON.stringify(TOOLS) + generateLadder(DEFAULT_LADDER).tips.join(" ");
+    expect(all).not.toMatch(/never sends/i);
+    expect(CTA["client-follow-up-message-generator"].small).toContain("only emails your client when you click Nudge client");
   });
 });

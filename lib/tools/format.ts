@@ -1,6 +1,15 @@
-import { firstName } from "@/lib/followups";
-
-export { firstName };
+/**
+ * The name to use after "Hi" or "Dear". A title keeps the surname with it ("Mr. Rao" stays "Mr. Rao"),
+ * a lone title is dropped, and an empty name becomes "there".
+ */
+export function firstName(full: string): string {
+  const words = (full ?? "").trim().split(/\s+/).filter(Boolean);
+  const isTitle = (w: string) => /^(mr|mrs|ms|miss|dr|prof|shri|smt|sri)\.?$/i.test(w);
+  while (words.length && isTitle(words[0]!) && words.length === 1) words.shift();
+  if (!words.length) return "there";
+  if (isTitle(words[0]!)) return `${capitalize(words[0]!.toLowerCase().replace(/\.?$/, "."))} ${words[1]}`;
+  return words[0]!;
+}
 
 export const TOOL_CURRENCIES = ["INR", "USD", "EUR", "GBP", "AED", "AUD", "CAD", "SGD"] as const;
 export type ToolCurrency = (typeof TOOL_CURRENCIES)[number];

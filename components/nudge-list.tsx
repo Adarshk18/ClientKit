@@ -44,7 +44,7 @@ export function NudgeList({ items, appOrigin, workspaceName }: { items: NudgeIte
         Needs a nudge today
       </h2>
       <p className="mt-1 text-sm text-muted">
-        These jobs are waiting on the client. Client Kit never sends anything for you. Pick a message and send it yourself.
+        These jobs are waiting on the client. The WhatsApp and email buttons only open a message for you to send. Pick one and press send yourself.
       </p>
       <ul className="mt-3 divide-y divide-line border border-line bg-cream" data-testid="nudge-list">
         {items.map((item) => {

@@ -27,7 +27,7 @@ export default function Page() {
     "gentle",
   );
   const emailExample = pick(
-    { channel: "email", style: "indian", clientName: "Mr. Iyer", yourName: "Kavya", project: "annual report design", fee: 120000, advanceValue: 40, balanceDue: "within 7 days of delivery", howToPay: "UPI ID kavya@okicici, or bank transfer on request", proformaLine: true },
+    { channel: "email", style: "indian", clientName: "Mr. Rao", yourName: "Kavya", project: "annual report design", fee: 120000, advanceValue: 40, balanceDue: "within 7 days of delivery", howToPay: "UPI ID kavya@okicici, or bank transfer on request", proformaLine: true },
     "standard",
   );
   const repeat = pick(

@@ -107,7 +107,7 @@ const faqs: { q: string; a: string }[] = [
   },
   {
     q: "Does Client Kit send follow-ups for me?",
-    a: "No. The WhatsApp and email buttons only open your own app with the message filled in, or copy the text. You read it and press send. Client Kit notes the time you nudged, so the job leaves the list for a couple of days. The separate Nudge client button on a sent job emails the client once you click it.",
+    a: "Only when you ask it to. The WhatsApp and email follow-up buttons just open your own app with the message filled in, or copy the text, and you press send. Client Kit notes the time you nudged, so the job leaves the list for a couple of days. The separate Nudge client button on a sent job does email the client, but only when you click it.",
   },
   {
     q: "Can I limit how many revisions a client gets?",

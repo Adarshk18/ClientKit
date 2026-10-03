@@ -21,10 +21,10 @@ function step(n: 1 | 2 | 3 | 4, input: Partial<LadderInput>) {
 export default function Page() {
   const proposal1 = step(1, { situation: "proposal_quiet", project: "brand website", clientName: "Meera", relationship: "new", daysSince: 4 });
   const proposal2 = step(2, { situation: "proposal_quiet", project: "brand website", clientName: "Meera", relationship: "new", daysSince: 8 });
-  const mid = step(2, { situation: "waiting_on_client", project: "app screens", clientName: "Arjun", daysSince: 6, action: "pause_work", deadline: "Friday 11 October" });
+  const mid = step(3, { situation: "waiting_on_client", project: "app screens", clientName: "Arjun", daysSince: 6, action: "pause_work", deadline: "Friday" });
   const advance = step(2, { situation: "advance_unpaid", project: "website redesign", amount: 30000, daysSince: 3 });
   const overdueWa = step(2, { situation: "payment_overdue", amount: 30000, daysSince: 10, reference: "invoice 114" });
-  const overdueEmail = step(3, { situation: "payment_overdue", channel: "email", amount: 30000, daysSince: 14, relationship: "company", deadline: "Friday 18 October", action: "pause_work" });
+  const overdueEmail = step(3, { situation: "payment_overdue", channel: "email", amount: 30000, daysSince: 14, relationship: "company", deadline: "next Friday", action: "pause_work" });
   const closing = step(4, { situation: "proposal_quiet", project: "brand website", clientName: "Meera", relationship: "regular", daysSince: 21, action: "close_file" });
 
   return (
@@ -36,7 +36,7 @@ export default function Page() {
       <Example title="Step 1, WhatsApp" text={proposal1.body} />
       <Example title="Step 2, WhatsApp" text={proposal2.body} />
       <H3>When a client goes quiet mid-project</H3>
-      <Example title="Step 2, WhatsApp, with a date and pause" text={mid.body} />
+      <Example title="Step 3, WhatsApp, with a date and a pause" text={mid.body} />
       <H3>When the advance has not arrived</H3>
       <Example title="Step 2, WhatsApp" text={advance.body} />
       <H3>When payment is overdue</H3>

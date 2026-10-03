@@ -1,3 +1,4 @@
+import { formatPlanPrice } from "@/lib/billing-regions";
 import { FOUNDER_CAP, PLAN_PRICES, SENT_LIMITS } from "@/lib/plans";
 
 export type ToolSlug =
@@ -159,7 +160,8 @@ export function getTool(slug: ToolSlug): ToolInfo {
 
 /** Facts used in the closing call to action. Built from the plan constants so they cannot drift. */
 export const CTA_FACTS = `Client Kit takes no cut. Free plan: ${SENT_LIMITS.free} sends a month, and it never expires.`;
-export const FOUNDER_LINE = `Founder plan: $${PLAN_PRICES.founder.usd} a month for the first ${FOUNDER_CAP} workspaces.`;
+/** The rupee figure comes from the same price table the pricing page and checkout use. */
+export const FOUNDER_LINE = `Founder plan: $${PLAN_PRICES.founder.usd} a month for the first ${FOUNDER_CAP} workspaces (priced in rupees in India, ${formatPlanPrice("founder", "IN")} a month).`;
 
 export const CTA: Record<ToolSlug, { heading: string; body: string; secondaryLabel: string; secondaryHref: string; small: string }> = {
   "advance-payment-request-message-generator": {
@@ -182,6 +184,6 @@ export const CTA: Record<ToolSlug, { heading: string; body: string; secondaryLab
     secondaryLabel: "Try the live demo",
     secondaryHref: "/s/demo-acme",
     small:
-      "Client Kit never sends a follow-up on its own. It lists the jobs that need one and writes the message, and you press send. It does not make invoices.",
+      "Client Kit only emails your client when you click Nudge client on a job. The WhatsApp and mail follow-ups just open a message for you to send. It does not make invoices.",
   },
 };

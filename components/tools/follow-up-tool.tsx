@@ -118,9 +118,10 @@ export function FollowUpTool() {
         />
         <TextField
           label="Deadline for the last messages (optional)"
+          hint="If you leave it empty, the messages say by the end of this week."
           value={state.deadline}
           onChange={(v) => set("deadline", v)}
-          placeholder="Friday 11 October"
+          placeholder="Friday, or a date like 18 Oct"
         />
         <p className="text-[12px] leading-4 text-muted">Nothing is saved. Everything stays in this browser tab.</p>
       </form>

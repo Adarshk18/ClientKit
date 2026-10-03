@@ -69,7 +69,7 @@ export function generateLadder(input: LadderInput): { steps: LadderStep[]; tips:
   const refBit = ref ? ` (${ref})` : "";
   const amountStr = input.amount > 0 ? moneyText(input.amount, input.currency) : "[amount]";
   const deadline = tidy(input.deadline);
-  const by = deadline ? `by ${deadline}` : "within the next few days";
+  const by = deadline ? `by ${deadline}` : "by the end of this week";
   const sinceBit = `I have not heard back for ${daysPhrase(input.daysSince)}.`;
   const email = input.channel === "email";
   const company = input.relationship === "company";
@@ -100,7 +100,7 @@ export function generateLadder(input: LadderInput): { steps: LadderStep[]; tips:
       core = {
         s1: `I wanted to check that my proposal for ${project} reached you. Do you have any questions I can answer?`,
         s2: `Following up on my proposal for ${project}. Could you tell me if you would like to go ahead, change something, or pass for now? A short yes or no helps me plan my schedule.`,
-        s3: `I can hold a slot for ${project} ${deadline ? `until ${deadline}` : "until the end of this week"}. Could you confirm ${by} whether you want to go ahead?`,
+        s3: `I can hold a slot for ${project} ${deadline ? `until ${deadline}` : "until the end of this week"}. Could you confirm ${deadline ? by : "by then"} whether you want to go ahead?`,
         s4: `I have not heard back, so I will assume the timing is not right for ${project}. ${
           input.action === "close_file" ? "I will close the file for now. " : ""
         }If things change, message me and we can pick it up again.`,
@@ -122,7 +122,7 @@ export function generateLadder(input: LadderInput): { steps: LadderStep[]; tips:
       core = {
         s1: `Just checking that you saw my message about the advance of ${amountStr} for ${project}.${payBit}`,
         s2: `The advance of ${amountStr} for ${project} is still pending, and I start work once it is received. Could you pay today, or tell me when to expect it?${payBit}`,
-        s3: `I can hold your start date ${deadline ? `until ${deadline}` : "until the end of this week"}. Please pay the advance of ${amountStr} ${by}, or tell me a new date that works for you.`,
+        s3: `I can hold your start date ${deadline ? `until ${deadline}` : "until the end of this week"}. Please pay the advance of ${amountStr} ${deadline ? by : "by then"}, or tell me a new date that works for you.`,
         s4: `I have not received the advance, so I am not able to start ${project}. ${
           input.action === "close_file" ? "I will close the file for now. " : ""
         }If you still want to go ahead, message me and we will set a new start date.`,
@@ -177,9 +177,9 @@ export function generateLadder(input: LadderInput): { steps: LadderStep[]; tips:
 
   const tips = [
     "Send one step at a time and wait for the gap shown before the next one. Do not send all four in a row.",
-    "Keep each message on its own. Short messages get answered more often than long ones.",
+    "Keep each message on its own. Short messages are easier to answer.",
     "If they reply at any step, stop the ladder and answer them.",
-    "Client Kit never sends a message for you. These stay in your hands until you press send yourself.",
+    "Nothing is sent from this page. You copy the text or open it in WhatsApp or your mail app, and you press send yourself.",
   ];
   return { steps, tips };
 }

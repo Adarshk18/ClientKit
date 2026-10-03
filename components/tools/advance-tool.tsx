@@ -109,7 +109,7 @@ export function AdvanceTool() {
           label="When does work start? (optional)"
           value={state.start}
           onChange={(v) => set("start", v)}
-          placeholder="on Monday 14 October"
+          placeholder="on Monday"
         />
         <fieldset>
           <legend className="text-[13px] font-medium">Add these lines if you want them</legend>
