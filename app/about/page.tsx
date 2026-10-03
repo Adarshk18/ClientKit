@@ -14,8 +14,7 @@ export default function AboutPage() {
     <div className="flex min-h-dvh flex-col">
       <SiteHeader />
       <article className="mx-auto w-full max-w-2xl flex-1 px-4 py-12 text-sm leading-7">
-        <p className="text-[13px] text-stamp">About</p>
-        <h1 className="mt-2 font-serif text-3xl">A job link. Not an operating system.</h1>
+        <h1 className="font-serif text-3xl">A job link. Not an operating system.</h1>
         <div className="mt-8 space-y-4">
           <p>
             Client Kit is for people who already send a Google Doc and a payment link. You still just need a

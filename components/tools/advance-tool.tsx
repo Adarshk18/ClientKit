@@ -6,16 +6,19 @@ import { OutputBlock } from "@/components/tools/output-block";
 import { useToolCurrency } from "@/components/tools/use-tool-currency";
 import { DEFAULT_ADVANCE, generateAdvanceMessages, type AdvanceInput } from "@/lib/tools/advance-message";
 import { moneyText } from "@/lib/tools/format";
-import { TOOL_CURRENCIES } from "@/lib/tools/format";
+import { TOOL_CURRENCIES, exampleAmountFor } from "@/lib/tools/format";
 
 export function AdvanceTool() {
-  const [currency, setCurrency] = useToolCurrency(DEFAULT_ADVANCE.currency);
   const [state, setState] = useState<Omit<AdvanceInput, "currency">>(() => {
     const { currency: _c, ...rest } = DEFAULT_ADVANCE;
     void _c;
     return rest;
   });
   const set = <K extends keyof typeof state>(key: K, value: (typeof state)[K]) => setState((s) => ({ ...s, [key]: value }));
+  const [currency, setCurrency] = useToolCurrency(DEFAULT_ADVANCE.currency, (from, to) =>
+    // Only swap the example amount if the visitor has not typed their own yet.
+    setState((s) => (s.fee === DEFAULT_ADVANCE.fee ? { ...s, fee: exampleAmountFor(DEFAULT_ADVANCE.fee, to) } : s)),
+  );
 
   const input: AdvanceInput = { ...state, currency };
   const result = useMemo(() => generateAdvanceMessages(input), [input.channel, input.tone, input.style, input.clientName, input.yourName, input.project, input.fee, input.currency, input.advanceType, input.advanceValue, input.balanceDue, input.howToPay, input.start, input.mentionProposal, input.firstProject, input.askUtr, input.proformaLine]); // eslint-disable-line react-hooks/exhaustive-deps

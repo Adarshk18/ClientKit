@@ -14,6 +14,21 @@ export function firstName(full: string): string {
 export const TOOL_CURRENCIES = ["INR", "USD", "EUR", "GBP", "AED", "AUD", "CAD", "SGD"] as const;
 export type ToolCurrency = (typeof TOOL_CURRENCIES)[number];
 
+/** Rough rupees per unit of each currency, only used to pick a believable example amount. Not an exchange rate service. */
+const EXAMPLE_INR_PER_UNIT: Record<string, number> = { INR: 1, USD: 83, EUR: 90, GBP: 105, AED: 23, AUD: 55, CAD: 61, SGD: 62 };
+
+/**
+ * The example amount is written in rupees (60000). When the visitor is outside India and the currency switches,
+ * 60000 dollars would read as a fake figure, so we show a similar-sized job: 60000 INR becomes about 700 USD.
+ */
+export function exampleAmountFor(inrAmount: number, currency: string): number {
+  const rate = EXAMPLE_INR_PER_UNIT[currency] ?? 1;
+  const raw = inrAmount / rate;
+  if (currency === "INR" || !Number.isFinite(raw) || raw <= 0) return inrAmount;
+  const step = raw >= 200 ? 50 : 10;
+  return Math.max(step, Math.round(raw / step) * step);
+}
+
 /** "₹60,000", "$1,200.50". Whole amounts drop the decimals. INR uses Indian digit grouping. */
 export function moneyText(amount: number, currency: string): string {
   const safe = Number.isFinite(amount) ? amount : 0;

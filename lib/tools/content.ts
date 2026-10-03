@@ -23,7 +23,7 @@ export type ToolInfo = {
   faqs: Faq[];
 };
 
-export const TOOL_DISCLOSURE = "Made by the team behind Client Kit, the one link proposal, e-sign and payment tool.";
+export const TOOL_DISCLOSURE = "Made by Adarsh Sharma, who builds Client Kit, the one link proposal, e-sign and payment tool.";
 export const NOTHING_STORED = "Nothing you type here is saved or sent anywhere. The result is built in your browser.";
 export const NOT_LEGAL_ADVICE = "These are plain-English messages and terms, not legal or tax advice.";
 

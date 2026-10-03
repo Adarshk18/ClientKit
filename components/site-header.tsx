@@ -4,7 +4,7 @@ import { HeaderAuth } from "@/components/header-auth";
 import { btnGhost } from "@/lib/ui";
 
 /**
- * `mobileCta={false}` hides the filled "Get started" button below the sm breakpoint. The home page uses it
+ * `mobileCta={false}` hides the filled "Sign up" button below the sm breakpoint. The home page uses it
  * so the hero button is the one obvious tap on a phone.
  *
  * This is the one header for every marketing page. The server HTML is always the signed-out version, so it

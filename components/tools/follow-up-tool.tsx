@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { NumberField, Segmented, SelectField, TextField } from "@/components/tools/fields";
 import { OutputBlock } from "@/components/tools/output-block";
 import { useToolCurrency } from "@/components/tools/use-tool-currency";
-import { TOOL_CURRENCIES } from "@/lib/tools/format";
+import { TOOL_CURRENCIES, exampleAmountFor } from "@/lib/tools/format";
 import {
   DEFAULT_LADDER,
   SITUATIONS,
@@ -19,7 +19,6 @@ import {
 type ChannelChoice = "whatsapp" | "email" | "both";
 
 export function FollowUpTool() {
-  const [currency, setCurrency] = useToolCurrency(DEFAULT_LADDER.currency);
   const [channel, setChannel] = useState<ChannelChoice>("whatsapp");
   const [state, setState] = useState<Omit<LadderInput, "currency" | "channel">>(() => {
     const { currency: _c, channel: _ch, ...rest } = DEFAULT_LADDER;
@@ -28,6 +27,10 @@ export function FollowUpTool() {
     return rest;
   });
   const set = <K extends keyof typeof state>(key: K, value: (typeof state)[K]) => setState((s) => ({ ...s, [key]: value }));
+  const [currency, setCurrency] = useToolCurrency(DEFAULT_LADDER.currency, (from, to) =>
+    // Only swap the example amount if the visitor has not typed their own yet.
+    setState((s) => (s.amount === DEFAULT_LADDER.amount ? { ...s, amount: exampleAmountFor(DEFAULT_LADDER.amount, to) } : s)),
+  );
 
   const wa = useMemo(() => generateLadder({ ...state, currency, channel: "whatsapp" }), [state, currency]);
   const em = useMemo(() => generateLadder({ ...state, currency, channel: "email" }), [state, currency]);

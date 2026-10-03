@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { DEFAULT_ADVANCE, advanceAmounts, generateAdvanceMessages, type AdvanceInput } from "@/lib/tools/advance-message";
 import { DEFAULT_CLAUSE, generateClauses, type ClauseInput } from "@/lib/tools/clauses";
 import { CTA, FOUNDER_LINE, TOOLS, CTA_FACTS } from "@/lib/tools/content";
-import { moneyText, mailtoLink, whatsappLink, daysPhrase, firstName } from "@/lib/tools/format";
+import { exampleAmountFor, moneyText, mailtoLink, whatsappLink, daysPhrase, firstName } from "@/lib/tools/format";
 import { DEFAULT_LADDER, SITUATIONS, generateLadder, suggestStartStep, type LadderInput } from "@/lib/tools/follow-up-ladder";
 import { FOUNDER_CAP, PLAN_PRICES, SENT_LIMITS } from "@/lib/plans";
 import { formatPlanPrice } from "@/lib/billing-regions";
@@ -269,5 +269,21 @@ describe("fixes after the live check", () => {
     const all = JSON.stringify(CTA) + JSON.stringify(TOOLS) + generateLadder(DEFAULT_LADDER).tips.join(" ");
     expect(all).not.toMatch(/never sends/i);
     expect(CTA["client-follow-up-message-generator"].small).toContain("only emails your client when you click Nudge client");
+  });
+});
+
+describe("exampleAmountFor", () => {
+  it("keeps rupee amounts as they are", () => {
+    expect(exampleAmountFor(60000, "INR")).toBe(60000);
+  });
+  it("turns the rupee example into a believable foreign amount", () => {
+    expect(exampleAmountFor(60000, "USD")).toBe(700);
+    expect(exampleAmountFor(30000, "USD")).toBe(350);
+    expect(exampleAmountFor(60000, "GBP")).toBe(550);
+  });
+  it("never returns zero or NaN", () => {
+    expect(exampleAmountFor(0, "USD")).toBe(0);
+    expect(exampleAmountFor(Number.NaN, "USD")).toBeNaN();
+    expect(exampleAmountFor(500, "USD")).toBeGreaterThan(0);
   });
 });

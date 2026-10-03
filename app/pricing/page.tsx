@@ -42,8 +42,7 @@ export default function PricingPage() {
       <TrackPageView meta={{ page: "pricing" }} />
       <SiteHeader />
       <main className="ck-page-pad mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:py-12">
-        <p className="text-[13px] text-stamp">Pricing</p>
-        <h1 className="mt-2 max-w-xl font-serif text-3xl">You pay for the software. Clients pay you.</h1>
+        <h1 className="max-w-xl font-serif text-3xl">You pay for the software. Clients pay you.</h1>
         <p className="mt-4 max-w-xl text-sm leading-6 text-muted">
           No cut of job payments. The free plan sends {SENT_LIMITS.free} jobs a month and never expires. Paid plans
           only raise the monthly send limit. Prices are in INR for India.

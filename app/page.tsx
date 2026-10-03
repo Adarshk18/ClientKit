@@ -144,7 +144,7 @@ export default function MarketingPage() {
                 </div>
                 <div className="px-5 py-6 sm:px-7">
                   <p className="font-serif text-xl text-ink">Acme site rebuild</p>
-                  <p className="mt-1 text-[13px] text-muted">Studio North for Acme · due in 14 days</p>
+                  <p className="mt-1 text-[13px] text-muted">Studio North for Acme, due in 14 days</p>
                   <p className="mt-5 max-w-[46ch] text-sm leading-6 text-ink">
                     Homepage, CMS, and two rounds of revision. You send copy. We ship a static export you can host
                     anywhere.
@@ -235,21 +235,21 @@ export default function MarketingPage() {
           </p>
           <ul className="mt-8 max-w-2xl space-y-5 text-sm leading-6">
             <li>
-              <strong className="text-ink">The money goes straight to you.</strong> Big all-in-one tools route the
+              <strong className="font-semibold text-ink">The money goes straight to you.</strong> Big all-in-one tools route the
               client’s payment through their own processor, so fees come out of your job and the money can take days
               to reach you. Here the client pays your UPI or your own payment link. Client Kit never touches the money.
             </li>
             <li>
-              <strong className="text-ink">No cut of the job.</strong> You pay a flat monthly fee for the software, or
+              <strong className="font-semibold text-ink">No cut of the job.</strong> You pay a flat monthly fee for the software, or
               nothing on the free plan. Whatever the client pays is yours, minus only what your own UPI app or payment
               provider charges.
             </li>
             <li>
-              <strong className="text-ink">The client does not make an account.</strong> They open one link, sign, and
+              <strong className="font-semibold text-ink">The client does not make an account.</strong> They open one link, sign, and
               pay, on their phone if they like. Share it on WhatsApp. Your dashboard lists who needs a nudge, with a message ready to send yourself.
             </li>
             <li>
-              <strong className="text-ink">UPI is a first-class option.</strong> Save your UPI ID and the client gets a
+              <strong className="font-semibold text-ink">UPI is a first-class option.</strong> Save your UPI ID and the client gets a
               QR code and the exact amount. Freelancers outside India can use a payment link they already have.
             </li>
           </ul>
@@ -274,14 +274,14 @@ export default function MarketingPage() {
               <li className="flex items-center justify-between gap-3 px-4 py-3">
                 <span>
                   Brand kit, April
-                  <span className="mt-0.5 block text-[12px] text-muted">Rina · $900 due now</span>
+                  <span className="mt-0.5 block text-[12px] text-muted">Rina, $900 due now</span>
                 </span>
                 <span className="text-[12px]">viewed</span>
               </li>
               <li className="flex items-center justify-between gap-3 px-4 py-3">
                 <span>
                   Wedding stills
-                  <span className="mt-0.5 block text-[12px] text-muted">Draft · not sent</span>
+                  <span className="mt-0.5 block text-[12px] text-muted">Draft, not sent</span>
                 </span>
                 <span className="text-[12px] text-muted">draft</span>
               </li>
@@ -360,7 +360,7 @@ export default function MarketingPage() {
             Create a workspace, write a document, copy the URL. That is the product.
           </p>
           <SessionLink
-            signedOut={{ href: "/signup", label: "Get started" }}
+            signedOut={{ href: "/signup", label: "Start free" }}
             signedIn={{ href: DASHBOARD_HREF, label: "Go to dashboard" }}
             className={`${btnPrimary} mt-6`}
             meta={{ cta: "footer_get_started" }}

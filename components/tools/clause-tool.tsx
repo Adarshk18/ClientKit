@@ -5,7 +5,7 @@ import { NumberField, Segmented, SelectField, TextArea, TextField, Toggle } from
 import { OutputBlock } from "@/components/tools/output-block";
 import { useToolCurrency } from "@/components/tools/use-tool-currency";
 import { DEFAULT_CLAUSE, generateClauses, type ClauseInput, type ExtraRoundPricing, type LatePayment, type Refund, type Strictness } from "@/lib/tools/clauses";
-import { TOOL_CURRENCIES } from "@/lib/tools/format";
+import { TOOL_CURRENCIES, exampleAmountFor } from "@/lib/tools/format";
 
 const OUT_OF_SCOPE_CHIPS = ["Hosting and domain", "Stock assets", "Copywriting", "Ongoing support", "Extra pages", "Anything not listed above"];
 
@@ -16,13 +16,21 @@ const HOW_TO_SAY: Record<string, string> = {
 };
 
 export function ClauseTool() {
-  const [currency, setCurrency] = useToolCurrency(DEFAULT_CLAUSE.currency);
   const [state, setState] = useState<Omit<ClauseInput, "currency">>(() => {
     const { currency: _c, ...rest } = DEFAULT_CLAUSE;
     void _c;
     return rest;
   });
   const set = <K extends keyof typeof state>(key: K, value: (typeof state)[K]) => setState((s) => ({ ...s, [key]: value }));
+  const [currency, setCurrency] = useToolCurrency(DEFAULT_CLAUSE.currency, (from, to) =>
+    // Only swap the example amount if the visitor has not typed their own yet.
+    setState((s) => ({
+      ...s,
+      fee: s.fee === DEFAULT_CLAUSE.fee ? exampleAmountFor(DEFAULT_CLAUSE.fee, to) : s.fee,
+      extraAmount:
+        s.extraAmount === DEFAULT_CLAUSE.extraAmount ? exampleAmountFor(DEFAULT_CLAUSE.extraAmount, to) : s.extraAmount,
+    })),
+  );
   const result = useMemo(() => generateClauses({ ...state, currency }), [state, currency]);
 
   function addChip(chip: string) {

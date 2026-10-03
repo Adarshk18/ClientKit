@@ -91,7 +91,7 @@ export function PricingTable({ ctaHref = "/signup" }: { ctaHref?: string }) {
                 className={`mt-8 w-full ${featured ? btnPrimary : btnSecondary}`}
                 meta={{ cta: `pricing_${plan}`, plan, country }}
               >
-                {featured ? "Start on Solo" : `Choose ${label}`}
+                {`Choose ${label}`}
               </TrackedLink>
             </div>
           );
